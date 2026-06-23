@@ -1933,17 +1933,34 @@ export default function AdventureCamp() {
               </div>
 
               {/* grid */}
-              <div className="grid grid-cols-2 gap-3">
-                {VOCAB.map((v) => (
-                  <Flashcard
-                    key={v.id}
-                    data={v}
-                    mastered={mastered.has(v.id)}
-                    onMaster={masterCard}
-                    onNotSure={unMaster}
-                  />
-                ))}
-              </div>
+              {progress === VOCAB.length ? (
+                <div className="ac-fade mt-6 rounded-3xl bg-white p-8 text-center shadow-md ring-1 ring-slate-100">
+                  <div className="text-6xl">🎉⛺</div>
+                  <p className="mt-3 text-lg font-extrabold" style={{ color: BRAND.navy }}>
+                    Awesome! You mastered all words for today!
+                  </p>
+                  <p className="mt-1 text-sm font-bold text-slate-500">
+                    Come back tomorrow for a new adventure 🏕️
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-3">
+                  {VOCAB.filter((v) => !mastered.has(v.id) || hidingIds.has(v.id)).map((v) => (
+                    <div
+                      key={v.id}
+                      className={hidingIds.has(v.id) ? "pointer-events-none transition-all duration-400 opacity-0 scale-90" : "transition-all duration-300"}
+                      style={hidingIds.has(v.id) ? { transition: "opacity 400ms ease, transform 400ms ease" } : undefined}
+                    >
+                      <Flashcard
+                        data={v}
+                        mastered={mastered.has(v.id)}
+                        onMaster={masterCard}
+                        onNotSure={unMaster}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
             </>
           )}
 
