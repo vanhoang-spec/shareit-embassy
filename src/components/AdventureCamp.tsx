@@ -1671,6 +1671,20 @@ export default function AdventureCamp() {
     return () => clearTimeout(id);
   }, [gameCoins, spent]);
 
+  // Sync coin total to Lovable Cloud profile (when signed in)
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (cancelled || !session?.user) return;
+      await supabase
+        .from("profiles")
+        .update({ total_coins: coins })
+        .eq("id", session.user.id);
+    })();
+    return () => { cancelled = true; };
+  }, [coins]);
+
   function masterCard(id) {
     setMastered((prev) => {
       const next = new Set(prev);
