@@ -3138,35 +3138,33 @@ function UnitGalaxy({ onEnterUnit1, onBackToLevels }) {
 // Upbeat, kid-friendly 8-bit loop for Tier 1 / Tier 2 screens.
 // =================================================================
 function useCosmicMusic(enabled) {
-  const ctxRef = useRef(null);
-  const stopRef = useRef(null);
-
   useEffect(() => {
     if (!enabled) return;
     if (typeof window === "undefined") return;
-
-    let cancelled = false;
-    let timers = [];
-    let masterGain = null;
-    let AC = window.AudioContext || window.webkitAudioContext;
+    const AC = window.AudioContext || window.webkitAudioContext;
     if (!AC) return;
 
-    const ctx = ctxRef.current || new AC();
-    ctxRef.current = ctx;
+    let cancelled = false;
+    let started = false;
+    let timers = [];
+    let ctx = null;
+    let masterGain = null;
 
     const start = async () => {
+      if (started || cancelled) return;
+      started = true;
+
+      ctx = new AC();
       try { if (ctx.state === "suspended") await ctx.resume(); } catch {}
-      if (cancelled) return;
+      if (cancelled) { try { ctx.close(); } catch {} ; return; }
 
       masterGain = ctx.createGain();
       masterGain.gain.value = 0;
       masterGain.gain.linearRampToValueAtTime(0.18, ctx.currentTime + 0.6);
       masterGain.connect(ctx.destination);
 
-      // Notes (Hz) — happy C major arpeggio + bounce bass
       const M = { C4:261.63, D4:293.66, E4:329.63, G4:392.0, A4:440.0, C5:523.25, D5:587.33, E5:659.25, G5:783.99,
                   C3:130.81, G3:196.0, A3:220.0, F3:174.61 };
-      // Melody pattern (cycles), each step = 0.18s
       const melody = [
         M.C5, M.E5, M.G5, M.E5, M.C5, M.E5, M.G5, M.C5,
         M.A4, M.C5, M.E5, M.C5, M.A4, M.C5, M.E5, M.A4,
@@ -3189,7 +3187,6 @@ function useCosmicMusic(enabled) {
         o.start(t);
         o.stop(t + dur + 0.02);
       };
-
       const playKick = (t) => {
         const o = ctx.createOscillator();
         const g = ctx.createGain();
@@ -3202,14 +3199,11 @@ function useCosmicMusic(enabled) {
         o.connect(g).connect(masterGain);
         o.start(t); o.stop(t + 0.25);
       };
-
       const scheduleLoop = (startAt) => {
         for (let i = 0; i < melody.length; i++) {
           const t = startAt + i * stepDur;
           playNote(melody[i], t, stepDur * 0.9, "square", 0.16);
-          // bass every 2 steps
           if (i % 2 === 0) playNote(bass[(i / 2) % bass.length], t, stepDur * 1.6, "triangle", 0.22);
-          // kick every 4 steps
           if (i % 4 === 0) playKick(t);
         }
       };
@@ -3220,23 +3214,12 @@ function useCosmicMusic(enabled) {
         if (cancelled) return;
         nextStart += loopDur;
         scheduleLoop(nextStart);
-        const id = setTimeout(tick, loopDur * 1000 - 150);
-        timers.push(id);
+        timers.push(setTimeout(tick, loopDur * 1000 - 150));
       };
-      const id0 = setTimeout(tick, loopDur * 1000 - 150);
-      timers.push(id0);
-
-      stopRef.current = () => {
-        try {
-          masterGain.gain.cancelScheduledValues(ctx.currentTime);
-          masterGain.gain.setValueAtTime(masterGain.gain.value, ctx.currentTime);
-          masterGain.gain.linearRampToValueAtTime(0.0001, ctx.currentTime + 0.4);
-        } catch {}
-      };
+      timers.push(setTimeout(tick, loopDur * 1000 - 150));
     };
 
-    const onGesture = () => { start(); window.removeEventListener("pointerdown", onGesture); };
-    // Try immediately; if blocked by autoplay policy, wait for a gesture.
+    const onGesture = () => { start(); };
     start();
     window.addEventListener("pointerdown", onGesture, { once: true });
 
@@ -3244,10 +3227,21 @@ function useCosmicMusic(enabled) {
       cancelled = true;
       window.removeEventListener("pointerdown", onGesture);
       timers.forEach(clearTimeout);
-      if (stopRef.current) stopRef.current();
+      timers = [];
+      if (ctx) {
+        try {
+          if (masterGain) {
+            masterGain.gain.cancelScheduledValues(ctx.currentTime);
+            masterGain.gain.setValueAtTime(0.0001, ctx.currentTime);
+          }
+        } catch {}
+        // Close context to kill any already-scheduled oscillators.
+        setTimeout(() => { try { ctx.close(); } catch {} }, 50);
+      }
     };
   }, [enabled]);
 }
+
 
 // =================================================================
 // App — header + view router (no bottom nav)
