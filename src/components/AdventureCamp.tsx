@@ -300,6 +300,26 @@ const STYLES = `
 @media (prefers-reduced-motion: reduce){
   .ac-fade,.ac-pop,.ac-shake,.ac-float,.ac-ripple,.ac-pulse-ring,.ac-banner,.coin-ico { animation: none !important; transition: none !important; }
 }
+/* ===== Galaxy theme ===== */
+@keyframes gx-twinkle { 0%,100%{opacity:.2} 50%{opacity:1} }
+@keyframes gx-bob     { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+@keyframes gx-pulse   { 0%,100%{filter:drop-shadow(0 0 8px currentColor)} 50%{filter:drop-shadow(0 0 22px currentColor)} }
+@keyframes gx-comet   { 0%{transform:translate(-40%,40%) rotate(-25deg);opacity:0} 10%{opacity:1} 100%{transform:translate(140%,-100%) rotate(-25deg);opacity:0} }
+@keyframes gx-spin    { to { transform: rotate(360deg); } }
+@keyframes gx-supernova { 0%{transform:scale(.2);opacity:1} 100%{transform:scale(4);opacity:0} }
+.gx-shell { background: radial-gradient(ellipse at 20% 10%, #1e1b4b 0%, transparent 55%), radial-gradient(ellipse at 80% 90%, #4c1d95 0%, transparent 60%), linear-gradient(180deg,#070417 0%, #0b0628 50%, #100633 100%); }
+.gx-star  { position:absolute; background:#fff; border-radius:9999px; animation: gx-twinkle 3s ease-in-out infinite; box-shadow:0 0 6px #fff; pointer-events:none; }
+.gx-bob   { animation: gx-bob 4s ease-in-out infinite; }
+.gx-pulse { animation: gx-pulse 2.4s ease-in-out infinite; }
+.gx-spin-slow { animation: gx-spin 24s linear infinite; }
+.gx-comet { position:absolute; width:140px; height:3px; background:linear-gradient(90deg, transparent, #fff, #a78bfa); border-radius:9999px; animation: gx-comet 7s linear infinite; filter:drop-shadow(0 0 6px #a78bfa); pointer-events:none; }
+.gx-neon-text { text-shadow: 0 0 8px currentColor, 0 0 18px currentColor; }
+.gx-glass { background: rgba(255,255,255,.06); backdrop-filter: blur(10px); border:1px solid rgba(255,255,255,.14); }
+.gx-supernova { position:fixed; inset:0; pointer-events:none; z-index:80; display:flex; align-items:center; justify-content:center; }
+.gx-supernova::after { content:""; width:120px; height:120px; border-radius:9999px; background:radial-gradient(circle, #fff 0%, #fde68a 30%, #f59e0b 50%, #ec4899 70%, transparent 80%); animation: gx-supernova 1.1s ease-out forwards; }
+@media (prefers-reduced-motion: reduce){
+  .gx-star,.gx-bob,.gx-pulse,.gx-spin-slow,.gx-comet { animation: none !important; }
+}
 `;
 
 // Choose the nicest available English voice (falls back to any en voice).
@@ -1743,10 +1763,9 @@ function BackBtn({ onBack }) {
   return (
     <button
       onClick={onBack}
-      className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-1.5 text-sm font-extrabold shadow-md ring-1 ring-slate-200 transition-transform duration-150 hover:scale-105 active:scale-95"
-      style={{ color: BRAND.navy }}
+      className="mb-3 inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-extrabold text-white shadow-[0_0_20px_rgba(167,139,250,.55)] ring-1 ring-white/30 transition-transform duration-150 hover:scale-105 active:scale-95 gx-glass"
     >
-      <span className="text-base leading-none">‹</span> Back to Camp
+      <span className="text-base leading-none">🚀</span> Fly Back to Galaxy
     </button>
   );
 }
@@ -2774,39 +2793,152 @@ function GrandUnitQuiz({ onBack, addCoins }) {
 // Dashboard Hub — 5 arcade boxes
 // =================================================================
 const HUB_BOXES = [
-  { key: "vocab",     icon: "📚", title: "Vocabulary Quest", sub: "Lessons 1 · 5", grad: "linear-gradient(135deg, #f59e0b, #d97706)" },
-  { key: "grammar",   icon: "🧪", title: "Grammar Lab",      sub: "Lessons 2 · 6", grad: "linear-gradient(135deg, #10b981, #047857)" },
-  { key: "speaking",  icon: "🎙️", title: "AI Speaking World",sub: "Lessons 2 · 6", grad: "linear-gradient(135deg, #ec4899, #be185d)" },
-  { key: "reading",   icon: "🧭", title: "Reading Adventure",sub: "Lessons 3 · 7", grad: "linear-gradient(135deg, #3b82f6, #1d4ed8)" },
-  { key: "quiz",      icon: "🏆", title: "Grand Unit Quiz",  sub: "Lesson 8 arcade", grad: `linear-gradient(135deg, ${BRAND.red}, ${BRAND.redDark})` },
+  { key: "vocab",    icon: "🪐", title: "Vocabulary Orbit",     sub: "L1 Flashcards · L5 Mic",     grad: "linear-gradient(135deg,#f59e0b,#ef4444)", glow:"#fbbf24", ring:true  },
+  { key: "grammar",  icon: "🕳️", title: "Grammar Black Hole",   sub: "L2 · L6 Unscramble",         grad: "radial-gradient(circle at 50% 50%, #0f172a 0%, #4c1d95 60%, #7c3aed 100%)", glow:"#a78bfa", vortex:true },
+  { key: "speaking", icon: "🌌", title: "AI Voice Nebula",       sub: "Mic grading · Roleplay",     grad: "linear-gradient(135deg,#ec4899,#8b5cf6,#06b6d4)", glow:"#f472b6" },
+  { key: "reading",  icon: "☄️", title: "Reading Comet",         sub: "L3 · L7 True/False",         grad: "linear-gradient(135deg,#06b6d4,#3b82f6)", glow:"#22d3ee", comet:true },
+  { key: "quiz",     icon: "🚀", title: "Supernova Quiz Arena",  sub: "Phonics · 4-in-a-Row Bot",   grad: "linear-gradient(135deg,#10b981,#0ea5e9,#a855f7)", glow:"#34d399", wide:true },
 ];
+
+function StarField({ count = 40 }) {
+  const stars = Array.from({ length: count }, (_, i) => {
+    const size = Math.random() * 2 + 1;
+    return {
+      key: i,
+      top: Math.random() * 100,
+      left: Math.random() * 100,
+      size,
+      delay: Math.random() * 3,
+    };
+  });
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      {stars.map((s) => (
+        <span key={s.key} className="gx-star" style={{
+          top: `${s.top}%`, left: `${s.left}%`, width: s.size, height: s.size,
+          animationDelay: `${s.delay}s`,
+        }} />
+      ))}
+      <span className="gx-comet" style={{ top: "20%", left: "0%", animationDelay: "1s" }} />
+      <span className="gx-comet" style={{ top: "55%", left: "0%", animationDelay: "4s" }} />
+    </div>
+  );
+}
 
 function DashboardHub({ onPick, name }) {
   return (
-    <div className="ac-fade">
-      <div className="mb-4 rounded-3xl bg-white p-4 shadow-xl ring-1 ring-slate-100 text-center">
-        <p className="text-xs font-extrabold uppercase tracking-wider text-slate-400">Unit 1</p>
-        <p className="text-xl font-black" style={{ color: BRAND.navy }}>🏕️ Adventure Camp</p>
-        <p className="mt-1 text-sm font-bold text-slate-500">
-          {name ? `Welcome back, ${name}!` : "Welcome back, explorer!"} Pick a quest to begin.
+    <div className="ac-fade relative">
+      <div className="relative mb-4 overflow-hidden rounded-3xl p-4 text-center gx-glass">
+        <p className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-cyan-300 gx-neon-text" style={{ color: "#67e8f9" }}>Unit 1 · Sector 01</p>
+        <p className="text-2xl font-black text-white">🌠 Galaxy Adventure</p>
+        <p className="mt-1 text-sm font-bold text-indigo-200">
+          {name ? `Welcome, Captain ${name}!` : "Welcome, Space Cadet!"} Pick a planet to explore.
         </p>
       </div>
       <div className="grid grid-cols-2 gap-3">
         {HUB_BOXES.map((b, i) => (
-          <button key={b.key} onClick={() => onPick(b.key)}
-            className={`relative aspect-square overflow-hidden rounded-3xl p-4 text-left text-white shadow-xl transition-transform duration-200 hover:scale-105 active:scale-95 ${b.key === "quiz" ? "col-span-2 aspect-auto py-6" : ""}`}
-            style={{ background: b.grad, animation: `ac-fade .4s ${i*0.07}s both` }}>
-            <div className="absolute -right-2 -top-2 text-6xl opacity-25">{b.icon}</div>
+          <button
+            key={b.key}
+            onClick={() => onPick(b.key)}
+            className={`group relative overflow-hidden rounded-[28px] p-4 text-left text-white shadow-2xl ring-1 ring-white/20 transition-transform duration-200 hover:scale-[1.04] active:scale-95 ${b.wide ? "col-span-2 aspect-auto py-5" : "aspect-square"}`}
+            style={{
+              background: b.grad,
+              boxShadow: `0 0 24px ${b.glow}55, 0 10px 28px rgba(0,0,0,.45)`,
+              animation: `ac-fade .4s ${i * 0.07}s both`,
+            }}
+          >
+            {/* glowing planet body */}
+            <div className="pointer-events-none absolute -right-6 -top-6 h-28 w-28 rounded-full opacity-40 blur-2xl" style={{ background: b.glow }} />
+            {b.ring && (
+              <div className="pointer-events-none absolute right-2 top-3 h-20 w-20 gx-spin-slow" style={{ transform: "rotate(-18deg)" }}>
+                <div className="absolute inset-0 rounded-full border-[3px] border-white/40" style={{ transform: "rotateX(72deg)" }} />
+                <div className="absolute inset-2 rounded-full border-2 border-white/25" style={{ transform: "rotateX(72deg)" }} />
+              </div>
+            )}
+            {b.vortex && (
+              <div className="pointer-events-none absolute right-1 top-1 h-24 w-24 gx-spin-slow rounded-full" style={{ background: "conic-gradient(from 0deg, transparent 0%, rgba(167,139,250,.7) 50%, transparent 100%)", filter: "blur(2px)" }} />
+            )}
+            {b.comet && (
+              <div className="pointer-events-none absolute inset-0">
+                <span className="gx-comet" style={{ top: "30%", left: "-30%", animationDuration: "5s" }} />
+              </div>
+            )}
+            <div className="absolute -right-2 -top-2 text-7xl opacity-30 gx-bob">{b.icon}</div>
             <div className="relative flex h-full flex-col justify-end">
-              <div className="text-4xl drop-shadow">{b.icon}</div>
-              <p className="mt-1 text-base font-black leading-tight drop-shadow">{b.title}</p>
-              <p className="text-[11px] font-extrabold opacity-90">{b.sub}</p>
-              <span className="mt-2 inline-flex items-center gap-1 self-start rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-extrabold backdrop-blur">
-                Play <ArrowRight size={10} />
+              <div className="text-4xl gx-pulse" style={{ color: b.glow }}>{b.icon}</div>
+              <p className="mt-1 text-base font-black leading-tight drop-shadow gx-neon-text" style={{ color: "#fff" }}>{b.title}</p>
+              <p className="text-[11px] font-extrabold text-white/85">{b.sub}</p>
+              <span className="mt-2 inline-flex items-center gap-1 self-start rounded-full bg-white/15 px-2.5 py-0.5 text-[10px] font-extrabold ring-1 ring-white/30 backdrop-blur">
+                Launch <ArrowRight size={10} />
               </span>
             </div>
           </button>
         ))}
+      </div>
+
+      <div className="mt-5 flex items-center justify-center gap-2 text-[11px] font-bold text-indigo-200/80">
+        <span>👨‍🚀</span> Earn coins, master words, conquer the cosmos.
+      </div>
+    </div>
+  );
+}
+
+// =================================================================
+// Camper Profile — edit student_name (synced to Lovable Cloud)
+// =================================================================
+function ProfileModal({ open, onClose, name, onSave, saving, avatarEmoji, onOpenAvatar, coins, streak }) {
+  const [val, setVal] = useState(name || "");
+  useEffect(() => { if (open) setVal(name || ""); }, [open, name]);
+  if (!open) return null;
+  const trimmed = val.trim();
+  const canSave = trimmed.length >= 1 && trimmed.length <= 40 && trimmed !== (name || "");
+  return (
+    <div className="fixed inset-0 z-[70] flex items-center justify-center p-4" style={{ background: "rgba(3,3,30,.7)", backdropFilter: "blur(6px)" }}>
+      <div className="relative w-full max-w-sm overflow-hidden rounded-3xl p-5 text-white shadow-2xl ring-1 ring-white/20 gx-glass ac-fade" style={{ background: "linear-gradient(160deg,#1e1b4b,#312e81 60%,#4c1d95)" }}>
+        <StarField count={20} />
+        <div className="relative">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-extrabold uppercase tracking-widest text-cyan-300 gx-neon-text" style={{color:"#67e8f9"}}>Camper Profile</p>
+            <button onClick={onClose} className="rounded-full bg-white/10 p-1 ring-1 ring-white/20 hover:bg-white/20" aria-label="Close"><X size={16} /></button>
+          </div>
+          <div className="mt-3 flex items-center gap-3">
+            <button onClick={onOpenAvatar} className="relative flex h-16 w-16 items-center justify-center rounded-full bg-white/10 text-3xl ring-2 ring-cyan-300/70 hover:scale-105 transition" style={{ boxShadow: "0 0 18px #22d3ee88" }}>
+              <span>{avatarEmoji || "🧑‍🚀"}</span>
+              <span className="absolute -bottom-1 -right-1 rounded-full bg-cyan-400 px-1.5 py-0.5 text-[9px] font-black text-slate-900">EDIT</span>
+            </button>
+            <div className="flex-1">
+              <p className="text-[11px] font-bold text-indigo-200">Captain Name</p>
+              <input
+                value={val}
+                onChange={(e) => setVal(e.target.value)}
+                maxLength={40}
+                placeholder="Your name"
+                className="mt-1 w-full rounded-xl bg-white/10 px-3 py-2 text-base font-extrabold text-white placeholder-white/40 outline-none ring-1 ring-white/20 focus:ring-cyan-300"
+              />
+            </div>
+          </div>
+          <div className="mt-4 grid grid-cols-2 gap-2 text-center">
+            <div className="rounded-2xl bg-white/10 p-2 ring-1 ring-white/15">
+              <p className="text-[10px] font-extrabold uppercase tracking-wider text-yellow-300">Coins</p>
+              <p className="text-lg font-black text-white">{coins}</p>
+            </div>
+            <div className="rounded-2xl bg-white/10 p-2 ring-1 ring-white/15">
+              <p className="text-[10px] font-extrabold uppercase tracking-wider text-orange-300">Streak</p>
+              <p className="text-lg font-black text-white">{streak} 🔥</p>
+            </div>
+          </div>
+          <div className="mt-4 flex gap-2">
+            <button onClick={onClose} className="flex-1 rounded-full bg-white/10 px-4 py-2 text-sm font-extrabold text-white ring-1 ring-white/20 hover:bg-white/20">Cancel</button>
+            <button
+              disabled={!canSave || saving}
+              onClick={() => onSave(trimmed)}
+              className="flex-1 rounded-full px-4 py-2 text-sm font-black text-slate-900 shadow-lg transition disabled:cursor-not-allowed disabled:opacity-50"
+              style={{ background: "linear-gradient(135deg,#67e8f9,#a78bfa)", boxShadow: "0 0 18px #a78bfa88" }}
+            >
+              {saving ? <span className="inline-flex items-center gap-1"><Loader2 size={14} className="animate-spin"/>Saving…</span> : "Save 🚀"}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -2904,36 +3036,58 @@ export default function AdventureCamp() {
 
   function back() { setView("hub"); }
 
+  // Profile modal state + name persistence
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [savingName, setSavingName] = useState(false);
+  async function saveName(newName) {
+    const uid = userIdRef.current;
+    if (!uid) return;
+    setSavingName(true);
+    const { error } = await supabase.from("profiles").update({ student_name: newName }).eq("id", uid);
+    setSavingName(false);
+    if (!error) {
+      setName(newName);
+      setProfileOpen(false);
+    }
+  }
+
   return (
-    <div className="flex min-h-screen w-full justify-center bg-gradient-to-b from-blue-100 via-white to-red-50 font-sans">
+    <div className="flex min-h-screen w-full justify-center font-sans gx-shell">
       <style>{STYLES}</style>
-      <div className="relative flex h-screen w-full max-w-md flex-col overflow-hidden bg-gradient-to-b from-blue-50 to-white shadow-2xl" style={{ height: "100dvh" }}>
+      <div className="relative flex h-screen w-full max-w-md flex-col overflow-hidden shadow-2xl gx-shell" style={{ height: "100dvh" }}>
+        <StarField count={50} />
         {/* HEADER */}
         <header className="sticky top-0 z-40 shadow-lg">
-          <div className="bg-white">
+          <div className="bg-white/95 backdrop-blur">
             <div className="flex items-center justify-center px-4 pb-2 pt-2.5">
               <img src={LOGO_URI} alt="Embassy Language" className="h-9 w-auto select-none" draggable={false} />
             </div>
           </div>
-          <div style={{ height: 3, background: `linear-gradient(90deg, ${BRAND.navy}, ${BRAND.red})` }} />
-          <div className="px-4 pb-3 pt-3" style={{ background: `linear-gradient(135deg, ${BRAND.navy} 0%, ${BRAND.navyDark} 100%)` }}>
+          <div style={{ height: 3, background: `linear-gradient(90deg, #22d3ee, #a78bfa, #ec4899)` }} />
+          <div className="relative px-4 pb-3 pt-3" style={{ background: "linear-gradient(135deg,#0b0628 0%, #1e1b4b 60%, #4c1d95 100%)" }}>
             <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
               <div className="flex min-w-0 items-center gap-2.5">
-                <button onClick={() => setPickerOpen(true)}
+                <button
+                  onClick={() => setPickerOpen(true)}
                   className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-2xl transition-transform hover:scale-105 active:scale-95"
-                  style={{ boxShadow: `0 0 0 3px ${BRAND.red}, 0 2px 6px rgba(0,0,0,.25)` }}
-                  aria-label="Change avatar">
-                  <span>{currentAvatar?.emoji || "🐯"}</span>
+                  style={{ boxShadow: "0 0 0 3px #22d3ee, 0 0 18px #a78bfa" }}
+                  aria-label="Change avatar"
+                >
+                  <span>{currentAvatar?.emoji || "🧑‍🚀"}</span>
                 </button>
-                <div className="min-w-0 leading-tight">
-                  <p className="truncate text-sm font-extrabold text-white">{name || "Explorer"}</p>
-                  <p className="text-[11px] font-bold text-blue-200">{currentAvatar?.name || "Adventurer"}</p>
-                </div>
+                <button
+                  onClick={() => setProfileOpen(true)}
+                  className="min-w-0 text-left leading-tight rounded-lg px-1 transition hover:bg-white/10"
+                  aria-label="Edit profile"
+                >
+                  <p className="truncate text-sm font-extrabold text-white">{name || "Space Cadet"} <span className="text-cyan-300">✎</span></p>
+                  <p className="text-[11px] font-bold text-indigo-200">{currentAvatar?.name || "Galactic Explorer"}</p>
+                </button>
               </div>
               <div className="flex shrink-0 items-center gap-2">
                 <div className={`flex items-center gap-1 rounded-full bg-white px-3 py-1.5 shadow ${coinPop ? "ac-pop" : ""}`}
-                  style={{ color: BRAND.navy }}>
-                  {loading ? <Loader2 size={14} className="animate-spin" /> : <Coins size={14} style={{ color: BRAND.gold }} />}
+                  style={{ color: "#1e1b4b" }}>
+                  {loading ? <Loader2 size={14} className="animate-spin" /> : <Coins size={14} style={{ color: "#f59e0b" }} />}
                   <span className="text-sm font-black tabular-nums">{loading ? "…" : coins}</span>
                 </div>
                 <div className="flex items-center gap-1 rounded-full bg-white/15 px-3 py-1.5 ring-1 ring-white/25 text-white">
@@ -2946,7 +3100,7 @@ export default function AdventureCamp() {
         </header>
 
         {/* MAIN */}
-        <main className="flex-1 overflow-y-auto px-3 pb-6 pt-4">
+        <main className="relative flex-1 overflow-y-auto px-3 pb-6 pt-4">
           {view === "hub" && <DashboardHub onPick={setView} name={name} />}
           {view === "vocab" && <VocabularyQuest onBack={back} addCoins={addCoins} />}
           {view === "grammar" && <GrammarLab onBack={back} addCoins={addCoins} />}
@@ -2960,12 +3114,25 @@ export default function AdventureCamp() {
           owned={owned} equipped={avatar} coins={coins}
           onEquip={equipAvatar} onUnlock={unlockAvatar} />
 
+        {/* PROFILE MODAL */}
+        <ProfileModal
+          open={profileOpen}
+          onClose={() => setProfileOpen(false)}
+          name={name}
+          onSave={saveName}
+          saving={savingName}
+          avatarEmoji={currentAvatar?.emoji}
+          onOpenAvatar={() => { setProfileOpen(false); setPickerOpen(true); }}
+          coins={coins}
+          streak={streak}
+        />
+
         <Confetti burst={confettiBurst} />
         {celebrateName && (
           <div className="pointer-events-none fixed inset-x-0 top-24 flex justify-center px-6" style={{ zIndex: 71 }}>
             <div className="ac-banner flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-extrabold text-white shadow-2xl"
-              style={{ background: `linear-gradient(135deg, ${BRAND.navy}, ${BRAND.red})` }}>
-              <PartyPopper size={18} /> Mở khóa {celebrateName}!
+              style={{ background: "linear-gradient(135deg,#22d3ee,#a78bfa,#ec4899)" }}>
+              <PartyPopper size={18} /> Unlocked {celebrateName}!
             </div>
           </div>
         )}
