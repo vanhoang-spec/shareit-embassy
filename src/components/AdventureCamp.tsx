@@ -1566,10 +1566,28 @@ export default function AdventureCamp() {
   const [owned, setOwned] = useState(() => new Set(FREE_AVATARS));
   const [avatar, setAvatar] = useState("dan"); // default: Hổ (Tiger) — a free starter
   const [spent, setSpent] = useState(0);
+  const [profileBonus, setProfileBonus] = useState(0);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [confettiBurst, setConfettiBurst] = useState(0); // increments to retrigger
   const [celebrateName, setCelebrateName] = useState(null);
   const confettiTimer = useRef(null);
+
+  // Load synced coins from profile on mount
+  useEffect(() => {
+    (async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) return;
+      const { data } = await supabase
+        .from("profiles")
+        .select("total_coins")
+        .eq("id", session.user.id)
+        .maybeSingle();
+      if (data && typeof data.total_coins === "number") {
+        setProfileBonus(Math.max(0, data.total_coins - 100));
+      }
+    })();
+  }, []);
+
 
   function applyScroll(y) {
     setCollapsed((prev) => {
