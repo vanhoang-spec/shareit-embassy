@@ -3117,7 +3117,7 @@ function StarLeague({ onEnterLevel5 }) {
                 style={{ boxShadow:`0 0 0 4px ${l.glow}55, 0 0 28px ${l.glow}` }} />
             </div>
             <p className="text-[10px] font-extrabold tracking-wide" style={{ color: l.unlocked ? l.glow : "#94a3b8" }}>
-              {l.n === 0 ? "STARTER" : `LEVEL ${l.n}`}
+              {l.n === 0 ? "SHARE IT! STARTER" : `SHARE IT! ${l.n}`}
             </p>
             <p className="truncate text-sm font-black text-white" style={{ color: l.unlocked ? "#fff" : "#cbd5e1" }}>{l.title}</p>
           </button>
