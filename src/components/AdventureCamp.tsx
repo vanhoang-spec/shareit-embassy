@@ -1567,26 +1567,43 @@ export default function AdventureCamp() {
   const [avatar, setAvatar] = useState("dan"); // default: Hổ (Tiger) — a free starter
   const [spent, setSpent] = useState(0);
   const [profileBonus, setProfileBonus] = useState(0);
+  const [profileLoaded, setProfileLoaded] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [confettiBurst, setConfettiBurst] = useState(0); // increments to retrigger
   const [celebrateName, setCelebrateName] = useState(null);
   const confettiTimer = useRef(null);
 
-  // Load synced coins from profile on mount
+  // Load synced coins from profile on mount and on auth state changes
   useEffect(() => {
-    (async () => {
+    let cancelled = false;
+    async function loadProfile() {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.user) return;
+      if (cancelled) return;
+      if (!session?.user) {
+        setProfileLoaded(true); // no user → nothing to load
+        return;
+      }
       const { data } = await supabase
         .from("profiles")
         .select("total_coins")
         .eq("id", session.user.id)
         .maybeSingle();
+      if (cancelled) return;
       if (data && typeof data.total_coins === "number") {
         setProfileBonus(Math.max(0, data.total_coins - 100));
       }
-    })();
+      setProfileLoaded(true);
+    }
+    loadProfile();
+    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_IN" || event === "USER_UPDATED") {
+        setProfileLoaded(false);
+        loadProfile();
+      }
+    });
+    return () => { cancelled = true; sub.subscription.unsubscribe(); };
   }, []);
+
 
 
   function applyScroll(y) {
