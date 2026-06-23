@@ -1606,8 +1606,9 @@ export default function AdventureCamp() {
     setCollapsed(false); // always show full header when changing section
   }
 
-  const earned = 100 + mastered.size * 10 + speakingCoins + gameCoins;
+  const earned = 100 + mastered.size * 10 + speakingCoins + gameCoins + profileBonus;
   const coins = Math.max(0, earned - spent);
+
   const progress = mastered.size;
   const pct = Math.round((progress / VOCAB.length) * 100);
   const currentAvatar = AVATAR_BY_ID[avatar] || ALL_AVATARS[0];
