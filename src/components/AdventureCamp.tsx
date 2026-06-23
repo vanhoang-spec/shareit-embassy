@@ -3379,7 +3379,7 @@ export default function AdventureCamp() {
   useEffect(() => {
     try { localStorage.setItem("ac_music_on", musicOn ? "1" : "0"); } catch {}
   }, [musicOn]);
-  useCosmicMusic(musicOn && (view === "levels" || view === "galaxy" || view === "hub" || view === "quiz"));
+  useCosmicMusic(musicOn && (view === "levels" || view === "galaxy" || view === "hub" || view === "quiz" || view === "grammar" || view === "vocab" || view === "speaking" || view === "reading"));
 
   const [coins, setCoins] = useState(0);
 
