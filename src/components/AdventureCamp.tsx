@@ -1566,10 +1566,28 @@ export default function AdventureCamp() {
   const [owned, setOwned] = useState(() => new Set(FREE_AVATARS));
   const [avatar, setAvatar] = useState("dan"); // default: Hổ (Tiger) — a free starter
   const [spent, setSpent] = useState(0);
+  const [profileBonus, setProfileBonus] = useState(0);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [confettiBurst, setConfettiBurst] = useState(0); // increments to retrigger
   const [celebrateName, setCelebrateName] = useState(null);
   const confettiTimer = useRef(null);
+
+  // Load synced coins from profile on mount
+  useEffect(() => {
+    (async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) return;
+      const { data } = await supabase
+        .from("profiles")
+        .select("total_coins")
+        .eq("id", session.user.id)
+        .maybeSingle();
+      if (data && typeof data.total_coins === "number") {
+        setProfileBonus(Math.max(0, data.total_coins - 100));
+      }
+    })();
+  }, []);
+
 
   function applyScroll(y) {
     setCollapsed((prev) => {
@@ -1588,8 +1606,9 @@ export default function AdventureCamp() {
     setCollapsed(false); // always show full header when changing section
   }
 
-  const earned = 100 + mastered.size * 10 + speakingCoins + gameCoins;
+  const earned = 100 + mastered.size * 10 + speakingCoins + gameCoins + profileBonus;
   const coins = Math.max(0, earned - spent);
+
   const progress = mastered.size;
   const pct = Math.round((progress / VOCAB.length) * 100);
   const currentAvatar = AVATAR_BY_ID[avatar] || ALL_AVATARS[0];
