@@ -3058,13 +3058,13 @@ function ProfileModal({ open, onClose, name, onSave, saving, avatarEmoji, onOpen
 // Tier 1 — Star League (7 Level Space Stations)
 // =================================================================
 const LEVELS = [
-  { n:0, title:"Share It! Starter", glow:"#a5b4fc", core:"radial-gradient(circle at 30% 30%, #e0e7ff, #6366f1 55%, #1e1b4b)", unlocked:false },
-  { n:1, title:"Share It! 1",       glow:"#22d3ee", core:"radial-gradient(circle at 30% 30%, #cffafe, #06b6d4 55%, #083344)", unlocked:false },
-  { n:2, title:"Share It! 2",       glow:"#34d399", core:"radial-gradient(circle at 30% 30%, #d1fae5, #10b981 55%, #064e3b)", unlocked:false },
-  { n:3, title:"Share It! 3",       glow:"#facc15", core:"radial-gradient(circle at 30% 30%, #fef9c3, #eab308 55%, #422006)", unlocked:false },
-  { n:4, title:"Share It! 4",       glow:"#fb923c", core:"radial-gradient(circle at 30% 30%, #ffedd5, #f97316 55%, #7c2d12)", unlocked:false },
-  { n:5, title:"Share It! 5",       glow:"#f472b6", core:"radial-gradient(circle at 30% 30%, #fce7f3, #ec4899 55%, #500724)", unlocked:true  },
-  { n:6, title:"Share It! 6",       glow:"#c084fc", core:"radial-gradient(circle at 30% 30%, #f3e8ff, #9333ea 55%, #3b0764)", unlocked:false },
+  { n:0, title:"Starter Constellation", glow:"#a5b4fc", core:"radial-gradient(circle at 30% 30%, #e0e7ff, #6366f1 55%, #1e1b4b)", unlocked:false },
+  { n:1, title:"Galaxy Level 1",        glow:"#22d3ee", core:"radial-gradient(circle at 30% 30%, #cffafe, #06b6d4 55%, #083344)", unlocked:false },
+  { n:2, title:"Galaxy Level 2",        glow:"#34d399", core:"radial-gradient(circle at 30% 30%, #d1fae5, #10b981 55%, #064e3b)", unlocked:false },
+  { n:3, title:"Galaxy Level 3",        glow:"#facc15", core:"radial-gradient(circle at 30% 30%, #fef9c3, #eab308 55%, #422006)", unlocked:false },
+  { n:4, title:"Galaxy Level 4",        glow:"#fb923c", core:"radial-gradient(circle at 30% 30%, #ffedd5, #f97316 55%, #7c2d12)", unlocked:false },
+  { n:5, title:"Galaxy Level 5",        glow:"#f472b6", core:"radial-gradient(circle at 30% 30%, #fce7f3, #ec4899 55%, #500724)", unlocked:true  },
+  { n:6, title:"Galaxy Level 6",        glow:"#c084fc", core:"radial-gradient(circle at 30% 30%, #f3e8ff, #9333ea 55%, #3b0764)", unlocked:false },
 ];
 
 function StarLeague({ onEnterLevel5 }) {
