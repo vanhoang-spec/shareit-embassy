@@ -689,18 +689,54 @@ const REACTIONS = [
   { id: 3, emoji: "🔥", activity: "Campfire", polarity: "pos", answer: "I cooked dinner on a campfire." },
 ];
 
+// normalize and tokenize for pronunciation comparison
+function normWords(s) {
+  return (s || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9' ]+/g, " ")
+    .replace(/\bdid not\b/g, "didn't")
+    .split(/\s+/)
+    .filter(Boolean);
+}
+function scoreTranscript(target, said) {
+  const t = normWords(target);
+  const s = normWords(said);
+  if (!t.length) return { pct: 0, matchedTarget: [] };
+  const pool = [...s];
+  const matchedTarget = t.map((w) => {
+    const i = pool.indexOf(w);
+    if (i !== -1) { pool.splice(i, 1); return true; }
+    return false;
+  });
+  const hits = matchedTarget.filter(Boolean).length;
+  return { pct: Math.round((hits / t.length) * 100), matchedTarget };
+}
+
 function GrammarReaction({ onReward }) {
   const [idx, setIdx] = useState(0);
-  const [phase, setPhase] = useState("idle"); // idle | recording | processing | scored
-  const procTimer = useRef(null);
+  const [phase, setPhase] = useState("idle"); // idle | recording | scored
   const [speaking, setSpeaking] = useState(false);
+  const [transcript, setTranscript] = useState("");
+  const [audioUrl, setAudioUrl] = useState(null);
+  const [result, setResult] = useState(null); // { pct, stars, matchedTarget, said }
+  const [sttSupported, setSttSupported] = useState(true);
+
+  const mediaRecRef = useRef(null);
+  const mediaStreamRef = useRef(null);
+  const chunksRef = useRef([]);
+  const recogRef = useRef(null);
+  const finalTextRef = useRef("");
+  const playbackRef = useRef(null);
 
   const ch = REACTIONS[idx];
   const isPos = ch.polarity === "pos";
-  const accent = isPos ? "#16a34a" : BRAND.red; // green for (+), brand red for (-)
+  const accent = isPos ? "#16a34a" : BRAND.red;
 
   useEffect(() => () => {
-    clearTimeout(procTimer.current);
+    try { recogRef.current && recogRef.current.stop(); } catch {}
+    try { mediaRecRef.current && mediaRecRef.current.state !== "inactive" && mediaRecRef.current.stop(); } catch {}
+    if (mediaStreamRef.current) mediaStreamRef.current.getTracks().forEach((t) => t.stop());
+    if (audioUrl) URL.revokeObjectURL(audioUrl);
     if (typeof window !== "undefined" && window.speechSynthesis) window.speechSynthesis.cancel();
   }, []);
 
@@ -720,32 +756,111 @@ function GrammarReaction({ onReward }) {
     synth.speak(u);
   }
 
-  function startRec() {
+  async function startRec() {
+    setTranscript("");
+    setResult(null);
+    if (audioUrl) { URL.revokeObjectURL(audioUrl); setAudioUrl(null); }
+    finalTextRef.current = "";
+
+    // 1) MediaRecorder
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaStreamRef.current = stream;
+      const mime = ["audio/webm", "audio/mp4"].find((t) => MediaRecorder.isTypeSupported(t)) || "";
+      const rec = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream);
+      chunksRef.current = [];
+      rec.ondataavailable = (e) => { if (e.data && e.data.size) chunksRef.current.push(e.data); };
+      rec.onstop = () => {
+        const blob = new Blob(chunksRef.current, { type: rec.mimeType || "audio/webm" });
+        if (blob.size > 0) setAudioUrl(URL.createObjectURL(blob));
+        stream.getTracks().forEach((t) => t.stop());
+      };
+      rec.start();
+      mediaRecRef.current = rec;
+    } catch (e) {
+      alert("Em ơi, cho phép micro để cô chấm phát âm nhé! 🎤");
+      return;
+    }
+
+    // 2) Web Speech API (STT)
+    const SR = typeof window !== "undefined" && (window.SpeechRecognition || window.webkitSpeechRecognition);
+    if (SR) {
+      setSttSupported(true);
+      const r = new SR();
+      r.lang = "en-US";
+      r.continuous = true;
+      r.interimResults = true;
+      r.onresult = (ev) => {
+        let interim = "";
+        for (let i = ev.resultIndex; i < ev.results.length; i++) {
+          const res = ev.results[i];
+          if (res.isFinal) finalTextRef.current += " " + res[0].transcript;
+          else interim += res[0].transcript;
+        }
+        setTranscript((finalTextRef.current + " " + interim).trim());
+      };
+      r.onerror = () => {};
+      try { r.start(); recogRef.current = r; } catch {}
+    } else {
+      setSttSupported(false);
+    }
+
     setPhase("recording");
   }
+
   function stopRec() {
-    setPhase("processing");
-    clearTimeout(procTimer.current);
-    procTimer.current = setTimeout(() => {
+    try { recogRef.current && recogRef.current.stop(); } catch {}
+    try { mediaRecRef.current && mediaRecRef.current.stop(); } catch {}
+
+    // small delay so final STT results settle
+    setTimeout(() => {
+      const said = (finalTextRef.current || transcript || "").trim();
+      const { pct, matchedTarget } = scoreTranscript(ch.answer, said);
+      let stars = 1;
+      if (pct > 80) stars = 5;
+      else if (pct >= 50) stars = 3;
+      setResult({ pct, stars, matchedTarget, said });
+      if (stars === 5) onReward && onReward();
       setPhase("scored");
-      onReward && onReward(); // +10 Coins → global header balance
-    }, 1700);
+    }, 350);
   }
+
   function nextChallenge() {
+    if (audioUrl) { URL.revokeObjectURL(audioUrl); setAudioUrl(null); }
+    setResult(null);
+    setTranscript("");
+    finalTextRef.current = "";
     setPhase("idle");
     setIdx((i) => (i + 1) % REACTIONS.length);
   }
 
+  function retry() {
+    if (audioUrl) { URL.revokeObjectURL(audioUrl); setAudioUrl(null); }
+    setResult(null);
+    setTranscript("");
+    finalTextRef.current = "";
+    setPhase("idle");
+  }
+
+  function playMyVoice() {
+    if (!audioUrl) return;
+    if (!playbackRef.current) playbackRef.current = new Audio(audioUrl);
+    else playbackRef.current.src = audioUrl;
+    playbackRef.current.currentTime = 0;
+    playbackRef.current.play().catch(() => {});
+  }
+
+  const targetWords = ch.answer.split(/\s+/);
+  const normTarget = normWords(ch.answer);
+
   return (
     <div className="ac-fade flex flex-col items-center px-1 pt-1">
-      {/* title */}
       <div className="mb-4 text-center">
         <h2 className="text-lg font-black" style={{ color: BRAND.navy }}>
           Grammar Reaction Challenge
         </h2>
       </div>
 
-      {/* challenge progress dots */}
       <div className="mb-4 flex items-center gap-2">
         {REACTIONS.map((r, i) => (
           <span
@@ -756,23 +871,19 @@ function GrammarReaction({ onReward }) {
         ))}
       </div>
 
-      {/* reaction card */}
       <div className="relative w-full overflow-hidden rounded-3xl bg-white p-6 shadow-xl ring-1 ring-slate-100">
-        {/* polarity colour wash */}
         <div
           className="pointer-events-none absolute inset-x-0 top-0 h-28"
           style={{ background: `linear-gradient(180deg, ${accent}1f, transparent)` }}
         />
 
         <div className="relative flex items-center justify-center gap-4">
-          {/* activity icon */}
           <div
             className="flex h-28 w-28 items-center justify-center rounded-3xl bg-slate-50 text-6xl"
             style={{ boxShadow: `0 0 0 4px ${accent}55` }}
           >
             {ch.emoji}
           </div>
-          {/* polarity badge — re-keyed so it pops on every new challenge */}
           <div
             key={ch.id}
             className="gr-pop flex h-20 w-20 items-center justify-center rounded-full text-white shadow-lg"
@@ -782,7 +893,6 @@ function GrammarReaction({ onReward }) {
           </div>
         </div>
 
-        {/* hint */}
         <div className="mt-5 flex flex-col items-center">
           <span
             className="rounded-full px-4 py-1.5 text-sm font-extrabold text-white shadow"
@@ -797,7 +907,6 @@ function GrammarReaction({ onReward }) {
           </p>
         </div>
 
-        {/* read-along target sentence */}
         <div
           className="relative mt-5 rounded-2xl p-4 text-center"
           style={{ backgroundColor: `${accent}12`, boxShadow: `inset 0 0 0 2px ${accent}33` }}
@@ -841,7 +950,6 @@ function GrammarReaction({ onReward }) {
 
         {phase === "recording" && (
           <>
-            {/* live sound-wave visualizer */}
             <div className="flex h-24 items-center justify-center gap-1.5 rounded-3xl bg-red-50 px-8 ring-2 ring-red-200">
               {[0, 1, 2, 3, 4, 5, 6].map((b) => (
                 <span
@@ -851,6 +959,11 @@ function GrammarReaction({ onReward }) {
                 />
               ))}
             </div>
+            {transcript && (
+              <p className="mt-3 max-w-xs text-center text-sm font-bold italic text-slate-500">
+                “{transcript}”
+              </p>
+            )}
             <button
               onClick={stopRec}
               className="mt-4 flex items-center gap-2 rounded-2xl px-6 py-3 text-base font-extrabold text-white shadow-md transition-transform duration-200 hover:scale-105 active:scale-95"
@@ -861,70 +974,136 @@ function GrammarReaction({ onReward }) {
             <p className="mt-2 text-xs font-bold text-red-500">● Đang ghi âm… nói to và rõ nào!</p>
           </>
         )}
-
-        {phase === "processing" && (
-          <div className="flex h-24 flex-col items-center justify-center">
-            <Loader2 size={44} className="animate-spin" style={{ color: BRAND.navy }} />
-            <p className="mt-3 text-sm font-extrabold text-slate-500">AI is analyzing your grammar...</p>
-          </div>
-        )}
       </div>
 
       {/* ---------- AI Score Card modal ---------- */}
-      {phase === "scored" && (
+      {phase === "scored" && result && (
         <div
           className="ac-fade fixed inset-0 flex items-center justify-center p-6"
           style={{ zIndex: 90, background: "rgba(0,38,79,.55)" }}
         >
           <div className="gr-pop w-full max-w-sm overflow-hidden rounded-3xl bg-white shadow-2xl">
-            {/* header */}
             <div
               className="px-6 py-5 text-center text-white"
-              style={{ background: `linear-gradient(135deg, ${BRAND.navy}, ${BRAND.red})` }}
+              style={{
+                background:
+                  result.stars === 5
+                    ? `linear-gradient(135deg, #16a34a, ${BRAND.navy})`
+                    : result.stars === 3
+                    ? `linear-gradient(135deg, #f59e0b, ${BRAND.navy})`
+                    : `linear-gradient(135deg, ${BRAND.red}, ${BRAND.navy})`,
+              }}
             >
               <p className="text-xs font-extrabold uppercase tracking-widest opacity-90">AI Score Card</p>
-              <h3 className="mt-1 text-2xl font-black">Perfect Grammar! 🎉</h3>
+              <h3 className="mt-1 text-2xl font-black">
+                {result.stars === 5 ? "Perfect! 🎉" : result.stars === 3 ? "Good try! 👍" : "Try again! 💪"}
+              </h3>
+              <p className="mt-1 text-sm font-bold opacity-95">
+                {result.stars === 5
+                  ? "Phát âm xuất sắc!"
+                  : result.stars === 3
+                  ? "Listen and repeat — nghe lại và nói theo nhé!"
+                  : "Cố gắng lên — nghe mẫu rồi thử lại!"}
+              </p>
             </div>
 
             <div className="px-6 py-5">
-              {/* 5 glowing stars */}
+              {/* stars */}
               <div className="flex justify-center gap-1.5">
-                {[0, 1, 2, 3, 4].map((s) => (
-                  <Star
-                    key={s}
-                    size={34}
-                    className="gr-star text-yellow-400"
-                    fill="currentColor"
-                    style={{ animationDelay: `${s * 0.1}s`, filter: "drop-shadow(0 2px 6px rgba(245,179,1,.55))" }}
-                  />
-                ))}
+                {[0, 1, 2, 3, 4].map((s) => {
+                  const active = s < result.stars;
+                  return (
+                    <Star
+                      key={s}
+                      size={34}
+                      className={active ? "gr-star text-yellow-400" : "text-slate-200"}
+                      fill="currentColor"
+                      style={
+                        active
+                          ? { animationDelay: `${s * 0.1}s`, filter: "drop-shadow(0 2px 6px rgba(245,179,1,.55))" }
+                          : undefined
+                      }
+                    />
+                  );
+                })}
               </div>
 
-              {/* simulated transcript */}
-              <div className="mt-5 rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-100">
-                <p className="text-[11px] font-extrabold uppercase tracking-wide text-slate-400">You said:</p>
-                <p className="mt-1 text-lg font-extrabold" style={{ color: BRAND.navy }}>
-                  “{ch.answer}”
+              {/* match percentage */}
+              <p className="mt-3 text-center text-sm font-extrabold text-slate-500">
+                Match: <span style={{ color: BRAND.navy }}>{result.pct}%</span>
+              </p>
+
+              {/* color-coded target sentence */}
+              <div className="mt-4 rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-100">
+                <p className="text-[11px] font-extrabold uppercase tracking-wide text-slate-400">Target sentence:</p>
+                <p className="mt-1 text-lg font-extrabold leading-snug">
+                  {targetWords.map((w, i) => {
+                    // map display word index to its normalized index
+                    const normIdx = normWords(targetWords.slice(0, i + 1)).length - 1;
+                    const ok = result.matchedTarget[normIdx];
+                    return (
+                      <span
+                        key={i}
+                        className="mr-1 inline-block transition-colors"
+                        style={{ color: ok ? "#16a34a" : "#dc2626" }}
+                      >
+                        {w}
+                      </span>
+                    );
+                  })}
                 </p>
-                <span className="mt-2 inline-flex items-center gap-1 rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-extrabold text-green-600">
-                  <Check size={13} strokeWidth={3} /> {isPos ? "Affirmative (+) ✓" : "Negative (-) ✓"}
-                </span>
+                <p className="mt-3 text-[11px] font-extrabold uppercase tracking-wide text-slate-400">You said:</p>
+                <p className="mt-1 text-sm font-bold italic text-slate-600">
+                  {result.said ? `“${result.said}”` : sttSupported ? "(không nghe được — thử nói to hơn nhé)" : "(trình duyệt chưa hỗ trợ nhận diện giọng nói)"}
+                </p>
               </div>
 
-              {/* coin reward note */}
-              <div className="mt-4 flex items-center justify-center gap-1.5 rounded-2xl bg-yellow-50 py-2.5 ring-2 ring-yellow-300">
-                <Coins size={20} className="ac-pop text-yellow-500" />
-                <span className="text-sm font-extrabold text-yellow-700">+10 Coins đã cộng vào ví của em!</span>
-              </div>
+              {/* play my voice */}
+              {audioUrl && (
+                <button
+                  onClick={playMyVoice}
+                  className="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl py-3 text-base font-extrabold text-white shadow transition-transform duration-200 hover:scale-105 active:scale-95"
+                  style={{ background: `linear-gradient(135deg, ${BRAND.navy}, ${BRAND.navyDark})` }}
+                >
+                  <Volume2 size={18} /> Play My Voice 🎧
+                </button>
+              )}
 
-              {/* next challenge */}
-              <button
-                onClick={nextChallenge}
-                className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl py-3.5 text-base font-extrabold text-white shadow-md transition-transform duration-200 hover:scale-105 active:scale-95"
-                style={{ background: `linear-gradient(135deg, ${BRAND.navy}, ${BRAND.navyDark})` }}
-              >
-                Next Challenge <ArrowRight size={20} />
-              </button>
+              {/* coin reward (only when perfect) */}
+              {result.stars === 5 && (
+                <div className="mt-4 flex items-center justify-center gap-1.5 rounded-2xl bg-yellow-50 py-2.5 ring-2 ring-yellow-300">
+                  <Coins size={20} className="ac-pop text-yellow-500" />
+                  <span className="text-sm font-extrabold text-yellow-700">+10 Coins đã cộng vào ví của em!</span>
+                </div>
+              )}
+
+              {/* actions */}
+              {result.stars === 5 ? (
+                <button
+                  onClick={nextChallenge}
+                  className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl py-3.5 text-base font-extrabold text-white shadow-md transition-transform duration-200 hover:scale-105 active:scale-95"
+                  style={{ background: `linear-gradient(135deg, ${BRAND.red}, ${BRAND.redDark})` }}
+                >
+                  Next Challenge <ArrowRight size={20} />
+                </button>
+              ) : (
+                <div className="mt-5 grid grid-cols-2 gap-2">
+                  <button
+                    onClick={retry}
+                    className="flex items-center justify-center gap-2 rounded-2xl py-3 text-sm font-extrabold text-white shadow transition-transform duration-200 hover:scale-105 active:scale-95"
+                    style={{ backgroundColor: BRAND.red }}
+                  >
+                    <Mic size={16} /> Try Again
+                  </button>
+                  <button
+                    onClick={nextChallenge}
+                    className="flex items-center justify-center gap-2 rounded-2xl py-3 text-sm font-extrabold text-white shadow transition-transform duration-200 hover:scale-105 active:scale-95"
+                    style={{ backgroundColor: BRAND.navy }}
+                  >
+                    Skip <ArrowRight size={16} />
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
