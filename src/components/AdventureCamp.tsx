@@ -3291,7 +3291,8 @@ export default function AdventureCamp() {
 
         {/* MAIN */}
         <main className="relative flex-1 overflow-y-auto px-3 pb-6 pt-4">
-          {view === "galaxy" && <UnitGalaxy onEnterUnit1={() => setView("hub")} />}
+          {view === "levels" && <StarLeague onEnterLevel5={() => setView("galaxy")} />}
+          {view === "galaxy" && <UnitGalaxy onEnterUnit1={() => setView("hub")} onBackToLevels={() => setView("levels")} />}
           {view === "hub" && (
             <>
               <button
@@ -3299,11 +3300,12 @@ export default function AdventureCamp() {
                 className="mb-3 inline-flex items-center gap-2 rounded-full gx-glass px-3 py-1.5 text-xs font-black text-white transition hover:scale-105 active:scale-95"
                 style={{ boxShadow:"0 0 14px #a78bfa66, inset 0 0 0 1px #a78bfa55" }}
               >
-                🚀 Fly Back to Galaxy
+                ☄️ Fly Back to Units
               </button>
               <DashboardHub onPick={setView} name={name} />
             </>
           )}
+
           {view === "vocab" && <VocabularyQuest onBack={back} addCoins={addCoins} />}
           {view === "grammar" && <GrammarLab onBack={back} addCoins={addCoins} />}
           {view === "speaking" && <AISpeakingWorld onBack={back} addCoins={addCoins} />}
