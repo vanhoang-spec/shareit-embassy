@@ -1924,7 +1924,7 @@ function PhraseSpeaking({ addCoins }) {
             <>
               <div className="flex h-20 items-center gap-1.5 rounded-3xl bg-red-50 px-6 ring-2 ring-red-200">
                 {[0,1,2,3,4,5,6].map((b) => (
-                  <span key={b} className="w-1.5 rounded-full" style={{ height: 10 + ((b*7+idx*3)%30), backgroundColor: BRAND.red, animation: `ac-bar .9s ${b*0.08}s ease-in-out infinite alternate` }} />
+                  <span key={b} className="w-1.5 rounded-full" style={{ height: 10 + ((b*7+idx*3)%30), backgroundColor: BRAND.red, animation: `gr-eq .9s ${b*0.08}s ease-in-out infinite alternate` }} />
                 ))}
               </div>
               <button onClick={stopRec} className="mt-4 flex items-center gap-2 rounded-full bg-slate-900 px-5 py-2 text-sm font-extrabold text-white shadow-lg hover:scale-105 active:scale-95 transition-transform">
@@ -2281,7 +2281,7 @@ function Roleplay({ addCoins }) {
             <>
               <div className="flex h-16 items-center gap-1.5 rounded-3xl bg-red-50 px-5 ring-2 ring-red-200">
                 {[0,1,2,3,4,5].map((b) => (
-                  <span key={b} className="w-1.5 rounded-full" style={{ height: 14, backgroundColor: BRAND.red, animation: `ac-bar .9s ${b*0.08}s ease-in-out infinite alternate` }} />
+                  <span key={b} className="w-1.5 rounded-full" style={{ height: 14, backgroundColor: BRAND.red, animation: `gr-eq .9s ${b*0.08}s ease-in-out infinite alternate` }} />
                 ))}
               </div>
               <button onClick={stopRec} className="mt-3 rounded-full bg-slate-900 px-5 py-2 text-sm font-extrabold text-white shadow">Stop</button>
