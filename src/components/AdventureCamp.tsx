@@ -3277,25 +3277,41 @@ function useCosmicMusic(enabled) {
       masterGain.gain.linearRampToValueAtTime(0.18, ctx.currentTime + 0.6);
       masterGain.connect(ctx.destination);
 
-      const M = { C4:261.63, D4:293.66, E4:329.63, G4:392.0, A4:440.0, C5:523.25, D5:587.33, E5:659.25, G5:783.99,
-                  C3:130.81, G3:196.0, A3:220.0, F3:174.61 };
+      // Energetic arcade dance loop in A minor / C major (vi–IV–I–V)
+      const M = {
+        C3:130.81, D3:146.83, E3:164.81, F3:174.61, G3:196.00, A3:220.00, B3:246.94,
+        C4:261.63, D4:293.66, E4:329.63, F4:349.23, G4:392.00, A4:440.00, B4:493.88,
+        C5:523.25, D5:587.33, E5:659.25, F5:698.46, G5:783.99, A5:880.00, B5:987.77,
+        C6:1046.5,
+      };
+      // 32-step lead — fast arpeggios that climb across chord changes
       const melody = [
-        M.C5, M.E5, M.G5, M.E5, M.C5, M.E5, M.G5, M.C5,
-        M.A4, M.C5, M.E5, M.C5, M.A4, M.C5, M.E5, M.A4,
-        M.G4, M.C5, M.E5, M.C5, M.G4, M.D5, M.G5, M.D5,
-        M.C5, M.G4, M.E4, M.G4, M.C5, M.E5, M.G5, M.C5,
+        // Am: A C E A C E A C
+        M.A4, M.C5, M.E5, M.A5, M.E5, M.C5, M.A4, M.E5,
+        // F:  F A C F A C F A
+        M.F4, M.A4, M.C5, M.F5, M.C5, M.A4, M.F4, M.C5,
+        // C:  C E G C E G C E
+        M.C5, M.E5, M.G5, M.C6, M.G5, M.E5, M.C5, M.G5,
+        // G:  G B D G B D G B
+        M.G4, M.B4, M.D5, M.G5, M.D5, M.B4, M.G4, M.B4,
       ];
-      const bass = [M.C3, M.G3, M.A3, M.F3];
-      const stepDur = 0.18;
+      // Bouncing bass on each beat (eighth notes), 2 hits per chord beat
+      const bass = [
+        M.A3, M.A3, M.E3, M.A3,
+        M.F3, M.F3, M.C3, M.F3,
+        M.C3, M.C3, M.G3, M.C3,
+        M.G3, M.G3, M.D3, M.G3,
+      ];
+      const stepDur = 0.14; // ~107 BPM sixteenths — exciting & fast
       const loopDur = melody.length * stepDur;
 
-      const playNote = (freq, t, dur, type = "square", vol = 0.22) => {
+      const playNote = (freq, t, dur, type = "square", vol = 0.18) => {
         const o = ctx.createOscillator();
         const g = ctx.createGain();
         o.type = type;
         o.frequency.setValueAtTime(freq, t);
         g.gain.setValueAtTime(0.0001, t);
-        g.gain.exponentialRampToValueAtTime(vol, t + 0.01);
+        g.gain.exponentialRampToValueAtTime(vol, t + 0.008);
         g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
         o.connect(g).connect(masterGain);
         o.start(t);
@@ -3305,22 +3321,59 @@ function useCosmicMusic(enabled) {
         const o = ctx.createOscillator();
         const g = ctx.createGain();
         o.type = "sine";
-        o.frequency.setValueAtTime(120, t);
-        o.frequency.exponentialRampToValueAtTime(40, t + 0.18);
+        o.frequency.setValueAtTime(140, t);
+        o.frequency.exponentialRampToValueAtTime(45, t + 0.16);
         g.gain.setValueAtTime(0.0001, t);
-        g.gain.exponentialRampToValueAtTime(0.35, t + 0.005);
-        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.22);
+        g.gain.exponentialRampToValueAtTime(0.45, t + 0.004);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.2);
         o.connect(g).connect(masterGain);
-        o.start(t); o.stop(t + 0.25);
+        o.start(t); o.stop(t + 0.22);
       };
+      // Tiny noise-burst snare/hat using a short buffer
+      let noiseBuf = null;
+      const makeNoise = () => {
+        if (noiseBuf) return noiseBuf;
+        const b = ctx.createBuffer(1, ctx.sampleRate * 0.2, ctx.sampleRate);
+        const d = b.getChannelData(0);
+        for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+        noiseBuf = b; return b;
+      };
+      const playSnare = (t) => {
+        const src = ctx.createBufferSource(); src.buffer = makeNoise();
+        const bp = ctx.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = 1800; bp.Q.value = 0.9;
+        const g = ctx.createGain();
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.exponentialRampToValueAtTime(0.32, t + 0.004);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.14);
+        src.connect(bp).connect(g).connect(masterGain);
+        src.start(t); src.stop(t + 0.16);
+      };
+      const playHat = (t) => {
+        const src = ctx.createBufferSource(); src.buffer = makeNoise();
+        const hp = ctx.createBiquadFilter(); hp.type = "highpass"; hp.frequency.value = 6500;
+        const g = ctx.createGain();
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.exponentialRampToValueAtTime(0.10, t + 0.002);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.05);
+        src.connect(hp).connect(g).connect(masterGain);
+        src.start(t); src.stop(t + 0.06);
+      };
+
       const scheduleLoop = (startAt) => {
         for (let i = 0; i < melody.length; i++) {
           const t = startAt + i * stepDur;
-          playNote(melody[i], t, stepDur * 0.9, "square", 0.16);
-          if (i % 2 === 0) playNote(bass[(i / 2) % bass.length], t, stepDur * 1.6, "triangle", 0.22);
+          // Lead (square) + soft octave (triangle) for richness
+          playNote(melody[i], t, stepDur * 0.95, "square",   0.14);
+          playNote(melody[i] / 2, t, stepDur * 1.1, "triangle", 0.10);
+          // Bass — every other step
+          if (i % 2 === 0) playNote(bass[(i / 2) % bass.length], t, stepDur * 1.7, "sawtooth", 0.14);
+          // Drums on a 4-on-the-floor pattern
           if (i % 4 === 0) playKick(t);
+          if (i % 8 === 4) playSnare(t);
+          playHat(t); // closed hat on every sixteenth for drive
         }
       };
+
 
       let nextStart = ctx.currentTime + 0.1;
       scheduleLoop(nextStart);
