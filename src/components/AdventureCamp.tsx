@@ -3152,11 +3152,16 @@ function useCosmicMusic(enabled) {
 
     const start = async () => {
       if (started || cancelled) return;
+      const tentativeCtx = new AC();
+      try { if (tentativeCtx.state === "suspended") await tentativeCtx.resume(); } catch {}
+      if (cancelled) { try { tentativeCtx.close(); } catch {} ; return; }
+      // If browser still blocked us (no user gesture yet), discard and wait for one.
+      if (tentativeCtx.state !== "running") {
+        try { tentativeCtx.close(); } catch {}
+        return;
+      }
       started = true;
-
-      ctx = new AC();
-      try { if (ctx.state === "suspended") await ctx.resume(); } catch {}
-      if (cancelled) { try { ctx.close(); } catch {} ; return; }
+      ctx = tentativeCtx;
 
       masterGain = ctx.createGain();
       masterGain.gain.value = 0;
@@ -3220,8 +3225,13 @@ function useCosmicMusic(enabled) {
     };
 
     const onGesture = () => { start(); };
+    // Try immediately (works if a prior gesture activated the page),
+    // otherwise wait for the first user interaction.
     start();
-    window.addEventListener("pointerdown", onGesture, { once: true });
+    window.addEventListener("pointerdown", onGesture);
+    window.addEventListener("keydown", onGesture);
+    window.addEventListener("touchstart", onGesture, { passive: true });
+
 
     return () => {
       cancelled = true;
