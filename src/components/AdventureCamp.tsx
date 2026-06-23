@@ -1707,8 +1707,11 @@ export default function AdventureCamp() {
     return () => clearTimeout(id);
   }, [gameCoins, spent]);
 
-  // Sync coin total to Lovable Cloud profile (when signed in)
+  // Sync coin total to Lovable Cloud profile (when signed in).
+  // Gated on profileLoaded to avoid overwriting the saved value with the
+  // initial render's 100 before the fetch resolves.
   useEffect(() => {
+    if (!profileLoaded) return;
     let cancelled = false;
     (async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -1719,7 +1722,8 @@ export default function AdventureCamp() {
         .eq("id", session.user.id);
     })();
     return () => { cancelled = true; };
-  }, [coins]);
+  }, [coins, profileLoaded]);
+
 
   function masterCard(id) {
     setMastered((prev) => {
