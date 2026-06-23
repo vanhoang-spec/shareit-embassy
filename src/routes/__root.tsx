@@ -77,14 +77,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { title: "Embassy Language Learning App" },
+      { name: "description", content: "Share It! is a React application for language learning, featuring Flashcards, AI Speaking, and My Camp modules." },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "Embassy Language Learning App" },
+      { property: "og:description", content: "Share It! is a React application for language learning, featuring Flashcards, AI Speaking, and My Camp modules." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Embassy Language Learning App" },
+      { name: "twitter:description", content: "Share It! is a React application for language learning, featuring Flashcards, AI Speaking, and My Camp modules." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/baa2229b-6950-4300-b3e6-48db616ac2ae/id-preview-c683a8ba--f462e50c-eba7-4afd-a6b8-b7dd6195b6be.lovable.app-1782217703173.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/baa2229b-6950-4300-b3e6-48db616ac2ae/id-preview-c683a8ba--f462e50c-eba7-4afd-a6b8-b7dd6195b6be.lovable.app-1782217703173.png" },
     ],
     links: [
       {
