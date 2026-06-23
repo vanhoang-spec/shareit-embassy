@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Tent, Loader2 } from "lucide-react";
-import embassyLogo from "@/assets/embassy-logo.png.asset.json";
+import embassyLogo from "@/assets/embassy-language-logo.png";
 
 const BRAND = { navy: "#004088", red: "#E81820", gold: "#F5B301" };
 
@@ -69,7 +69,7 @@ function AuthPage() {
 
       <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl p-8 border-4" style={{ borderColor: BRAND.gold }}>
         <div className="text-center mb-6">
-          <img src={embassyLogo.url} alt="Embassy Language" className="mx-auto h-16 w-auto mb-3" />
+          <img src={embassyLogo} alt="Embassy Language" className="mx-auto h-16 w-auto mb-3" />
           <div className="text-5xl mb-2">🏕️</div>
           <h1 className="text-3xl font-extrabold tracking-tight" style={{ color: BRAND.navy }}>
             Welcome to Share It!
