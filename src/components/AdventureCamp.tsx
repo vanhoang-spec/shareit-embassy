@@ -3236,7 +3236,9 @@ function useCosmicMusic(enabled) {
     return () => {
       cancelled = true;
       window.removeEventListener("pointerdown", onGesture);
-      timers.forEach(clearTimeout);
+      window.removeEventListener("keydown", onGesture);
+      window.removeEventListener("touchstart", onGesture);
+
       timers = [];
       if (ctx) {
         try {
