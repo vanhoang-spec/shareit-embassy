@@ -3134,12 +3134,139 @@ function UnitGalaxy({ onEnterUnit1, onBackToLevels }) {
 }
 
 // =================================================================
+// Cosmic chiptune background music (Web Audio API, no deps)
+// Upbeat, kid-friendly 8-bit loop for Tier 1 / Tier 2 screens.
+// =================================================================
+function useCosmicMusic(enabled) {
+  const ctxRef = useRef(null);
+  const stopRef = useRef(null);
+
+  useEffect(() => {
+    if (!enabled) return;
+    if (typeof window === "undefined") return;
+
+    let cancelled = false;
+    let timers = [];
+    let masterGain = null;
+    let AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+
+    const ctx = ctxRef.current || new AC();
+    ctxRef.current = ctx;
+
+    const start = async () => {
+      try { if (ctx.state === "suspended") await ctx.resume(); } catch {}
+      if (cancelled) return;
+
+      masterGain = ctx.createGain();
+      masterGain.gain.value = 0;
+      masterGain.gain.linearRampToValueAtTime(0.18, ctx.currentTime + 0.6);
+      masterGain.connect(ctx.destination);
+
+      // Notes (Hz) — happy C major arpeggio + bounce bass
+      const M = { C4:261.63, D4:293.66, E4:329.63, G4:392.0, A4:440.0, C5:523.25, D5:587.33, E5:659.25, G5:783.99,
+                  C3:130.81, G3:196.0, A3:220.0, F3:174.61 };
+      // Melody pattern (cycles), each step = 0.18s
+      const melody = [
+        M.C5, M.E5, M.G5, M.E5, M.C5, M.E5, M.G5, M.C5,
+        M.A4, M.C5, M.E5, M.C5, M.A4, M.C5, M.E5, M.A4,
+        M.G4, M.C5, M.E5, M.C5, M.G4, M.D5, M.G5, M.D5,
+        M.C5, M.G4, M.E4, M.G4, M.C5, M.E5, M.G5, M.C5,
+      ];
+      const bass = [M.C3, M.G3, M.A3, M.F3];
+      const stepDur = 0.18;
+      const loopDur = melody.length * stepDur;
+
+      const playNote = (freq, t, dur, type = "square", vol = 0.22) => {
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.type = type;
+        o.frequency.setValueAtTime(freq, t);
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.exponentialRampToValueAtTime(vol, t + 0.01);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+        o.connect(g).connect(masterGain);
+        o.start(t);
+        o.stop(t + dur + 0.02);
+      };
+
+      const playKick = (t) => {
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.type = "sine";
+        o.frequency.setValueAtTime(120, t);
+        o.frequency.exponentialRampToValueAtTime(40, t + 0.18);
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.exponentialRampToValueAtTime(0.35, t + 0.005);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.22);
+        o.connect(g).connect(masterGain);
+        o.start(t); o.stop(t + 0.25);
+      };
+
+      const scheduleLoop = (startAt) => {
+        for (let i = 0; i < melody.length; i++) {
+          const t = startAt + i * stepDur;
+          playNote(melody[i], t, stepDur * 0.9, "square", 0.16);
+          // bass every 2 steps
+          if (i % 2 === 0) playNote(bass[(i / 2) % bass.length], t, stepDur * 1.6, "triangle", 0.22);
+          // kick every 4 steps
+          if (i % 4 === 0) playKick(t);
+        }
+      };
+
+      let nextStart = ctx.currentTime + 0.1;
+      scheduleLoop(nextStart);
+      const tick = () => {
+        if (cancelled) return;
+        nextStart += loopDur;
+        scheduleLoop(nextStart);
+        const id = setTimeout(tick, loopDur * 1000 - 150);
+        timers.push(id);
+      };
+      const id0 = setTimeout(tick, loopDur * 1000 - 150);
+      timers.push(id0);
+
+      stopRef.current = () => {
+        try {
+          masterGain.gain.cancelScheduledValues(ctx.currentTime);
+          masterGain.gain.setValueAtTime(masterGain.gain.value, ctx.currentTime);
+          masterGain.gain.linearRampToValueAtTime(0.0001, ctx.currentTime + 0.4);
+        } catch {}
+      };
+    };
+
+    const onGesture = () => { start(); window.removeEventListener("pointerdown", onGesture); };
+    // Try immediately; if blocked by autoplay policy, wait for a gesture.
+    start();
+    window.addEventListener("pointerdown", onGesture, { once: true });
+
+    return () => {
+      cancelled = true;
+      window.removeEventListener("pointerdown", onGesture);
+      timers.forEach(clearTimeout);
+      if (stopRef.current) stopRef.current();
+    };
+  }, [enabled]);
+}
+
+// =================================================================
 // App — header + view router (no bottom nav)
 // =================================================================
 export default function AdventureCamp() {
   const [view, setView] = useState("levels"); // levels | galaxy | hub | vocab | grammar | speaking | reading | quiz
 
+
+  const [musicOn, setMusicOn] = useState(() => {
+    if (typeof window === "undefined") return true;
+    return localStorage.getItem("ac_music_on") !== "0";
+  });
+  useEffect(() => {
+    try { localStorage.setItem("ac_music_on", musicOn ? "1" : "0"); } catch {}
+  }, [musicOn]);
+  useCosmicMusic(musicOn && (view === "levels" || view === "galaxy"));
+
   const [coins, setCoins] = useState(0);
+
   const [streak, setStreak] = useState(0);
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(true);
@@ -3275,6 +3402,16 @@ export default function AdventureCamp() {
                 </button>
               </div>
               <div className="flex shrink-0 items-center gap-2">
+                <button
+                  onClick={() => setMusicOn(v => !v)}
+                  aria-label={musicOn ? "Mute music" : "Play music"}
+                  title={musicOn ? "Mute music" : "Play music"}
+                  className="flex h-9 w-9 items-center justify-center rounded-full bg-white/15 ring-1 ring-white/25 text-white text-base transition hover:scale-110 active:scale-95"
+                  style={{ boxShadow: musicOn ? "0 0 12px #22d3ee99" : "none" }}
+                >
+                  <span>{musicOn ? "🎵" : "🔇"}</span>
+                </button>
+
                 <div className={`flex items-center gap-1 rounded-full bg-white px-3 py-1.5 shadow ${coinPop ? "ac-pop" : ""}`}
                   style={{ color: "#1e1b4b" }}>
                   {loading ? <Loader2 size={14} className="animate-spin" /> : <Coins size={14} style={{ color: "#f59e0b" }} />}
