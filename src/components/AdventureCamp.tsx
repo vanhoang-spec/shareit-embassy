@@ -1039,7 +1039,7 @@ function GrammarReaction({ onReward }) {
                 <p className="mt-1 text-lg font-extrabold leading-snug">
                   {targetWords.map((w, i) => {
                     // map display word index to its normalized index
-                    const normIdx = normWords(targetWords.slice(0, i + 1)).length - 1;
+                    const normIdx = normWords(targetWords.slice(0, i + 1).join(" ")).length - 1;
                     const ok = result.matchedTarget[normIdx];
                     return (
                       <span
