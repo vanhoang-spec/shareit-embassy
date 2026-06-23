@@ -3137,7 +3137,7 @@ function UnitGalaxy({ onEnterUnit1, onBackToLevels }) {
 // App — header + view router (no bottom nav)
 // =================================================================
 export default function AdventureCamp() {
-  const [view, setView] = useState("galaxy"); // galaxy | hub | vocab | grammar | speaking | reading | quiz
+  const [view, setView] = useState("levels"); // levels | galaxy | hub | vocab | grammar | speaking | reading | quiz
 
   const [coins, setCoins] = useState(0);
   const [streak, setStreak] = useState(0);
