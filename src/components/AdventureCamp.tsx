@@ -2091,80 +2091,189 @@ const L6_SENTENCES = [
   { t: "We make jewelry in art class.",       past: false },
 ];
 
-function GrammarLab({ onBack, addCoins }) {
-  const [lesson, setLesson] = useState("l2");
-  const data = lesson === "l2" ? L2_SENTENCES : L6_SENTENCES;
-  const [idx, setIdx] = useState(0);
-  const [feedback, setFeedback] = useState(null); // "right" | "wrong" | null
-  const [done, setDone] = useState(0);
+// =================================================================
+// Cosmic Grammar Smasher — arcade time-attack mini-game
+// =================================================================
+const SMASHER_PAIRS = [
+  { correct: "I cooked dinner on a campfire",  wrong: "I didn't cooked dinner" },
+  { correct: "I built a shelter",              wrong: "I builded a shelter" },
+  { correct: "I rode on a zipline",            wrong: "I rided on a zipline" },
+  { correct: "We went climbing last week",     wrong: "We goed climbing last week" },
+  { correct: "Did you play outside?",          wrong: "Did you played outside?" },
+  { correct: "What did you do yesterday?",     wrong: "What did you did yesterday?" },
+];
 
-  function pick(choice) {
-    if (feedback) return;
-    const correct = choice === data[idx].past;
-    if (correct) {
-      setFeedback("right"); addCoins(3); playBeep(880, 0.15);
+function GrammarLab({ onBack, addCoins }) {
+  const [phase, setPhase] = useState("start"); // start | playing | won | lost
+  const [score, setScore] = useState(0);
+  const [hearts, setHearts] = useState(3);
+  const [rocks, setRocks] = useState([]); // {id, pair, leftPct, correctFirst, hitFlash}
+  const [shake, setShake] = useState(false);
+  const idRef = useRef(1);
+  const fallMs = 9000; // time from top to ship
+  const FIELD_H = 460;
+
+  // Spawn loop
+  useEffect(() => {
+    if (phase !== "playing") return;
+    function spawn() {
+      const pair = SMASHER_PAIRS[Math.floor(Math.random() * SMASHER_PAIRS.length)];
+      const id = idRef.current++;
+      const leftPct = 8 + Math.random() * 70;
+      const correctFirst = Math.random() < 0.5;
+      setRocks((r) => [...r, { id, pair, leftPct, correctFirst, born: Date.now() }]);
+      // remove if not interacted; collision check
       setTimeout(() => {
-        setFeedback(null);
-        if (idx + 1 < data.length) setIdx(idx + 1);
-        else { setDone(data.length); fireConfetti(); }
-      }, 700);
-    } else {
-      setFeedback("wrong"); playBeep(220, 0.18, "sawtooth");
-      setTimeout(() => setFeedback(null), 700);
+        setRocks((r) => {
+          const still = r.find((x) => x.id === id);
+          if (still) {
+            // hit ship
+            setHearts((h) => Math.max(0, h - 1));
+            setShake(true); setTimeout(() => setShake(false), 400);
+            playBeep(180, 0.22, "sawtooth");
+          }
+          return r.filter((x) => x.id !== id);
+        });
+      }, fallMs);
     }
+    spawn();
+    const t = setInterval(spawn, 4000);
+    return () => clearInterval(t);
+  }, [phase]);
+
+  // Win / lose watchers
+  useEffect(() => {
+    if (phase !== "playing") return;
+    if (hearts <= 0) {
+      setPhase("lost"); setRocks([]); playBeep(140, 0.4, "sawtooth");
+    } else if (score >= 50) {
+      setPhase("won"); setRocks([]);
+      fireConfetti(); setTimeout(fireConfetti, 400);
+      addCoins(15);
+    }
+  }, [hearts, score, phase, addCoins]);
+
+  function hitCorrect(id) {
+    playBeep(980, 0.12);
+    setScore((s) => s + 10);
+    setRocks((r) => r.filter((x) => x.id !== id));
   }
-  function reset() { setIdx(0); setDone(0); setFeedback(null); }
+  function hitWrong(id) {
+    playBeep(220, 0.18, "sawtooth");
+    setHearts((h) => Math.max(0, h - 1));
+    setShake(true); setTimeout(() => setShake(false), 400);
+    setRocks((r) => r.map((x) => x.id === id ? { ...x, flash: true } : x));
+    setTimeout(() => setRocks((r) => r.filter((x) => x.id !== id)), 380);
+  }
+  function launch() {
+    setScore(0); setHearts(3); setRocks([]); setPhase("playing");
+  }
 
   return (
     <div>
       <BackBtn onBack={onBack} />
-      <div className="mb-4 flex items-center justify-center gap-2">
-        {[{k:"l2",l:"Lesson 2"},{k:"l6",l:"Lesson 6"}].map((t) => (
-          <button key={t.k} onClick={() => { setLesson(t.k); reset(); }}
-            className="rounded-full px-4 py-1.5 text-xs font-extrabold shadow"
-            style={lesson === t.k
-              ? { background: `linear-gradient(135deg, ${BRAND.navy}, ${BRAND.red})`, color: "white" }
-              : { background: "white", color: BRAND.navy }}>
-            {t.l}
-          </button>
-        ))}
-      </div>
 
-      <div className="rounded-3xl bg-white p-6 shadow-xl ring-1 ring-slate-100">
-        <h2 className="text-center text-base font-black" style={{ color: BRAND.navy }}>🧪 Sort the sentence</h2>
-        <p className="mt-1 text-center text-xs font-bold text-slate-400">Is it Past Simple, or not?</p>
+      <div className="relative mx-auto max-w-md overflow-hidden rounded-3xl p-4 shadow-2xl ring-1 ring-fuchsia-400/30"
+        style={{ background: "radial-gradient(ellipse at 50% 0%, #1e1b4b 0%, #0b1026 55%, #050816 100%)" }}>
+        {/* starfield */}
+        <div aria-hidden className="pointer-events-none absolute inset-0 opacity-70"
+          style={{ backgroundImage: "radial-gradient(1px 1px at 20% 30%, #fff 50%, transparent), radial-gradient(1px 1px at 70% 20%, #fff 50%, transparent), radial-gradient(1px 1px at 40% 70%, #fff 50%, transparent), radial-gradient(1px 1px at 85% 80%, #fff 50%, transparent), radial-gradient(1px 1px at 10% 85%, #fff 50%, transparent)" }} />
 
-        {done === data.length ? (
-          <div className="mt-6 text-center">
-            <div className="text-5xl">🏆</div>
-            <p className="mt-2 text-lg font-black" style={{ color: BRAND.navy }}>Lab complete!</p>
-            <button onClick={reset} className="mt-4 rounded-full px-4 py-2 text-sm font-extrabold text-white shadow" style={{ backgroundColor: BRAND.red }}>Play again</button>
+        {/* HUD */}
+        <div className="relative z-10 mb-3 flex items-center justify-between text-xs font-extrabold text-white">
+          <div className="rounded-full bg-white/10 px-3 py-1 ring-1 ring-white/20">🛰️ Score <span className="text-amber-300">{score}</span>/50</div>
+          <div className="rounded-full bg-white/10 px-3 py-1 ring-1 ring-white/20">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <span key={i} className="mx-0.5" style={{ filter: i < hearts ? "none" : "grayscale(1) opacity(.35)" }}>❤️</span>
+            ))}
           </div>
-        ) : (
-          <>
-            <div className="mt-4 mb-2 text-center text-xs font-extrabold text-slate-400">{idx + 1}/{data.length}</div>
-            <div className="mx-auto max-w-md rounded-2xl bg-slate-50 p-5 text-center text-lg font-extrabold leading-snug ring-2 ring-slate-200"
-              style={{ color: BRAND.navy }}>
-              "{data[idx].t}"
-            </div>
-            {feedback && (
-              <p className="mt-3 text-center text-base font-black" style={{ color: feedback === "right" ? "#16a34a" : BRAND.red }}>
-                {feedback === "right" ? "✓ Correct! +3 coins" : "✗ Try again!"}
+        </div>
+
+        {/* Field */}
+        <div className="relative z-10 overflow-hidden rounded-2xl ring-1 ring-white/10" style={{ height: FIELD_H, background: "linear-gradient(180deg, rgba(124,58,237,.08), rgba(15,23,42,.4))" }}>
+          {phase === "start" && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center">
+              <div className="text-5xl drop-shadow-[0_0_18px_rgba(167,139,250,.8)]">☄️</div>
+              <h2 className="mt-2 text-lg font-black text-white">Cosmic Grammar Smasher</h2>
+              <p className="mt-2 text-xs font-bold text-fuchsia-100/90 leading-snug">
+                🚀 Asteroid Alert! Alien grammar rocks are crashing! Tap the <span className="text-emerald-300">CORRECT</span> past-tense sentence to blast them before they hit your spaceship. Protect the camp!
               </p>
-            )}
-            <div className="mt-5 grid grid-cols-2 gap-3">
-              <button onClick={() => pick(true)} className="rounded-2xl px-4 py-4 text-sm font-extrabold text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
-                style={{ background: `linear-gradient(135deg, ${BRAND.navy}, ${BRAND.navyDark})` }}>
-                ⏪ Past Simple
-              </button>
-              <button onClick={() => pick(false)} className="rounded-2xl px-4 py-4 text-sm font-extrabold text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
-                style={{ background: `linear-gradient(135deg, ${BRAND.red}, ${BRAND.redDark})` }}>
-                🔄 Not past
+              <button onClick={launch}
+                className="mt-5 rounded-full px-6 py-3 text-sm font-black text-white shadow-[0_0_30px_rgba(244,114,182,.7)] ring-2 ring-white/40 transition-transform hover:scale-105 active:scale-95"
+                style={{ background: "linear-gradient(135deg,#7c3aed,#ec4899,#f59e0b)" }}>
+                LAUNCH MISSION 🎮
               </button>
             </div>
-          </>
-        )}
+          )}
+
+          {phase === "playing" && rocks.map((r) => {
+            const a = r.correctFirst
+              ? { onClick: () => hitCorrect(r.id), label: r.pair.correct, good: true }
+              : { onClick: () => hitWrong(r.id),   label: r.pair.wrong,   good: false };
+            const b = r.correctFirst
+              ? { onClick: () => hitWrong(r.id),   label: r.pair.wrong,   good: false }
+              : { onClick: () => hitCorrect(r.id), label: r.pair.correct, good: true };
+            return (
+              <div key={r.id}
+                className="cgs-rock"
+                style={{ left: `${r.leftPct}%`, animationDuration: `${fallMs}ms` }}
+              >
+                <div className={`cgs-rock-inner ${r.flash ? "cgs-flash" : ""}`}>
+                  <div className="text-2xl text-center leading-none">☄️</div>
+                  <button onClick={a.onClick} className="cgs-choice">{a.label}</button>
+                  <button onClick={b.onClick} className="cgs-choice">{b.label}</button>
+                </div>
+              </div>
+            );
+          })}
+
+          {/* Spaceship */}
+          {phase === "playing" && (
+            <div className={`absolute bottom-2 left-1/2 -translate-x-1/2 text-4xl ${shake ? "cgs-shake" : "cgs-float"}`}
+              style={{ filter: shake ? "drop-shadow(0 0 12px #ef4444)" : "drop-shadow(0 0 10px #38bdf8)" }}>
+              🚀
+            </div>
+          )}
+
+          {phase === "won" && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center">
+              <div className="text-5xl">🏆</div>
+              <h3 className="mt-2 text-xl font-black text-amber-300 drop-shadow-[0_0_14px_rgba(245,158,11,.8)]">SPACE DEFENDER VICTORIOUS!</h3>
+              <p className="mt-1 text-xs font-bold text-white/80">+15 coins saved to your profile 🪙</p>
+              <button onClick={launch} className="mt-4 rounded-full bg-white/15 px-5 py-2 text-sm font-extrabold text-white ring-1 ring-white/30 hover:scale-105 transition">Play again</button>
+            </div>
+          )}
+
+          {phase === "lost" && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center">
+              <div className="text-5xl">🛰️</div>
+              <h3 className="mt-2 text-base font-black text-white">Ship damaged!</h3>
+              <p className="mt-1 text-xs font-bold text-fuchsia-100/90">Warp back to camp to repair and try again!</p>
+              <button onClick={launch}
+                className="mt-4 rounded-full px-5 py-2 text-sm font-black text-white shadow-[0_0_24px_rgba(244,114,182,.6)] ring-2 ring-white/30 hover:scale-105 transition"
+                style={{ background: "linear-gradient(135deg,#7c3aed,#ec4899)" }}>
+                Retry Mission 🔁
+              </button>
+            </div>
+          )}
+        </div>
       </div>
+
+      <style>{`
+        @keyframes cgs-fall { from { transform: translateY(-20%); } to { transform: translateY(${FIELD_H - 80}px); } }
+        @keyframes cgs-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes cgs-float { 0%,100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, -6px); } }
+        @keyframes cgs-shake { 0%,100% { transform: translate(-50%, 0) rotate(0); } 25% { transform: translate(-58%, 0) rotate(-6deg); } 75% { transform: translate(-42%, 0) rotate(6deg); } }
+        @keyframes cgs-flash { 0%,100% { box-shadow: 0 0 24px rgba(239,68,68,.9); } 50% { box-shadow: 0 0 6px rgba(239,68,68,.3); } }
+        .cgs-rock { position: absolute; top: 0; width: 170px; animation-name: cgs-fall; animation-timing-function: linear; animation-fill-mode: forwards; will-change: transform; }
+        .cgs-rock-inner { display: flex; flex-direction: column; gap: 4px; padding: 8px; border-radius: 14px; background: rgba(15,23,42,.7); backdrop-filter: blur(4px); box-shadow: 0 0 18px rgba(168,85,247,.45); border: 1px solid rgba(244,114,182,.35); }
+        .cgs-choice { width: 100%; padding: 6px 8px; border-radius: 10px; font-size: 11px; font-weight: 800; color: #fff; line-height: 1.1; background: linear-gradient(135deg, rgba(99,102,241,.7), rgba(168,85,247,.7)); border: 1px solid rgba(255,255,255,.18); transition: transform .12s; }
+        .cgs-choice:hover { transform: scale(1.04); }
+        .cgs-choice:active { transform: scale(.96); }
+        .cgs-flash { animation: cgs-flash .35s linear; background: rgba(239,68,68,.4) !important; }
+        .cgs-float { animation: cgs-float 2.4s ease-in-out infinite; }
+        .cgs-shake { animation: cgs-shake .4s ease-in-out; }
+      `}</style>
     </div>
   );
 }
