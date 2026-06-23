@@ -300,6 +300,26 @@ const STYLES = `
 @media (prefers-reduced-motion: reduce){
   .ac-fade,.ac-pop,.ac-shake,.ac-float,.ac-ripple,.ac-pulse-ring,.ac-banner,.coin-ico { animation: none !important; transition: none !important; }
 }
+/* ===== Galaxy theme ===== */
+@keyframes gx-twinkle { 0%,100%{opacity:.2} 50%{opacity:1} }
+@keyframes gx-bob     { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+@keyframes gx-pulse   { 0%,100%{filter:drop-shadow(0 0 8px currentColor)} 50%{filter:drop-shadow(0 0 22px currentColor)} }
+@keyframes gx-comet   { 0%{transform:translate(-40%,40%) rotate(-25deg);opacity:0} 10%{opacity:1} 100%{transform:translate(140%,-100%) rotate(-25deg);opacity:0} }
+@keyframes gx-spin    { to { transform: rotate(360deg); } }
+@keyframes gx-supernova { 0%{transform:scale(.2);opacity:1} 100%{transform:scale(4);opacity:0} }
+.gx-shell { background: radial-gradient(ellipse at 20% 10%, #1e1b4b 0%, transparent 55%), radial-gradient(ellipse at 80% 90%, #4c1d95 0%, transparent 60%), linear-gradient(180deg,#070417 0%, #0b0628 50%, #100633 100%); }
+.gx-star  { position:absolute; background:#fff; border-radius:9999px; animation: gx-twinkle 3s ease-in-out infinite; box-shadow:0 0 6px #fff; pointer-events:none; }
+.gx-bob   { animation: gx-bob 4s ease-in-out infinite; }
+.gx-pulse { animation: gx-pulse 2.4s ease-in-out infinite; }
+.gx-spin-slow { animation: gx-spin 24s linear infinite; }
+.gx-comet { position:absolute; width:140px; height:3px; background:linear-gradient(90deg, transparent, #fff, #a78bfa); border-radius:9999px; animation: gx-comet 7s linear infinite; filter:drop-shadow(0 0 6px #a78bfa); pointer-events:none; }
+.gx-neon-text { text-shadow: 0 0 8px currentColor, 0 0 18px currentColor; }
+.gx-glass { background: rgba(255,255,255,.06); backdrop-filter: blur(10px); border:1px solid rgba(255,255,255,.14); }
+.gx-supernova { position:fixed; inset:0; pointer-events:none; z-index:80; display:flex; align-items:center; justify-content:center; }
+.gx-supernova::after { content:""; width:120px; height:120px; border-radius:9999px; background:radial-gradient(circle, #fff 0%, #fde68a 30%, #f59e0b 50%, #ec4899 70%, transparent 80%); animation: gx-supernova 1.1s ease-out forwards; }
+@media (prefers-reduced-motion: reduce){
+  .gx-star,.gx-bob,.gx-pulse,.gx-spin-slow,.gx-comet { animation: none !important; }
+}
 `;
 
 // Choose the nicest available English voice (falls back to any en voice).
