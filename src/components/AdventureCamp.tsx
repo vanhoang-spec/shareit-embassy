@@ -2793,39 +2793,152 @@ function GrandUnitQuiz({ onBack, addCoins }) {
 // Dashboard Hub — 5 arcade boxes
 // =================================================================
 const HUB_BOXES = [
-  { key: "vocab",     icon: "📚", title: "Vocabulary Quest", sub: "Lessons 1 · 5", grad: "linear-gradient(135deg, #f59e0b, #d97706)" },
-  { key: "grammar",   icon: "🧪", title: "Grammar Lab",      sub: "Lessons 2 · 6", grad: "linear-gradient(135deg, #10b981, #047857)" },
-  { key: "speaking",  icon: "🎙️", title: "AI Speaking World",sub: "Lessons 2 · 6", grad: "linear-gradient(135deg, #ec4899, #be185d)" },
-  { key: "reading",   icon: "🧭", title: "Reading Adventure",sub: "Lessons 3 · 7", grad: "linear-gradient(135deg, #3b82f6, #1d4ed8)" },
-  { key: "quiz",      icon: "🏆", title: "Grand Unit Quiz",  sub: "Lesson 8 arcade", grad: `linear-gradient(135deg, ${BRAND.red}, ${BRAND.redDark})` },
+  { key: "vocab",    icon: "🪐", title: "Vocabulary Orbit",     sub: "L1 Flashcards · L5 Mic",     grad: "linear-gradient(135deg,#f59e0b,#ef4444)", glow:"#fbbf24", ring:true  },
+  { key: "grammar",  icon: "🕳️", title: "Grammar Black Hole",   sub: "L2 · L6 Unscramble",         grad: "radial-gradient(circle at 50% 50%, #0f172a 0%, #4c1d95 60%, #7c3aed 100%)", glow:"#a78bfa", vortex:true },
+  { key: "speaking", icon: "🌌", title: "AI Voice Nebula",       sub: "Mic grading · Roleplay",     grad: "linear-gradient(135deg,#ec4899,#8b5cf6,#06b6d4)", glow:"#f472b6" },
+  { key: "reading",  icon: "☄️", title: "Reading Comet",         sub: "L3 · L7 True/False",         grad: "linear-gradient(135deg,#06b6d4,#3b82f6)", glow:"#22d3ee", comet:true },
+  { key: "quiz",     icon: "🚀", title: "Supernova Quiz Arena",  sub: "Phonics · 4-in-a-Row Bot",   grad: "linear-gradient(135deg,#10b981,#0ea5e9,#a855f7)", glow:"#34d399", wide:true },
 ];
+
+function StarField({ count = 40 }) {
+  const stars = Array.from({ length: count }, (_, i) => {
+    const size = Math.random() * 2 + 1;
+    return {
+      key: i,
+      top: Math.random() * 100,
+      left: Math.random() * 100,
+      size,
+      delay: Math.random() * 3,
+    };
+  });
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      {stars.map((s) => (
+        <span key={s.key} className="gx-star" style={{
+          top: `${s.top}%`, left: `${s.left}%`, width: s.size, height: s.size,
+          animationDelay: `${s.delay}s`,
+        }} />
+      ))}
+      <span className="gx-comet" style={{ top: "20%", left: "0%", animationDelay: "1s" }} />
+      <span className="gx-comet" style={{ top: "55%", left: "0%", animationDelay: "4s" }} />
+    </div>
+  );
+}
 
 function DashboardHub({ onPick, name }) {
   return (
-    <div className="ac-fade">
-      <div className="mb-4 rounded-3xl bg-white p-4 shadow-xl ring-1 ring-slate-100 text-center">
-        <p className="text-xs font-extrabold uppercase tracking-wider text-slate-400">Unit 1</p>
-        <p className="text-xl font-black" style={{ color: BRAND.navy }}>🏕️ Adventure Camp</p>
-        <p className="mt-1 text-sm font-bold text-slate-500">
-          {name ? `Welcome back, ${name}!` : "Welcome back, explorer!"} Pick a quest to begin.
+    <div className="ac-fade relative">
+      <div className="relative mb-4 overflow-hidden rounded-3xl p-4 text-center gx-glass">
+        <p className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-cyan-300 gx-neon-text" style={{ color: "#67e8f9" }}>Unit 1 · Sector 01</p>
+        <p className="text-2xl font-black text-white">🌠 Galaxy Adventure</p>
+        <p className="mt-1 text-sm font-bold text-indigo-200">
+          {name ? `Welcome, Captain ${name}!` : "Welcome, Space Cadet!"} Pick a planet to explore.
         </p>
       </div>
       <div className="grid grid-cols-2 gap-3">
         {HUB_BOXES.map((b, i) => (
-          <button key={b.key} onClick={() => onPick(b.key)}
-            className={`relative aspect-square overflow-hidden rounded-3xl p-4 text-left text-white shadow-xl transition-transform duration-200 hover:scale-105 active:scale-95 ${b.key === "quiz" ? "col-span-2 aspect-auto py-6" : ""}`}
-            style={{ background: b.grad, animation: `ac-fade .4s ${i*0.07}s both` }}>
-            <div className="absolute -right-2 -top-2 text-6xl opacity-25">{b.icon}</div>
+          <button
+            key={b.key}
+            onClick={() => onPick(b.key)}
+            className={`group relative overflow-hidden rounded-[28px] p-4 text-left text-white shadow-2xl ring-1 ring-white/20 transition-transform duration-200 hover:scale-[1.04] active:scale-95 ${b.wide ? "col-span-2 aspect-auto py-5" : "aspect-square"}`}
+            style={{
+              background: b.grad,
+              boxShadow: `0 0 24px ${b.glow}55, 0 10px 28px rgba(0,0,0,.45)`,
+              animation: `ac-fade .4s ${i * 0.07}s both`,
+            }}
+          >
+            {/* glowing planet body */}
+            <div className="pointer-events-none absolute -right-6 -top-6 h-28 w-28 rounded-full opacity-40 blur-2xl" style={{ background: b.glow }} />
+            {b.ring && (
+              <div className="pointer-events-none absolute right-2 top-3 h-20 w-20 gx-spin-slow" style={{ transform: "rotate(-18deg)" }}>
+                <div className="absolute inset-0 rounded-full border-[3px] border-white/40" style={{ transform: "rotateX(72deg)" }} />
+                <div className="absolute inset-2 rounded-full border-2 border-white/25" style={{ transform: "rotateX(72deg)" }} />
+              </div>
+            )}
+            {b.vortex && (
+              <div className="pointer-events-none absolute right-1 top-1 h-24 w-24 gx-spin-slow rounded-full" style={{ background: "conic-gradient(from 0deg, transparent 0%, rgba(167,139,250,.7) 50%, transparent 100%)", filter: "blur(2px)" }} />
+            )}
+            {b.comet && (
+              <div className="pointer-events-none absolute inset-0">
+                <span className="gx-comet" style={{ top: "30%", left: "-30%", animationDuration: "5s" }} />
+              </div>
+            )}
+            <div className="absolute -right-2 -top-2 text-7xl opacity-30 gx-bob">{b.icon}</div>
             <div className="relative flex h-full flex-col justify-end">
-              <div className="text-4xl drop-shadow">{b.icon}</div>
-              <p className="mt-1 text-base font-black leading-tight drop-shadow">{b.title}</p>
-              <p className="text-[11px] font-extrabold opacity-90">{b.sub}</p>
-              <span className="mt-2 inline-flex items-center gap-1 self-start rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-extrabold backdrop-blur">
-                Play <ArrowRight size={10} />
+              <div className="text-4xl gx-pulse" style={{ color: b.glow }}>{b.icon}</div>
+              <p className="mt-1 text-base font-black leading-tight drop-shadow gx-neon-text" style={{ color: "#fff" }}>{b.title}</p>
+              <p className="text-[11px] font-extrabold text-white/85">{b.sub}</p>
+              <span className="mt-2 inline-flex items-center gap-1 self-start rounded-full bg-white/15 px-2.5 py-0.5 text-[10px] font-extrabold ring-1 ring-white/30 backdrop-blur">
+                Launch <ArrowRight size={10} />
               </span>
             </div>
           </button>
         ))}
+      </div>
+
+      <div className="mt-5 flex items-center justify-center gap-2 text-[11px] font-bold text-indigo-200/80">
+        <span>👨‍🚀</span> Earn coins, master words, conquer the cosmos.
+      </div>
+    </div>
+  );
+}
+
+// =================================================================
+// Camper Profile — edit student_name (synced to Lovable Cloud)
+// =================================================================
+function ProfileModal({ open, onClose, name, onSave, saving, avatarEmoji, onOpenAvatar, coins, streak }) {
+  const [val, setVal] = useState(name || "");
+  useEffect(() => { if (open) setVal(name || ""); }, [open, name]);
+  if (!open) return null;
+  const trimmed = val.trim();
+  const canSave = trimmed.length >= 1 && trimmed.length <= 40 && trimmed !== (name || "");
+  return (
+    <div className="fixed inset-0 z-[70] flex items-center justify-center p-4" style={{ background: "rgba(3,3,30,.7)", backdropFilter: "blur(6px)" }}>
+      <div className="relative w-full max-w-sm overflow-hidden rounded-3xl p-5 text-white shadow-2xl ring-1 ring-white/20 gx-glass ac-fade" style={{ background: "linear-gradient(160deg,#1e1b4b,#312e81 60%,#4c1d95)" }}>
+        <StarField count={20} />
+        <div className="relative">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-extrabold uppercase tracking-widest text-cyan-300 gx-neon-text" style={{color:"#67e8f9"}}>Camper Profile</p>
+            <button onClick={onClose} className="rounded-full bg-white/10 p-1 ring-1 ring-white/20 hover:bg-white/20" aria-label="Close"><X size={16} /></button>
+          </div>
+          <div className="mt-3 flex items-center gap-3">
+            <button onClick={onOpenAvatar} className="relative flex h-16 w-16 items-center justify-center rounded-full bg-white/10 text-3xl ring-2 ring-cyan-300/70 hover:scale-105 transition" style={{ boxShadow: "0 0 18px #22d3ee88" }}>
+              <span>{avatarEmoji || "🧑‍🚀"}</span>
+              <span className="absolute -bottom-1 -right-1 rounded-full bg-cyan-400 px-1.5 py-0.5 text-[9px] font-black text-slate-900">EDIT</span>
+            </button>
+            <div className="flex-1">
+              <p className="text-[11px] font-bold text-indigo-200">Captain Name</p>
+              <input
+                value={val}
+                onChange={(e) => setVal(e.target.value)}
+                maxLength={40}
+                placeholder="Your name"
+                className="mt-1 w-full rounded-xl bg-white/10 px-3 py-2 text-base font-extrabold text-white placeholder-white/40 outline-none ring-1 ring-white/20 focus:ring-cyan-300"
+              />
+            </div>
+          </div>
+          <div className="mt-4 grid grid-cols-2 gap-2 text-center">
+            <div className="rounded-2xl bg-white/10 p-2 ring-1 ring-white/15">
+              <p className="text-[10px] font-extrabold uppercase tracking-wider text-yellow-300">Coins</p>
+              <p className="text-lg font-black text-white">{coins}</p>
+            </div>
+            <div className="rounded-2xl bg-white/10 p-2 ring-1 ring-white/15">
+              <p className="text-[10px] font-extrabold uppercase tracking-wider text-orange-300">Streak</p>
+              <p className="text-lg font-black text-white">{streak} 🔥</p>
+            </div>
+          </div>
+          <div className="mt-4 flex gap-2">
+            <button onClick={onClose} className="flex-1 rounded-full bg-white/10 px-4 py-2 text-sm font-extrabold text-white ring-1 ring-white/20 hover:bg-white/20">Cancel</button>
+            <button
+              disabled={!canSave || saving}
+              onClick={() => onSave(trimmed)}
+              className="flex-1 rounded-full px-4 py-2 text-sm font-black text-slate-900 shadow-lg transition disabled:cursor-not-allowed disabled:opacity-50"
+              style={{ background: "linear-gradient(135deg,#67e8f9,#a78bfa)", boxShadow: "0 0 18px #a78bfa88" }}
+            >
+              {saving ? <span className="inline-flex items-center gap-1"><Loader2 size={14} className="animate-spin"/>Saving…</span> : "Save 🚀"}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
