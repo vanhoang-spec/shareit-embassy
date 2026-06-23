@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Tent, Loader2 } from "lucide-react";
+import embassyLogo from "@/assets/embassy-logo.png.asset.json";
 
 const BRAND = { navy: "#004088", red: "#E81820", gold: "#F5B301" };
 
