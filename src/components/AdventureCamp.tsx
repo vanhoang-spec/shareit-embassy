@@ -1744,6 +1744,7 @@ export default function AdventureCamp() {
           fire({});
           setTimeout(() => fire({ angle: 60, origin: { x: 0, y: 0.7 } }), 200);
           setTimeout(() => fire({ angle: 120, origin: { x: 1, y: 0.7 } }), 400);
+          playFireworks();
         }, 350);
       }
       return next;
