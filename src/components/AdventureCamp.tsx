@@ -1726,12 +1726,36 @@ export default function AdventureCamp() {
   }, [coins, profileLoaded]);
 
 
+  const [hidingIds, setHidingIds] = useState(() => new Set());
+
   function masterCard(id) {
+    if (mastered.has(id)) return;
+    // start fade-out animation
+    setHidingIds((prev) => new Set(prev).add(id));
+    // mark mastered immediately so counter updates instantly
     setMastered((prev) => {
       const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
+      next.add(id);
+      // celebrate if all mastered
+      if (next.size === VOCAB.length) {
+        setTimeout(() => {
+          const fire = (opts) =>
+            confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 }, ...opts });
+          fire({});
+          setTimeout(() => fire({ angle: 60, origin: { x: 0, y: 0.7 } }), 200);
+          setTimeout(() => fire({ angle: 120, origin: { x: 1, y: 0.7 } }), 400);
+        }, 350);
+      }
       return next;
     });
+    // remove from DOM after fade completes
+    setTimeout(() => {
+      setHidingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+    }, 400);
   }
   function unMaster(id) {
     setMastered((prev) => {
