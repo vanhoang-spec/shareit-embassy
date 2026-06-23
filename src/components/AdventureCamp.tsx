@@ -3256,7 +3256,17 @@ export default function AdventureCamp() {
   const [view, setView] = useState("levels"); // levels | galaxy | hub | vocab | grammar | speaking | reading | quiz
 
 
+  const [musicOn, setMusicOn] = useState(() => {
+    if (typeof window === "undefined") return true;
+    return localStorage.getItem("ac_music_on") !== "0";
+  });
+  useEffect(() => {
+    try { localStorage.setItem("ac_music_on", musicOn ? "1" : "0"); } catch {}
+  }, [musicOn]);
+  useCosmicMusic(musicOn && (view === "levels" || view === "galaxy"));
+
   const [coins, setCoins] = useState(0);
+
   const [streak, setStreak] = useState(0);
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(true);
