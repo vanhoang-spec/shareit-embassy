@@ -1737,138 +1737,1102 @@ function Confetti({ burst }) {
 }
 
 // =================================================================
-// App
+// Shared back button (used by every full-screen sub-view)
 // =================================================================
-export default function AdventureCamp() {
-  const [tab, setTab] = useState("flashcards");
-  const [mastered, setMastered] = useState(() => new Set());
-  const [speakingCoins, setSpeakingCoins] = useState(0); // earned in AI Speaking
-  const [gameCoins, setGameCoins] = useState(0); // earned in My Camp grid game
-  const [campItems, setCampItems] = useState(() => new Set()); // placed camp items
-  const [gameSolved, setGameSolved] = useState(() => new Set()); // solved grid cells
-  const [campBoard] = useState(() => {
-    const base = ["go", "build", "sleep", "ride", "cook", "see"];
-    return Array.from({ length: 16 }, () => base[Math.floor(Math.random() * base.length)]);
-  });
-  const [coinPop, setCoinPop] = useState(false);
-  const [collapsed, setCollapsed] = useState(false); // header shrinks on scroll
+function BackBtn({ onBack }) {
+  return (
+    <button
+      onClick={onBack}
+      className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-1.5 text-sm font-extrabold shadow-md ring-1 ring-slate-200 transition-transform duration-150 hover:scale-105 active:scale-95"
+      style={{ color: BRAND.navy }}
+    >
+      <span className="text-base leading-none">‹</span> Back to Camp
+    </button>
+  );
+}
 
-  // avatar economy
-  const [owned, setOwned] = useState(() => new Set(FREE_AVATARS));
-  const [avatar, setAvatar] = useState("dan"); // default: Hổ (Tiger) — a free starter
-  const [spent, setSpent] = useState(0);
-  const [profileBonus, setProfileBonus] = useState(0);
-  const [profileLoaded, setProfileLoaded] = useState(false);
-  const [pickerOpen, setPickerOpen] = useState(false);
-  const [confettiBurst, setConfettiBurst] = useState(0); // increments to retrigger
-  const [celebrateName, setCelebrateName] = useState(null);
-  const confettiTimer = useRef(null);
+function fireConfetti() {
+  try {
+    confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+    setTimeout(() => confetti({ particleCount: 80, spread: 100, angle: 60, origin: { x: 0, y: 0.7 } }), 180);
+    setTimeout(() => confetti({ particleCount: 80, spread: 100, angle: 120, origin: { x: 1, y: 0.7 } }), 360);
+  } catch {}
+}
 
-  // Load synced coins from profile on mount and on auth state changes
-  useEffect(() => {
-    let cancelled = false;
-    async function loadProfile() {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (cancelled) return;
-      if (!session?.user) {
-        setProfileLoaded(true); // no user → nothing to load
-        return;
-      }
-      const { data } = await supabase
-        .from("profiles")
-        .select("total_coins")
-        .eq("id", session.user.id)
-        .maybeSingle();
-      if (cancelled) return;
-      if (data && typeof data.total_coins === "number") {
-        setProfileBonus(Math.max(0, data.total_coins - 100));
-      }
-      setProfileLoaded(true);
-    }
-    loadProfile();
-    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "SIGNED_IN" || event === "USER_UPDATED") {
-        setProfileLoaded(false);
-        loadProfile();
-      }
-    });
-    return () => { cancelled = true; sub.subscription.unsubscribe(); };
+function playBeep(freq = 660, dur = 0.12, type = "sine") {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.type = type; o.frequency.value = freq;
+    o.connect(g); g.connect(ctx.destination);
+    g.gain.setValueAtTime(0.0001, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.25, ctx.currentTime + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + dur);
+    o.start(); o.stop(ctx.currentTime + dur + 0.02);
+  } catch {}
+}
+
+// =================================================================
+// Lesson 5: Phrase Speaking Challenge
+// =================================================================
+const L5_PHRASES = [
+  { id: 1, text: "jump on a trampoline", emoji: "🤸" },
+  { id: 2, text: "go climbing",           emoji: "🧗" },
+  { id: 3, text: "play volleyball",       emoji: "🏐" },
+  { id: 4, text: "make jewelry",          emoji: "💍" },
+  { id: 5, text: "play table tennis",     emoji: "🏓" },
+  { id: 6, text: "play badminton",        emoji: "🏸" },
+  { id: 7, text: "go ice skating",        emoji: "⛸️" },
+  { id: 8, text: "go bowling",            emoji: "🎳" },
+];
+
+function PhraseSpeaking({ addCoins }) {
+  const [idx, setIdx] = useState(0);
+  const [phase, setPhase] = useState("idle"); // idle | recording | scored
+  const [transcript, setTranscript] = useState("");
+  const [audioUrl, setAudioUrl] = useState(null);
+  const [result, setResult] = useState(null);
+  const mediaRecRef = useRef(null);
+  const streamRef = useRef(null);
+  const chunksRef = useRef([]);
+  const recogRef = useRef(null);
+  const finalRef = useRef("");
+  const playbackRef = useRef(null);
+
+  const ph = L5_PHRASES[idx];
+
+  useEffect(() => () => {
+    try { recogRef.current?.stop(); } catch {}
+    try { mediaRecRef.current?.state !== "inactive" && mediaRecRef.current?.stop(); } catch {}
+    streamRef.current?.getTracks().forEach((t) => t.stop());
+    if (audioUrl) URL.revokeObjectURL(audioUrl);
   }, []);
 
-
-
-  function applyScroll(y) {
-    setCollapsed((prev) => {
-      if (!prev && y > 48) return true;   // collapse after scrolling down a bit
-      if (prev && y < 20) return false;   // expand again near the top
-      return prev;
-    });
-  }
-  function onMainScroll(e) {
-    applyScroll(e.currentTarget.scrollTop);
-  }
-  // Only <main> scrolls (the shell is a fixed-height viewport), so a single
-  // scroll source is enough — this avoids the collapse/expand feedback loop.
-  function switchTab(key) {
-    setTab(key);
-    setCollapsed(false); // always show full header when changing section
+  function sayAloud() {
+    if (!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(ph.text);
+    u.lang = "en-US"; u.rate = 0.9;
+    window.speechSynthesis.speak(u);
   }
 
-  const earned = 100 + mastered.size * 10 + speakingCoins + gameCoins + profileBonus;
-  const coins = Math.max(0, earned - spent);
+  async function startRec() {
+    setTranscript(""); setResult(null);
+    if (audioUrl) { URL.revokeObjectURL(audioUrl); setAudioUrl(null); }
+    finalRef.current = "";
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      streamRef.current = stream;
+      const mime = ["audio/webm", "audio/mp4"].find((t) => MediaRecorder.isTypeSupported(t)) || "";
+      const rec = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream);
+      chunksRef.current = [];
+      rec.ondataavailable = (e) => { if (e.data?.size) chunksRef.current.push(e.data); };
+      rec.onstop = () => {
+        const blob = new Blob(chunksRef.current, { type: rec.mimeType || "audio/webm" });
+        if (blob.size > 0) setAudioUrl(URL.createObjectURL(blob));
+        stream.getTracks().forEach((t) => t.stop());
+      };
+      rec.start();
+      mediaRecRef.current = rec;
+    } catch {
+      alert("Em ơi, cho phép micro để cô chấm phát âm nhé! 🎤");
+      return;
+    }
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SR) {
+      const r = new SR();
+      r.lang = "en-US"; r.continuous = true; r.interimResults = true;
+      r.onresult = (ev) => {
+        let interim = "";
+        for (let i = ev.resultIndex; i < ev.results.length; i++) {
+          const res = ev.results[i];
+          if (res.isFinal) finalRef.current += " " + res[0].transcript;
+          else interim += res[0].transcript;
+        }
+        setTranscript((finalRef.current + " " + interim).trim());
+      };
+      try { r.start(); recogRef.current = r; } catch {}
+    }
+    setPhase("recording");
+  }
 
-  const progress = mastered.size;
-  const pct = Math.round((progress / VOCAB.length) * 100);
-  const currentAvatar = AVATAR_BY_ID[avatar] || ALL_AVATARS[0];
+  function stopRec() {
+    try { recogRef.current?.stop(); } catch {}
+    try { mediaRecRef.current?.stop(); } catch {}
+    setTimeout(() => {
+      const said = (finalRef.current || transcript || "").trim();
+      const { pct, matchedTarget } = scoreTranscript(ph.text, said);
+      let stars = 1;
+      if (pct > 85) stars = 5;
+      else if (pct >= 50) stars = 3;
+      setResult({ pct, stars, matchedTarget, said });
+      if (stars === 5) { addCoins(10); fireConfetti(); }
+      setPhase("scored");
+    }, 350);
+  }
 
-  // ---- My Camp economy helpers ----
-  function buyCampItem(id, price) {
-    if (campItems.has(id)) return "owned";
-    if (coins < price) return "poor";
-    setCampItems((prev) => {
-      const n = new Set(prev);
-      n.add(id);
+  function next() {
+    if (audioUrl) { URL.revokeObjectURL(audioUrl); setAudioUrl(null); }
+    setResult(null); setTranscript(""); finalRef.current = "";
+    setPhase("idle");
+    setIdx((i) => (i + 1) % L5_PHRASES.length);
+  }
+  function retry() {
+    if (audioUrl) { URL.revokeObjectURL(audioUrl); setAudioUrl(null); }
+    setResult(null); setTranscript(""); finalRef.current = "";
+    setPhase("idle");
+  }
+  function playMyVoice() {
+    if (!audioUrl) return;
+    if (!playbackRef.current) playbackRef.current = new Audio(audioUrl);
+    else playbackRef.current.src = audioUrl;
+    playbackRef.current.currentTime = 0;
+    playbackRef.current.play().catch(() => {});
+  }
+
+  const targetWords = ph.text.split(/\s+/);
+
+  return (
+    <div className="ac-fade">
+      <div className="mb-3 flex items-center justify-center gap-1.5">
+        {L5_PHRASES.map((_, i) => (
+          <span key={i} className="h-2.5 rounded-full transition-all" style={{ width: i === idx ? 24 : 8, backgroundColor: i === idx ? BRAND.red : "#cbd5e1" }} />
+        ))}
+      </div>
+
+      <div className="rounded-3xl bg-white p-6 shadow-xl ring-1 ring-slate-100">
+        <div className="flex flex-col items-center">
+          <div className="flex h-24 w-24 items-center justify-center rounded-3xl bg-slate-50 text-6xl shadow-inner">{ph.emoji}</div>
+          <p className="mt-4 text-center text-xs font-extrabold uppercase tracking-wide text-slate-400">Read the phrase</p>
+          <p className="mt-1 text-center text-2xl font-black leading-tight" style={{ color: BRAND.navy }}>"{ph.text}"</p>
+          <button onClick={sayAloud} className="mt-3 flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-extrabold text-white shadow hover:scale-105 active:scale-95 transition-transform" style={{ backgroundColor: BRAND.navy }}>
+            <Volume2 size={16} /> Hear it
+          </button>
+        </div>
+
+        <div className="mt-6 flex flex-col items-center">
+          {phase === "idle" && (
+            <>
+              <button onClick={startRec} className="flex h-16 w-16 items-center justify-center rounded-full text-white shadow-xl animate-bounce hover:scale-105 active:scale-95 transition-transform" style={{ background: `linear-gradient(135deg, ${BRAND.red}, ${BRAND.redDark})` }} aria-label="Record">
+                <Mic size={28} />
+              </button>
+              <p className="mt-2 text-sm font-extrabold" style={{ color: BRAND.navy }}>Tap & say the phrase!</p>
+            </>
+          )}
+          {phase === "recording" && (
+            <>
+              <div className="flex h-20 items-center gap-1.5 rounded-3xl bg-red-50 px-6 ring-2 ring-red-200">
+                {[0,1,2,3,4,5,6].map((b) => (
+                  <span key={b} className="w-1.5 rounded-full" style={{ height: 10 + ((b*7+idx*3)%30), backgroundColor: BRAND.red, animation: `gr-eq .9s ${b*0.08}s ease-in-out infinite alternate` }} />
+                ))}
+              </div>
+              <button onClick={stopRec} className="mt-4 flex items-center gap-2 rounded-full bg-slate-900 px-5 py-2 text-sm font-extrabold text-white shadow-lg hover:scale-105 active:scale-95 transition-transform">
+                <Square size={14} fill="white" /> Stop
+              </button>
+              {transcript && <p className="mt-3 text-center text-sm italic text-slate-500">"{transcript}"</p>}
+            </>
+          )}
+          {phase === "scored" && result && (
+            <div className="w-full">
+              <div className="flex justify-center gap-1 text-3xl">
+                {[1,2,3,4,5].map((s) => (
+                  <span key={s} style={{ color: s <= result.stars ? BRAND.gold : "#e2e8f0" }}>★</span>
+                ))}
+              </div>
+              <p className="mt-2 text-center text-lg font-black" style={{ color: result.stars === 5 ? "#16a34a" : result.stars === 3 ? BRAND.navy : BRAND.red }}>
+                {result.stars === 5 ? "Perfect! +10 coins 🎉" : result.stars === 3 ? "Good try! Listen and repeat 👂" : "Try again! 💪"}
+              </p>
+              <div className="mt-3 rounded-2xl bg-slate-50 p-3 text-center">
+                <p className="text-[11px] font-extrabold uppercase text-slate-400 mb-1">Target</p>
+                <p className="text-lg font-black">
+                  {targetWords.map((w, i) => {
+                    const matched = result.matchedTarget[i];
+                    return <span key={i} style={{ color: matched ? "#16a34a" : BRAND.red }}>{w} </span>;
+                  })}
+                </p>
+                <p className="mt-2 text-[11px] font-extrabold uppercase text-slate-400">You said</p>
+                <p className="text-sm italic text-slate-600">"{result.said || "—"}"</p>
+                <p className="mt-2 text-xs font-bold text-slate-500">Match: {result.pct}%</p>
+              </div>
+              <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+                {audioUrl && (
+                  <button onClick={playMyVoice} className="rounded-full bg-white px-4 py-2 text-sm font-extrabold shadow ring-1 ring-slate-200" style={{ color: BRAND.navy }}>
+                    🎧 Play My Voice
+                  </button>
+                )}
+                <button onClick={retry} className="rounded-full px-4 py-2 text-sm font-extrabold text-white shadow" style={{ backgroundColor: BRAND.red }}>Retry</button>
+                <button onClick={next} className="rounded-full px-4 py-2 text-sm font-extrabold text-white shadow" style={{ backgroundColor: BRAND.navy }}>Next phrase →</button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// =================================================================
+// Box 1: Vocabulary Quest
+// =================================================================
+function VocabularyQuest({ onBack, addCoins }) {
+  const [sub, setSub] = useState("l1"); // l1 | l5
+  const [mastered, setMastered] = useState(() => new Set());
+  const [hiding, setHiding] = useState(() => new Set());
+
+  function master(id) {
+    if (mastered.has(id)) return;
+    setHiding((p) => new Set(p).add(id));
+    setMastered((prev) => {
+      const n = new Set(prev); n.add(id);
+      addCoins(2);
+      if (n.size === VOCAB.length) {
+        setTimeout(() => { fireConfetti(); playFireworks(); }, 350);
+      }
       return n;
     });
-    setSpent((sp) => sp + price);
-    return "ok";
+    setTimeout(() => setHiding((p) => { const n = new Set(p); n.delete(id); return n; }), 400);
   }
-  function solveCampCell(idx) {
-    setGameSolved((prev) => {
-      if (prev.has(idx)) return prev;
-      const n = new Set(prev);
-      n.add(idx);
-      return n;
-    });
-    setGameCoins((c) => c + 5);
+  function unMaster(id) {
+    setMastered((p) => { const n = new Set(p); n.delete(id); return n; });
   }
 
-  const RARE_PLUS = ["rare", "epic", "legendary", "mythic"];
-  function celebrate(name) {
-    setConfettiBurst((n) => n + 1);
-    setCelebrateName(name);
-    clearTimeout(confettiTimer.current);
-    confettiTimer.current = setTimeout(() => {
-      setConfettiBurst(0);
-      setCelebrateName(null);
-    }, 2200);
-  }
-  useEffect(() => () => clearTimeout(confettiTimer.current), []);
+  return (
+    <div>
+      <BackBtn onBack={onBack} />
+      <div className="mb-4 flex items-center justify-center gap-2">
+        {[
+          { k: "l1", l: "Lesson 1 · Flashcards" },
+          { k: "l5", l: "Lesson 5 · Speaking" },
+        ].map((t) => (
+          <button key={t.k} onClick={() => setSub(t.k)}
+            className="rounded-full px-4 py-1.5 text-xs font-extrabold shadow transition-all"
+            style={sub === t.k
+              ? { background: `linear-gradient(135deg, ${BRAND.navy}, ${BRAND.red})`, color: "white" }
+              : { background: "white", color: BRAND.navy, boxShadow: "0 1px 3px rgba(0,0,0,.08)" }}>
+            {t.l}
+          </button>
+        ))}
+      </div>
 
-  function equipAvatar(id) {
-    setAvatar(id);
-    setPickerOpen(false);
+      {sub === "l1" && (
+        <>
+          <div className="mb-3 rounded-3xl bg-white p-3 shadow ring-1 ring-slate-100">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-extrabold" style={{ color: BRAND.navy }}>Vocabulary progress</p>
+              <span className="rounded-full px-2.5 py-0.5 text-xs font-extrabold text-white" style={{ backgroundColor: BRAND.navy }}>
+                {mastered.size}/{VOCAB.length} mastered
+              </span>
+            </div>
+            <div className="mt-2 h-3 w-full overflow-hidden rounded-full bg-slate-100">
+              <div className="h-full rounded-full transition-all duration-500"
+                style={{ width: `${(mastered.size/VOCAB.length)*100}%`, background: `linear-gradient(90deg, ${BRAND.navy}, ${BRAND.red})` }} />
+            </div>
+          </div>
+          {mastered.size === VOCAB.length ? (
+            <div className="ac-fade rounded-3xl bg-white p-8 text-center shadow ring-1 ring-slate-100">
+              <div className="text-6xl">🎉⛺</div>
+              <p className="mt-3 text-lg font-extrabold" style={{ color: BRAND.navy }}>Awesome! All words mastered!</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-3">
+              {VOCAB.filter((v) => !mastered.has(v.id) || hiding.has(v.id)).map((v) => (
+                <div key={v.id}
+                  className={hiding.has(v.id) ? "pointer-events-none opacity-0 scale-90" : ""}
+                  style={hiding.has(v.id) ? { transition: "opacity 400ms ease, transform 400ms ease" } : undefined}>
+                  <Flashcard data={v} mastered={mastered.has(v.id)} onMaster={master} onNotSure={unMaster} />
+                </div>
+              ))}
+            </div>
+          )}
+        </>
+      )}
+      {sub === "l5" && <PhraseSpeaking addCoins={addCoins} />}
+    </div>
+  );
+}
+
+// =================================================================
+// Box 2: Grammar Lab — past-simple sorting
+// =================================================================
+const L2_SENTENCES = [
+  { t: "I built a shelter yesterday.",       past: true },
+  { t: "We sleep in tents every summer.",    past: false },
+  { t: "She rode a zipline last weekend.",   past: true },
+  { t: "They cook on a campfire on Fridays.",past: false },
+  { t: "He went hiking last month.",         past: true },
+  { t: "I make jewelry with my friends.",    past: false },
+];
+const L6_SENTENCES = [
+  { t: "We played badminton after school.",   past: true },
+  { t: "She goes bowling on Saturdays.",      past: false },
+  { t: "They jumped on a trampoline.",        past: true },
+  { t: "I play table tennis every day.",      past: false },
+  { t: "He went ice skating last winter.",    past: true },
+  { t: "We make jewelry in art class.",       past: false },
+];
+
+function GrammarLab({ onBack, addCoins }) {
+  const [lesson, setLesson] = useState("l2");
+  const data = lesson === "l2" ? L2_SENTENCES : L6_SENTENCES;
+  const [idx, setIdx] = useState(0);
+  const [feedback, setFeedback] = useState(null); // "right" | "wrong" | null
+  const [done, setDone] = useState(0);
+
+  function pick(choice) {
+    if (feedback) return;
+    const correct = choice === data[idx].past;
+    if (correct) {
+      setFeedback("right"); addCoins(3); playBeep(880, 0.15);
+      setTimeout(() => {
+        setFeedback(null);
+        if (idx + 1 < data.length) setIdx(idx + 1);
+        else { setDone(data.length); fireConfetti(); }
+      }, 700);
+    } else {
+      setFeedback("wrong"); playBeep(220, 0.18, "sawtooth");
+      setTimeout(() => setFeedback(null), 700);
+    }
   }
-  function unlockAvatar(id) {
-    const z = AVATAR_BY_ID[id];
-    if (!z || owned.has(id) || coins < z.cost) return;
-    setSpent((s) => s + z.cost);
-    setOwned((prev) => new Set(prev).add(id));
-    setAvatar(id); // auto-equip the newly unlocked avatar
-    if (RARE_PLUS.includes(z.rarity)) celebrate(z.name); // celebrate rare+ unlocks
+  function reset() { setIdx(0); setDone(0); setFeedback(null); }
+
+  return (
+    <div>
+      <BackBtn onBack={onBack} />
+      <div className="mb-4 flex items-center justify-center gap-2">
+        {[{k:"l2",l:"Lesson 2"},{k:"l6",l:"Lesson 6"}].map((t) => (
+          <button key={t.k} onClick={() => { setLesson(t.k); reset(); }}
+            className="rounded-full px-4 py-1.5 text-xs font-extrabold shadow"
+            style={lesson === t.k
+              ? { background: `linear-gradient(135deg, ${BRAND.navy}, ${BRAND.red})`, color: "white" }
+              : { background: "white", color: BRAND.navy }}>
+            {t.l}
+          </button>
+        ))}
+      </div>
+
+      <div className="rounded-3xl bg-white p-6 shadow-xl ring-1 ring-slate-100">
+        <h2 className="text-center text-base font-black" style={{ color: BRAND.navy }}>🧪 Sort the sentence</h2>
+        <p className="mt-1 text-center text-xs font-bold text-slate-400">Is it Past Simple, or not?</p>
+
+        {done === data.length ? (
+          <div className="mt-6 text-center">
+            <div className="text-5xl">🏆</div>
+            <p className="mt-2 text-lg font-black" style={{ color: BRAND.navy }}>Lab complete!</p>
+            <button onClick={reset} className="mt-4 rounded-full px-4 py-2 text-sm font-extrabold text-white shadow" style={{ backgroundColor: BRAND.red }}>Play again</button>
+          </div>
+        ) : (
+          <>
+            <div className="mt-4 mb-2 text-center text-xs font-extrabold text-slate-400">{idx + 1}/{data.length}</div>
+            <div className="mx-auto max-w-md rounded-2xl bg-slate-50 p-5 text-center text-lg font-extrabold leading-snug ring-2 ring-slate-200"
+              style={{ color: BRAND.navy }}>
+              "{data[idx].t}"
+            </div>
+            {feedback && (
+              <p className="mt-3 text-center text-base font-black" style={{ color: feedback === "right" ? "#16a34a" : BRAND.red }}>
+                {feedback === "right" ? "✓ Correct! +3 coins" : "✗ Try again!"}
+              </p>
+            )}
+            <div className="mt-5 grid grid-cols-2 gap-3">
+              <button onClick={() => pick(true)} className="rounded-2xl px-4 py-4 text-sm font-extrabold text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+                style={{ background: `linear-gradient(135deg, ${BRAND.navy}, ${BRAND.navyDark})` }}>
+                ⏪ Past Simple
+              </button>
+              <button onClick={() => pick(false)} className="rounded-2xl px-4 py-4 text-sm font-extrabold text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+                style={{ background: `linear-gradient(135deg, ${BRAND.red}, ${BRAND.redDark})` }}>
+                🔄 Not past
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// =================================================================
+// Roleplay (L6) — speak a dialog line, get graded
+// =================================================================
+const L6_ROLEPLAY = [
+  { you: "Hi! What did you do at camp yesterday?",       reply: "I went canoeing with my friends." },
+  { you: "Wow! Did you have fun?",                       reply: "Yes, it was so much fun." },
+  { you: "What about today? Will you go ice skating?",   reply: "No, I will play badminton with my brother." },
+  { you: "Cool! Do you want to play table tennis later?",reply: "Yes, please. I love table tennis." },
+];
+
+function Roleplay({ addCoins }) {
+  const [step, setStep] = useState(0);
+  const [phase, setPhase] = useState("idle");
+  const [result, setResult] = useState(null);
+  const [transcript, setTranscript] = useState("");
+  const finalRef = useRef("");
+  const recogRef = useRef(null);
+  const recRef = useRef(null);
+  const streamRef = useRef(null);
+  const chunksRef = useRef([]);
+  const [audioUrl, setAudioUrl] = useState(null);
+
+  const turn = L6_ROLEPLAY[step];
+
+  useEffect(() => () => {
+    try { recogRef.current?.stop(); } catch {}
+    try { recRef.current?.stop(); } catch {}
+    streamRef.current?.getTracks().forEach((t) => t.stop());
+    if (audioUrl) URL.revokeObjectURL(audioUrl);
+  }, []);
+
+  function speakBot() {
+    if (!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(turn.you);
+    u.lang = "en-US"; u.rate = 0.95;
+    window.speechSynthesis.speak(u);
   }
 
-  // warm up speech voices (some browsers load them asynchronously)
+  async function startRec() {
+    setResult(null); setTranscript(""); finalRef.current = "";
+    if (audioUrl) { URL.revokeObjectURL(audioUrl); setAudioUrl(null); }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      streamRef.current = stream;
+      const mime = ["audio/webm","audio/mp4"].find((t) => MediaRecorder.isTypeSupported(t)) || "";
+      const rec = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream);
+      chunksRef.current = [];
+      rec.ondataavailable = (e) => { if (e.data?.size) chunksRef.current.push(e.data); };
+      rec.onstop = () => {
+        const blob = new Blob(chunksRef.current, { type: rec.mimeType || "audio/webm" });
+        if (blob.size > 0) setAudioUrl(URL.createObjectURL(blob));
+        stream.getTracks().forEach((t) => t.stop());
+      };
+      rec.start(); recRef.current = rec;
+    } catch { alert("Cho phép micro nhé! 🎤"); return; }
+
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SR) {
+      const r = new SR(); r.lang = "en-US"; r.continuous = true; r.interimResults = true;
+      r.onresult = (ev) => {
+        let interim = "";
+        for (let i = ev.resultIndex; i < ev.results.length; i++) {
+          const res = ev.results[i];
+          if (res.isFinal) finalRef.current += " " + res[0].transcript;
+          else interim += res[0].transcript;
+        }
+        setTranscript((finalRef.current + " " + interim).trim());
+      };
+      try { r.start(); recogRef.current = r; } catch {}
+    }
+    setPhase("recording");
+  }
+
+  function stopRec() {
+    try { recogRef.current?.stop(); } catch {}
+    try { recRef.current?.stop(); } catch {}
+    setTimeout(() => {
+      const said = (finalRef.current || transcript).trim();
+      const { pct, matchedTarget } = scoreTranscript(turn.reply, said);
+      let stars = 1; if (pct > 85) stars = 5; else if (pct >= 50) stars = 3;
+      setResult({ pct, stars, said, matchedTarget });
+      if (stars === 5) { addCoins(10); fireConfetti(); }
+      setPhase("scored");
+    }, 350);
+  }
+
+  function next() {
+    setResult(null); setTranscript(""); finalRef.current = "";
+    setPhase("idle");
+    if (audioUrl) { URL.revokeObjectURL(audioUrl); setAudioUrl(null); }
+    setStep((s) => (s + 1) % L6_ROLEPLAY.length);
+  }
+
+  const targetWords = turn.reply.split(/\s+/);
+  return (
+    <div className="ac-fade">
+      <div className="mb-3 flex items-center justify-center gap-1.5">
+        {L6_ROLEPLAY.map((_, i) => (
+          <span key={i} className="h-2.5 rounded-full" style={{ width: i === step ? 24 : 8, backgroundColor: i === step ? BRAND.red : "#cbd5e1" }} />
+        ))}
+      </div>
+      <div className="rounded-3xl bg-white p-5 shadow-xl ring-1 ring-slate-100">
+        <div className="flex items-start gap-3">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-100 text-2xl">🤖</div>
+          <div className="flex-1 rounded-2xl rounded-tl-sm bg-blue-50 p-3">
+            <p className="text-xs font-extrabold uppercase text-blue-500">Bot says</p>
+            <p className="text-base font-extrabold" style={{ color: BRAND.navy }}>{turn.you}</p>
+            <button onClick={speakBot} className="mt-2 inline-flex items-center gap-1 rounded-full bg-white px-3 py-1 text-xs font-extrabold shadow" style={{ color: BRAND.navy }}>
+              <Volume2 size={14} /> Listen
+            </button>
+          </div>
+        </div>
+        <div className="mt-3 flex items-start gap-3">
+          <div className="flex-1 rounded-2xl rounded-tr-sm bg-red-50 p-3">
+            <p className="text-xs font-extrabold uppercase text-red-500">Your turn — say:</p>
+            <p className="text-base font-extrabold" style={{ color: BRAND.navy }}>"{turn.reply}"</p>
+          </div>
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-red-100 text-2xl">🧒</div>
+        </div>
+
+        <div className="mt-5 flex flex-col items-center">
+          {phase === "idle" && (
+            <button onClick={startRec} className="flex h-16 w-16 items-center justify-center rounded-full text-white shadow-xl animate-bounce" style={{ background: `linear-gradient(135deg, ${BRAND.red}, ${BRAND.redDark})` }}>
+              <Mic size={28} />
+            </button>
+          )}
+          {phase === "recording" && (
+            <>
+              <div className="flex h-16 items-center gap-1.5 rounded-3xl bg-red-50 px-5 ring-2 ring-red-200">
+                {[0,1,2,3,4,5].map((b) => (
+                  <span key={b} className="w-1.5 rounded-full" style={{ height: 14, backgroundColor: BRAND.red, animation: `gr-eq .9s ${b*0.08}s ease-in-out infinite alternate` }} />
+                ))}
+              </div>
+              <button onClick={stopRec} className="mt-3 rounded-full bg-slate-900 px-5 py-2 text-sm font-extrabold text-white shadow">Stop</button>
+            </>
+          )}
+          {phase === "scored" && result && (
+            <div className="w-full">
+              <div className="flex justify-center gap-1 text-3xl">
+                {[1,2,3,4,5].map((s) => <span key={s} style={{ color: s <= result.stars ? BRAND.gold : "#e2e8f0" }}>★</span>)}
+              </div>
+              <p className="mt-1 text-center font-black" style={{ color: result.stars === 5 ? "#16a34a" : result.stars === 3 ? BRAND.navy : BRAND.red }}>
+                {result.stars === 5 ? "Perfect! +10 coins 🎉" : result.stars === 3 ? "Good try! 👂" : "Try again 💪"}
+              </p>
+              <p className="mt-3 text-center text-base font-extrabold">
+                {targetWords.map((w, i) => <span key={i} style={{ color: result.matchedTarget[i] ? "#16a34a" : BRAND.red }}>{w} </span>)}
+              </p>
+              <p className="mt-1 text-center text-xs italic text-slate-500">You said: "{result.said || "—"}"</p>
+              <div className="mt-3 flex justify-center gap-2">
+                {audioUrl && <button onClick={() => { const a = new Audio(audioUrl); a.play(); }} className="rounded-full bg-white px-4 py-2 text-sm font-extrabold shadow ring-1 ring-slate-200" style={{ color: BRAND.navy }}>🎧 Play My Voice</button>}
+                <button onClick={next} className="rounded-full px-4 py-2 text-sm font-extrabold text-white shadow" style={{ backgroundColor: BRAND.navy }}>Next →</button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// =================================================================
+// Box 3: AI Speaking World
+// =================================================================
+function AISpeakingWorld({ onBack, addCoins }) {
+  const [sub, setSub] = useState("l2");
+  return (
+    <div>
+      <BackBtn onBack={onBack} />
+      <div className="mb-4 flex items-center justify-center gap-2">
+        {[{k:"l2",l:"Lesson 2 · Short Answers"},{k:"l6",l:"Lesson 6 · Roleplay"}].map((t) => (
+          <button key={t.k} onClick={() => setSub(t.k)}
+            className="rounded-full px-4 py-1.5 text-xs font-extrabold shadow"
+            style={sub === t.k
+              ? { background: `linear-gradient(135deg, ${BRAND.navy}, ${BRAND.red})`, color: "white" }
+              : { background: "white", color: BRAND.navy }}>
+            {t.l}
+          </button>
+        ))}
+      </div>
+      {sub === "l2" && <GrammarReaction onReward={() => addCoins(10)} />}
+      {sub === "l6" && <Roleplay addCoins={addCoins} />}
+    </div>
+  );
+}
+
+// =================================================================
+// Box 4: Reading Adventure — T/F quests
+// =================================================================
+const READINGS = {
+  l3: {
+    title: "Camp Energy",
+    emoji: "🏕️",
+    text: "At Camp Energy, kids wake up early and go hiking before breakfast. After lunch they ride mountain bikes on the forest trail. In the evening, they cook on a campfire and sleep in big green tents under the stars.",
+    qs: [
+      { q: "Kids go hiking after breakfast.", a: false },
+      { q: "They ride mountain bikes in the forest.", a: true },
+      { q: "They cook on a campfire in the evening.", a: true },
+      { q: "They sleep in cabins.", a: false },
+    ],
+  },
+  l7: {
+    title: "A Race in the Snow",
+    emoji: "❄️",
+    text: "In 1911, Roald Amundsen reached the South Pole first. His team used dogs to pull their sleds across the ice. Robert Scott's team arrived later — they pulled their own sleds. The snow was very cold and the journey was very hard.",
+    qs: [
+      { q: "Amundsen reached the South Pole first.", a: true },
+      { q: "Amundsen's team used horses.", a: false },
+      { q: "Scott's team pulled their own sleds.", a: true },
+      { q: "The journey was easy and warm.", a: false },
+    ],
+  },
+};
+
+function ReadingAdventure({ onBack, addCoins }) {
+  const [lesson, setLesson] = useState("l3");
+  const data = READINGS[lesson];
+  const [answers, setAnswers] = useState({});
+  const [submitted, setSubmitted] = useState(false);
+
+  function reset() { setAnswers({}); setSubmitted(false); }
+  function pick(i, v) {
+    if (submitted) return;
+    setAnswers((p) => ({ ...p, [i]: v }));
+  }
+  function submit() {
+    setSubmitted(true);
+    const correct = data.qs.reduce((acc, q, i) => acc + (answers[i] === q.a ? 1 : 0), 0);
+    if (correct === data.qs.length) { fireConfetti(); addCoins(15); }
+    else if (correct >= data.qs.length - 1) addCoins(8);
+  }
+  const correctCount = data.qs.reduce((acc, q, i) => acc + (answers[i] === q.a ? 1 : 0), 0);
+
+  return (
+    <div>
+      <BackBtn onBack={onBack} />
+      <div className="mb-4 flex items-center justify-center gap-2">
+        {[{k:"l3",l:"Lesson 3"},{k:"l7",l:"Lesson 7"}].map((t) => (
+          <button key={t.k} onClick={() => { setLesson(t.k); reset(); }}
+            className="rounded-full px-4 py-1.5 text-xs font-extrabold shadow"
+            style={lesson === t.k
+              ? { background: `linear-gradient(135deg, ${BRAND.navy}, ${BRAND.red})`, color: "white" }
+              : { background: "white", color: BRAND.navy }}>
+            {t.l}
+          </button>
+        ))}
+      </div>
+
+      <div className="rounded-3xl bg-white p-5 shadow-xl ring-1 ring-slate-100">
+        <div className="text-center text-4xl">{data.emoji}</div>
+        <h2 className="mt-1 text-center text-xl font-black" style={{ color: BRAND.navy }}>{data.title}</h2>
+        <p className="mt-3 rounded-2xl bg-slate-50 p-4 text-sm font-medium leading-relaxed text-slate-700 ring-1 ring-slate-100">
+          {data.text}
+        </p>
+
+        <div className="mt-4 space-y-2">
+          {data.qs.map((q, i) => {
+            const sel = answers[i];
+            const isCorrect = sel === q.a;
+            return (
+              <div key={i} className="rounded-2xl bg-slate-50 p-3 ring-1 ring-slate-100">
+                <p className="text-sm font-extrabold" style={{ color: BRAND.navy }}>{i + 1}. {q.q}</p>
+                <div className="mt-2 flex gap-2">
+                  {[true, false].map((v) => {
+                    const picked = sel === v;
+                    let bg = "white", color = BRAND.navy;
+                    if (submitted) {
+                      if (v === q.a) { bg = "#16a34a"; color = "white"; }
+                      else if (picked) { bg = BRAND.red; color = "white"; }
+                    } else if (picked) {
+                      bg = BRAND.navy; color = "white";
+                    }
+                    return (
+                      <button key={String(v)} onClick={() => pick(i, v)}
+                        className="flex-1 rounded-full px-4 py-2 text-sm font-extrabold shadow transition-transform hover:scale-105 active:scale-95"
+                        style={{ backgroundColor: bg, color }}>
+                        {v ? "True ✓" : "False ✗"}
+                      </button>
+                    );
+                  })}
+                </div>
+                {submitted && !isCorrect && (
+                  <p className="mt-1 text-xs font-bold text-slate-500">Answer: {q.a ? "True" : "False"}</p>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="mt-5 flex justify-center gap-2">
+          {!submitted ? (
+            <button onClick={submit} disabled={Object.keys(answers).length < data.qs.length}
+              className="rounded-full px-6 py-2.5 text-sm font-extrabold text-white shadow-lg disabled:opacity-50"
+              style={{ background: `linear-gradient(135deg, ${BRAND.navy}, ${BRAND.red})` }}>
+              Submit answers
+            </button>
+          ) : (
+            <div className="text-center">
+              <p className="text-lg font-black" style={{ color: BRAND.navy }}>{correctCount}/{data.qs.length} correct</p>
+              <p className="mt-1 text-sm font-bold" style={{ color: correctCount === data.qs.length ? "#16a34a" : BRAND.navy }}>
+                {correctCount === data.qs.length ? "🎉 Perfect! +15 coins" : correctCount >= data.qs.length - 1 ? "Great! +8 coins" : "Keep practicing!"}
+              </p>
+              <button onClick={reset} className="mt-2 rounded-full px-4 py-2 text-sm font-extrabold text-white shadow" style={{ backgroundColor: BRAND.red }}>Try again</button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// =================================================================
+// Box 5a: Phonics Safari
+// =================================================================
+const PHONICS_WORDS = [
+  { display: "w a t _ _", answer: "er", full: "water" },
+  { display: "sh _ _ t",   answer: "ir", full: "shirt" },
+  { display: "t u _ _ t l e", answer: "r",  group: "ur", full: "turtle" }, // fallback if needed
+  { display: "t u _ _ tle", answer: "ur", full: "turtle" },
+  { display: "g _ _ l",    answer: "ir", full: "girl" },
+  { display: "m o t h _ _", answer: "er", full: "mother" },
+  { display: "b _ _ d",    answer: "ir", full: "bird" },
+  { display: "n _ _ se",   answer: "ur", full: "nurse" },
+  { display: "tea ch _ _", answer: "er", full: "teacher" },
+  { display: "p _ _ ple",  answer: "ur", full: "purple" },
+];
+const PHONICS_CLEAN = PHONICS_WORDS.filter((w) => ["er","ir","ur"].includes(w.answer));
+
+function PhonicsSafari({ onBack, addCoins }) {
+  const [order, setOrder] = useState(() => [...PHONICS_CLEAN].sort(() => Math.random() - 0.5));
+  const [idx, setIdx] = useState(0);
+  const [shakeTent, setShakeTent] = useState(null);
+  const [flash, setFlash] = useState(null); // {tent, kind}
+  const [score, setScore] = useState(0);
+
+  const word = order[idx];
+
+  function pick(tent) {
+    if (!word) return;
+    if (tent === word.answer) {
+      addCoins(2); setScore((s) => s + 1); playBeep(880, 0.12);
+      setFlash({ tent, kind: "ok" });
+      setTimeout(() => {
+        setFlash(null);
+        if (idx + 1 < order.length) setIdx(idx + 1);
+        else { fireConfetti(); addCoins(10); }
+      }, 500);
+    } else {
+      setShakeTent(tent); playBeep(180, 0.18, "sawtooth");
+      setTimeout(() => setShakeTent(null), 450);
+    }
+  }
+  function restart() {
+    setOrder([...PHONICS_CLEAN].sort(() => Math.random() - 0.5));
+    setIdx(0); setScore(0);
+  }
+
+  const finished = idx >= order.length - 0 && score === order.length;
+
+  return (
+    <div>
+      <BackBtn onBack={onBack} />
+      <div className="rounded-3xl p-5 shadow-xl ring-1 ring-emerald-100"
+        style={{ background: "linear-gradient(180deg, #ecfdf5, #ffffff)" }}>
+        <h2 className="text-center text-xl font-black" style={{ color: BRAND.navy }}>🌴 Phonics Safari</h2>
+        <p className="text-center text-xs font-bold text-slate-500">Tap the tent that completes the word</p>
+        <div className="mt-2 text-center text-xs font-extrabold text-slate-500">Score {score}/{order.length}</div>
+
+        {!finished ? (
+          <>
+            <div className="my-6 text-center">
+              <div className="inline-block rounded-3xl bg-white px-8 py-5 text-3xl font-black tracking-widest shadow-lg ring-2 ring-emerald-200" style={{ color: BRAND.navy }}>
+                {word.display}
+              </div>
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              {["er","ir","ur"].map((t) => {
+                const isFlash = flash?.tent === t;
+                const isShake = shakeTent === t;
+                return (
+                  <button key={t} onClick={() => pick(t)}
+                    className={`relative flex flex-col items-center rounded-2xl bg-white p-4 shadow-lg ring-2 ring-emerald-200 transition-transform hover:scale-105 active:scale-95 ${isShake ? "ac-shake" : ""}`}
+                    style={isFlash ? { boxShadow: "0 0 0 4px #16a34a" } : undefined}>
+                    <span className="text-4xl">⛺</span>
+                    <span className="mt-1 text-xl font-black" style={{ color: BRAND.red }}>-{t}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </>
+        ) : (
+          <div className="my-6 text-center">
+            <div className="text-6xl">🏆</div>
+            <p className="mt-2 text-lg font-black" style={{ color: BRAND.navy }}>Safari complete!</p>
+            <p className="text-sm font-bold text-slate-500">+10 bonus coins</p>
+            <button onClick={restart} className="mt-3 rounded-full px-4 py-2 text-sm font-extrabold text-white shadow" style={{ backgroundColor: BRAND.red }}>Play again</button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// =================================================================
+// Box 5b: Camp Arena — 4x4 connect-4-style vs bot
+// =================================================================
+const ARENA_QS = [
+  { q: "Spell it: c_ _k on a campfire", opts: ["oo","ea","ai"], a: "oo" },
+  { q: "Trivia: What two animals pulled sleds to the South Pole?", opts: ["Dogs and Horses","Cats and Bears","Dogs and Ponies"], a: "Dogs and Ponies" },
+  { q: "Grammar: Past tense of make is…", opts: ["made","maked","make"], a: "made" },
+  { q: "Spell it: b_ _d (flies in the sky)", opts: ["ir","er","ur"], a: "ir" },
+  { q: "Grammar: Past tense of go is…", opts: ["goed","went","gone"], a: "went" },
+  { q: "Spell it: t_ _tle (lives in a shell)", opts: ["ir","ur","er"], a: "ur" },
+  { q: "Trivia: Where do you sleep at camp?", opts: ["tent","car","train"], a: "tent" },
+  { q: "Grammar: Past tense of ride is…", opts: ["rode","rided","ridden"], a: "rode" },
+  { q: "Spell it: m_ _ther", opts: ["er","ir","ur"], a: "er" },
+  { q: "Grammar: Past tense of sleep is…", opts: ["sleeped","slept","slep"], a: "slept" },
+];
+
+function checkWin(board, player) {
+  const N = 4;
+  const at = (r, c) => board[r * N + c];
+  // rows & cols
+  for (let i = 0; i < N; i++) {
+    if ([0,1,2,3].every((j) => at(i,j) === player)) return true;
+    if ([0,1,2,3].every((j) => at(j,i) === player)) return true;
+  }
+  if ([0,1,2,3].every((i) => at(i,i) === player)) return true;
+  if ([0,1,2,3].every((i) => at(i, N-1-i) === player)) return true;
+  return false;
+}
+
+function CampArena({ onBack, addCoins }) {
+  const [board, setBoard] = useState(() => Array(16).fill(null));
+  const [turn, setTurn] = useState("blue"); // blue = player, red = bot
+  const [winner, setWinner] = useState(null);
+  const [popup, setPopup] = useState(null); // { cell, q }
+  const [pickedAnswer, setPickedAnswer] = useState(null);
+
+  function freshQ() { return ARENA_QS[Math.floor(Math.random() * ARENA_QS.length)]; }
+
+  function tryClick(cell) {
+    if (winner || turn !== "blue" || board[cell] || popup) return;
+    setPopup({ cell, q: freshQ() });
+    setPickedAnswer(null);
+  }
+
+  function answer(opt) {
+    if (!popup || pickedAnswer) return;
+    setPickedAnswer(opt);
+    const isRight = opt === popup.q.a;
+    setTimeout(() => {
+      if (isRight) {
+        const cell = popup.cell;
+        const nb = board.slice(); nb[cell] = "blue";
+        setPopup(null); setPickedAnswer(null);
+        addCoins(5); playBeep(900, 0.14);
+        if (checkWin(nb, "blue")) { setBoard(nb); setWinner("blue"); fireConfetti(); addCoins(30); return; }
+        if (nb.every(Boolean)) { setBoard(nb); setWinner("draw"); return; }
+        setBoard(nb); setTurn("red");
+      } else {
+        playBeep(200, 0.2, "sawtooth");
+        setPopup(null); setPickedAnswer(null);
+        setTurn("red");
+      }
+    }, 650);
+  }
+
+  // bot turn
+  useEffect(() => {
+    if (turn !== "red" || winner) return;
+    const t = setTimeout(() => {
+      const empties = board.map((v, i) => v ? -1 : i).filter((i) => i >= 0);
+      if (!empties.length) return;
+      const cell = empties[Math.floor(Math.random() * empties.length)];
+      const nb = board.slice(); nb[cell] = "red";
+      setBoard(nb);
+      if (checkWin(nb, "red")) setWinner("red");
+      else if (nb.every(Boolean)) setWinner("draw");
+      else setTurn("blue");
+    }, 750);
+    return () => clearTimeout(t);
+  }, [turn, board, winner]);
+
+  function reset() {
+    setBoard(Array(16).fill(null)); setTurn("blue"); setWinner(null); setPopup(null); setPickedAnswer(null);
+  }
+
+  return (
+    <div>
+      <BackBtn onBack={onBack} />
+      <div className="rounded-3xl p-5 shadow-xl"
+        style={{ background: `linear-gradient(180deg, ${BRAND.navy}, ${BRAND.navyDark})` }}>
+        <h2 className="text-center text-xl font-black text-white">⚔️ Camp Arena</h2>
+        <p className="text-center text-xs font-bold text-blue-200">Get 4 in a row to win! You are Blue.</p>
+
+        <div className="mt-3 flex items-center justify-center gap-3 text-xs font-extrabold">
+          <span className="rounded-full bg-blue-500 px-3 py-1 text-white shadow">YOU (Blue)</span>
+          <span className="text-white/70">vs</span>
+          <span className="rounded-full px-3 py-1 text-white shadow" style={{ backgroundColor: BRAND.red }}>BOT (Red)</span>
+        </div>
+        <p className="mt-2 text-center text-[11px] font-extrabold text-white/80">
+          {winner ? " " : turn === "blue" ? "Your turn — tap any empty cell" : "Bot is thinking…"}
+        </p>
+
+        <div className="mx-auto mt-4 grid max-w-xs grid-cols-4 gap-2">
+          {board.map((v, i) => (
+            <button key={i} onClick={() => tryClick(i)} disabled={!!v || !!winner || turn !== "blue"}
+              className="aspect-square rounded-xl text-2xl font-black shadow-lg transition-transform hover:scale-105 active:scale-95 disabled:hover:scale-100"
+              style={{
+                background: v === "blue" ? `linear-gradient(135deg, #3b82f6, #1d4ed8)` :
+                            v === "red"  ? `linear-gradient(135deg, ${BRAND.red}, ${BRAND.redDark})` :
+                            "rgba(255,255,255,.9)",
+                color: v ? "white" : BRAND.navy,
+              }}>
+              {v === "blue" ? "★" : v === "red" ? "●" : ""}
+            </button>
+          ))}
+        </div>
+
+        {winner && (
+          <div className="mt-5 rounded-2xl bg-white p-4 text-center shadow-xl">
+            {winner === "blue" && (
+              <>
+                <div className="text-5xl">🏆</div>
+                <p className="mt-1 text-xl font-black" style={{ color: BRAND.navy }}>VICTORY!</p>
+                <p className="text-sm font-bold" style={{ color: "#16a34a" }}>+30 bonus coins 🎉</p>
+              </>
+            )}
+            {winner === "red" && (
+              <>
+                <div className="text-5xl">🤖</div>
+                <p className="mt-1 text-xl font-black" style={{ color: BRAND.red }}>Bot wins — try again!</p>
+              </>
+            )}
+            {winner === "draw" && (
+              <>
+                <div className="text-5xl">🤝</div>
+                <p className="mt-1 text-xl font-black" style={{ color: BRAND.navy }}>It's a draw!</p>
+              </>
+            )}
+            <button onClick={reset} className="mt-3 rounded-full px-5 py-2 text-sm font-extrabold text-white shadow" style={{ backgroundColor: BRAND.red }}>New game</button>
+          </div>
+        )}
+      </div>
+
+      {popup && !winner && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 ac-fade" onClick={() => { if (!pickedAnswer) { setPopup(null); setTurn("red"); } }}>
+          <div className="w-full max-w-sm rounded-3xl bg-white p-5 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <p className="text-center text-xs font-extrabold uppercase text-slate-400">Answer to claim cell</p>
+            <p className="mt-2 text-center text-base font-black" style={{ color: BRAND.navy }}>{popup.q.q}</p>
+            <div className="mt-4 space-y-2">
+              {popup.q.opts.map((o) => {
+                const picked = pickedAnswer === o;
+                const isAns = pickedAnswer && o === popup.q.a;
+                const wrong = picked && o !== popup.q.a;
+                return (
+                  <button key={o} onClick={() => answer(o)} disabled={!!pickedAnswer}
+                    className="w-full rounded-2xl px-4 py-3 text-left text-sm font-extrabold shadow ring-2 transition-transform hover:scale-[1.02] active:scale-95"
+                    style={{
+                      backgroundColor: isAns ? "#16a34a" : wrong ? BRAND.red : "white",
+                      color: isAns || wrong ? "white" : BRAND.navy,
+                      borderColor: "transparent",
+                    }}>
+                    {o}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// =================================================================
+// Box 5: Grand Unit Quiz hub
+// =================================================================
+function GrandUnitQuiz({ onBack, addCoins }) {
+  const [mode, setMode] = useState(null);
+  if (mode === "phonics") return <PhonicsSafari onBack={() => setMode(null)} addCoins={addCoins} />;
+  if (mode === "arena") return <CampArena onBack={() => setMode(null)} addCoins={addCoins} />;
+  return (
+    <div>
+      <BackBtn onBack={onBack} />
+      <div className="rounded-3xl bg-white p-5 shadow-xl ring-1 ring-slate-100">
+        <h2 className="text-center text-xl font-black" style={{ color: BRAND.navy }}>🏆 Grand Unit Quiz</h2>
+        <p className="text-center text-xs font-bold text-slate-500">Choose your game mode</p>
+        <div className="mt-5 space-y-3">
+          <button onClick={() => setMode("phonics")}
+            className="w-full rounded-3xl p-5 text-left shadow-xl transition-transform hover:scale-[1.02] active:scale-95"
+            style={{ background: "linear-gradient(135deg, #10b981, #047857)" }}>
+            <div className="flex items-center gap-3">
+              <div className="text-4xl">🌴</div>
+              <div className="flex-1">
+                <p className="text-xs font-extrabold uppercase text-emerald-100">Mode A</p>
+                <p className="text-lg font-black text-white">Phonics Safari</p>
+                <p className="text-xs font-bold text-emerald-100">Sort words into -er / -ir / -ur tents</p>
+              </div>
+            </div>
+          </button>
+          <button onClick={() => setMode("arena")}
+            className="w-full rounded-3xl p-5 text-left shadow-xl transition-transform hover:scale-[1.02] active:scale-95"
+            style={{ background: `linear-gradient(135deg, ${BRAND.navy}, ${BRAND.red})` }}>
+            <div className="flex items-center gap-3">
+              <div className="text-4xl">⚔️</div>
+              <div className="flex-1">
+                <p className="text-xs font-extrabold uppercase text-blue-100">Mode B</p>
+                <p className="text-lg font-black text-white">Camp Arena</p>
+                <p className="text-xs font-bold text-blue-100">Four-in-a-row vs Bot — answer to claim cells</p>
+              </div>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// =================================================================
+// Dashboard Hub — 5 arcade boxes
+// =================================================================
+const HUB_BOXES = [
+  { key: "vocab",     icon: "📚", title: "Vocabulary Quest", sub: "Lessons 1 · 5", grad: "linear-gradient(135deg, #f59e0b, #d97706)" },
+  { key: "grammar",   icon: "🧪", title: "Grammar Lab",      sub: "Lessons 2 · 6", grad: "linear-gradient(135deg, #10b981, #047857)" },
+  { key: "speaking",  icon: "🎙️", title: "AI Speaking World",sub: "Lessons 2 · 6", grad: "linear-gradient(135deg, #ec4899, #be185d)" },
+  { key: "reading",   icon: "🧭", title: "Reading Adventure",sub: "Lessons 3 · 7", grad: "linear-gradient(135deg, #3b82f6, #1d4ed8)" },
+  { key: "quiz",      icon: "🏆", title: "Grand Unit Quiz",  sub: "Lesson 8 arcade", grad: `linear-gradient(135deg, ${BRAND.red}, ${BRAND.redDark})` },
+];
+
+function DashboardHub({ onPick, name }) {
+  return (
+    <div className="ac-fade">
+      <div className="mb-4 rounded-3xl bg-white p-4 shadow-xl ring-1 ring-slate-100 text-center">
+        <p className="text-xs font-extrabold uppercase tracking-wider text-slate-400">Unit 1</p>
+        <p className="text-xl font-black" style={{ color: BRAND.navy }}>🏕️ Adventure Camp</p>
+        <p className="mt-1 text-sm font-bold text-slate-500">
+          {name ? `Welcome back, ${name}!` : "Welcome back, explorer!"} Pick a quest to begin.
+        </p>
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        {HUB_BOXES.map((b, i) => (
+          <button key={b.key} onClick={() => onPick(b.key)}
+            className={`relative aspect-square overflow-hidden rounded-3xl p-4 text-left text-white shadow-xl transition-transform duration-200 hover:scale-105 active:scale-95 ${b.key === "quiz" ? "col-span-2 aspect-auto py-6" : ""}`}
+            style={{ background: b.grad, animation: `ac-fade .4s ${i*0.07}s both` }}>
+            <div className="absolute -right-2 -top-2 text-6xl opacity-25">{b.icon}</div>
+            <div className="relative flex h-full flex-col justify-end">
+              <div className="text-4xl drop-shadow">{b.icon}</div>
+              <p className="mt-1 text-base font-black leading-tight drop-shadow">{b.title}</p>
+              <p className="text-[11px] font-extrabold opacity-90">{b.sub}</p>
+              <span className="mt-2 inline-flex items-center gap-1 self-start rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-extrabold backdrop-blur">
+                Play <ArrowRight size={10} />
+              </span>
+            </div>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// =================================================================
+// App — header + view router (no bottom nav)
+// =================================================================
+export default function AdventureCamp() {
+  const [view, setView] = useState("hub"); // hub | vocab | grammar | speaking | reading | quiz
+  const [coins, setCoins] = useState(0);
+  const [streak, setStreak] = useState(0);
+  const [name, setName] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [userId, setUserId] = useState(null);
+  const userIdRef = useRef(null);
+  const [coinPop, setCoinPop] = useState(false);
+
+  const [owned, setOwned] = useState(() => new Set(FREE_AVATARS));
+  const [avatar, setAvatar] = useState("dan");
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [confettiBurst, setConfettiBurst] = useState(0);
+  const [celebrateName, setCelebrateName] = useState(null);
+  const celebrateTimer = useRef(null);
+
+  // warm tts voices
   useEffect(() => {
     if (typeof window === "undefined" || !window.speechSynthesis) return;
     const synth = window.speechSynthesis;
@@ -1878,344 +2842,129 @@ export default function AdventureCamp() {
     return () => synth.removeEventListener?.("voiceschanged", warm);
   }, []);
 
-  // pop the coin counter whenever the total changes
+  // load profile (coins/streak/name) on mount + auth changes
   useEffect(() => {
-    if (mastered.size === 0 && speakingCoins === 0) return;
-    setCoinPop(true);
-    const id = setTimeout(() => setCoinPop(false), 450);
-    return () => clearTimeout(id);
-  }, [mastered.size, speakingCoins]);
-
-  // pop the coin counter on camp earnings / purchases too
-  const campFxReady = useRef(false);
-  useEffect(() => {
-    if (!campFxReady.current) {
-      campFxReady.current = true;
-      return;
-    }
-    setCoinPop(true);
-    const id = setTimeout(() => setCoinPop(false), 450);
-    return () => clearTimeout(id);
-  }, [gameCoins, spent]);
-
-  // Sync coin total to Lovable Cloud profile (when signed in).
-  // Gated on profileLoaded to avoid overwriting the saved value with the
-  // initial render's 100 before the fetch resolves.
-  useEffect(() => {
-    if (!profileLoaded) return;
     let cancelled = false;
-    (async () => {
+    async function load() {
       const { data: { session } } = await supabase.auth.getSession();
-      if (cancelled || !session?.user) return;
-      await supabase
-        .from("profiles")
-        .update({ total_coins: coins })
-        .eq("id", session.user.id);
-    })();
-    return () => { cancelled = true; };
-  }, [coins, profileLoaded]);
+      if (cancelled) return;
+      if (!session?.user) { setLoading(false); return; }
+      setUserId(session.user.id); userIdRef.current = session.user.id;
+      const { data } = await supabase.from("profiles")
+        .select("total_coins,streak_days,student_name")
+        .eq("id", session.user.id).maybeSingle();
+      if (cancelled) return;
+      if (data) {
+        setCoins(typeof data.total_coins === "number" ? data.total_coins : 0);
+        setStreak(typeof data.streak_days === "number" ? data.streak_days : 0);
+        setName(data.student_name || "");
+      }
+      setLoading(false);
+    }
+    load();
+    const { data: sub } = supabase.auth.onAuthStateChange((e) => {
+      if (e === "SIGNED_IN" || e === "USER_UPDATED") { setLoading(true); load(); }
+    });
+    return () => { cancelled = true; sub.subscription.unsubscribe(); };
+  }, []);
 
-
-  const [hidingIds, setHidingIds] = useState(() => new Set());
-
-  function masterCard(id) {
-    if (mastered.has(id)) return;
-    // start fade-out animation
-    setHidingIds((prev) => new Set(prev).add(id));
-    // mark mastered immediately so counter updates instantly
-    setMastered((prev) => {
-      const next = new Set(prev);
-      next.add(id);
-      // celebrate if all mastered
-      if (next.size === VOCAB.length) {
-        setTimeout(() => {
-          const fire = (opts) =>
-            confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 }, ...opts });
-          fire({});
-          setTimeout(() => fire({ angle: 60, origin: { x: 0, y: 0.7 } }), 200);
-          setTimeout(() => fire({ angle: 120, origin: { x: 1, y: 0.7 } }), 400);
-          playFireworks();
-        }, 350);
+  // central addCoins — updates local state + persists to supabase
+  async function addCoins(delta) {
+    setCoinPop(true);
+    setTimeout(() => setCoinPop(false), 450);
+    setCoins((c) => {
+      const next = Math.max(0, c + delta);
+      const uid = userIdRef.current;
+      if (uid) {
+        supabase.from("profiles").update({ total_coins: next }).eq("id", uid).then(() => {});
       }
       return next;
     });
-    // remove from DOM after fade completes
-    setTimeout(() => {
-      setHidingIds((prev) => {
-        const next = new Set(prev);
-        next.delete(id);
-        return next;
-      });
-    }, 400);
-  }
-  function unMaster(id) {
-    setMastered((prev) => {
-      if (!prev.has(id)) return prev;
-      const next = new Set(prev);
-      next.delete(id);
-      return next;
-    });
   }
 
-  const TABS = [
-    { key: "flashcards", label: "Flashcards", icon: BookOpen,
-      emoji: "🏕️", title: "Adventure Camp", lesson: "Lesson 1", section: "Vocabulary" },
-    { key: "speaking", label: "AI Speaking", icon: Mic,
-      emoji: "🗣️", title: "Adventure Camp", lesson: "Lesson 2", section: "Grammar" },
-    { key: "camp", label: "My Camp", icon: Tent,
-      emoji: "⛺", title: "My Camp", lesson: "Bộ sưu tập", section: "Avatars" },
-  ];
-  const activeTab = TABS.find((t) => t.key === tab) || TABS[0];
+  function celebrate(n) {
+    setConfettiBurst((x) => x + 1);
+    setCelebrateName(n);
+    clearTimeout(celebrateTimer.current);
+    celebrateTimer.current = setTimeout(() => { setConfettiBurst(0); setCelebrateName(null); }, 2200);
+  }
+  useEffect(() => () => clearTimeout(celebrateTimer.current), []);
+
+  function equipAvatar(id) { setAvatar(id); setPickerOpen(false); }
+  function unlockAvatar(id) {
+    const z = AVATAR_BY_ID[id];
+    if (!z || owned.has(id) || coins < z.cost) return;
+    addCoins(-z.cost);
+    setOwned((p) => new Set(p).add(id));
+    setAvatar(id);
+    if (["rare","epic","legendary","mythic"].includes(z.rarity)) celebrate(z.name);
+  }
+
+  const currentAvatar = AVATAR_BY_ID[avatar] || ALL_AVATARS[0];
+
+  function back() { setView("hub"); }
 
   return (
     <div className="flex min-h-screen w-full justify-center bg-gradient-to-b from-blue-100 via-white to-red-50 font-sans">
       <style>{STYLES}</style>
-
-      <div
-        className="relative flex h-screen w-full max-w-md flex-col overflow-hidden bg-gradient-to-b from-blue-50 to-white shadow-2xl"
-        style={{ height: "100dvh" }}
-      >
-        {/* ---------------- HEADER ---------------- */}
+      <div className="relative flex h-screen w-full max-w-md flex-col overflow-hidden bg-gradient-to-b from-blue-50 to-white shadow-2xl" style={{ height: "100dvh" }}>
+        {/* HEADER */}
         <header className="sticky top-0 z-40 shadow-lg">
-          {/* brand strip (collapses on scroll) */}
-          <div
-            className="overflow-hidden bg-white transition-all duration-300"
-            style={{ maxHeight: collapsed ? 0 : 56, opacity: collapsed ? 0 : 1 }}
-          >
+          <div className="bg-white">
             <div className="flex items-center justify-center px-4 pb-2 pt-2.5">
-              <img
-                src={LOGO_URI}
-                alt="Embassy Language"
-                className="h-10 w-auto select-none"
-                draggable={false}
-              />
+              <img src={LOGO_URI} alt="Embassy Language" className="h-9 w-auto select-none" draggable={false} />
             </div>
           </div>
-          {/* brand accent divider (navy → red) */}
           <div style={{ height: 3, background: `linear-gradient(90deg, ${BRAND.navy}, ${BRAND.red})` }} />
-
-          {/* gamification dashboard */}
-          <div
-            className="px-4 pb-3 pt-3"
-            style={{ background: `linear-gradient(135deg, ${BRAND.navy} 0%, ${BRAND.navyDark} 100%)` }}
-          >
-            <div className="flex items-center justify-between">
-              {/* avatar + name + level */}
-              <div className="flex items-center gap-2.5">
-                <button
-                  onClick={() => setPickerOpen(true)}
-                  className="relative flex h-12 w-12 items-center justify-center rounded-full bg-white text-2xl transition-transform duration-200 hover:scale-105 active:scale-95"
+          <div className="px-4 pb-3 pt-3" style={{ background: `linear-gradient(135deg, ${BRAND.navy} 0%, ${BRAND.navyDark} 100%)` }}>
+            <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
+              <div className="flex min-w-0 items-center gap-2.5">
+                <button onClick={() => setPickerOpen(true)}
+                  className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-2xl transition-transform hover:scale-105 active:scale-95"
                   style={{ boxShadow: `0 0 0 3px ${BRAND.red}, 0 2px 6px rgba(0,0,0,.25)` }}
-                  aria-label="Change avatar"
-                >
-                  <span>{currentAvatar.emoji}</span>
-                  <span
-                    className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full text-white shadow"
-                    style={{ backgroundColor: BRAND.gold }}
-                  >
-                    <Sparkles size={11} />
-                  </span>
+                  aria-label="Change avatar">
+                  <span>{currentAvatar?.emoji || "🐯"}</span>
                 </button>
-                <div className="leading-tight">
-                  <p className="text-base font-extrabold text-white drop-shadow">Alex</p>
-                  <span
-                    className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-extrabold shadow"
-                    style={{ backgroundColor: BRAND.gold, color: BRAND.navyDark }}
-                  >
-                    <Trophy size={11} /> Lv.1 Rookie
-                  </span>
+                <div className="min-w-0 leading-tight">
+                  <p className="truncate text-sm font-extrabold text-white">{name || "Explorer"}</p>
+                  <p className="text-[11px] font-bold text-blue-200">{currentAvatar?.name || "Adventurer"}</p>
                 </div>
               </div>
-
-              {/* coins + streak */}
-              <div className="flex flex-col items-end gap-1.5">
-                <div className="coin-wrap flex cursor-default items-center gap-1.5 rounded-full bg-white/95 px-3 py-1 shadow-md ring-2 ring-yellow-300">
-                  <Coins className={`coin-ico text-yellow-500 ${coinPop ? "ac-pop" : ""}`} size={18} />
-                  {profileLoaded ? (
-                    <span className={`text-sm font-extrabold text-yellow-700 ${coinPop ? "ac-pop" : ""}`}>
-                      {coins} Coins
-                    </span>
-                  ) : (
-                    <Loader2 size={14} className="animate-spin text-yellow-700" />
-                  )}
+              <div className="flex shrink-0 items-center gap-2">
+                <div className={`flex items-center gap-1 rounded-full bg-white px-3 py-1.5 shadow ${coinPop ? "ac-pop" : ""}`}
+                  style={{ color: BRAND.navy }}>
+                  {loading ? <Loader2 size={14} className="animate-spin" /> : <Coins size={14} style={{ color: BRAND.gold }} />}
+                  <span className="text-sm font-black tabular-nums">{loading ? "…" : coins}</span>
                 </div>
-
-                <div
-                  className="flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-extrabold text-white shadow"
-                  style={{ backgroundColor: BRAND.red }}
-                >
-                  <Flame size={13} className="text-yellow-200" /> 3 Days
-                </div>
-              </div>
-            </div>
-
-            {/* lesson title card — content changes per tab, shrinks on scroll */}
-            <div
-              className="mt-3 flex items-center gap-3 rounded-2xl bg-white/15 px-3 ring-1 ring-white/20 transition-all duration-300"
-              style={{ paddingTop: collapsed ? 6 : 8, paddingBottom: collapsed ? 6 : 8 }}
-            >
-              <div
-                className="flex shrink-0 items-center justify-center rounded-xl bg-white shadow transition-all duration-300"
-                style={{ height: collapsed ? 28 : 44, width: collapsed ? 28 : 44, fontSize: collapsed ? 16 : 24 }}
-              >
-                {activeTab.emoji}
-              </div>
-              <div className="min-w-0 leading-tight">
-                {!collapsed && (
-                  <p className="ac-fade truncate text-lg font-extrabold text-white drop-shadow">{activeTab.title}</p>
-                )}
-                <div className={`flex flex-wrap items-center gap-1 ${collapsed ? "" : "mt-0.5"}`}>
-                  {tab !== "camp" && (
-                    <>
-                      <span
-                        className="rounded-full px-2 py-0.5 text-[10px] font-extrabold text-white"
-                        style={{ backgroundColor: BRAND.red }}
-                      >
-                        Share It! 5
-                      </span>
-                      <span className="rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-extrabold" style={{ color: BRAND.navy }}>
-                        Unit 1
-                      </span>
-                    </>
-                  )}
-                  <span
-                    className="rounded-full px-2 py-0.5 text-[10px] font-extrabold"
-                    style={{ backgroundColor: BRAND.gold, color: BRAND.navyDark }}
-                  >
-                    {activeTab.lesson}
-                  </span>
-                  <span className="rounded-full bg-white/25 px-2 py-0.5 text-[10px] font-extrabold text-white">
-                    {activeTab.section}
-                  </span>
+                <div className="flex items-center gap-1 rounded-full bg-white/15 px-3 py-1.5 ring-1 ring-white/25 text-white">
+                  <Flame size={14} className="text-orange-300" />
+                  <span className="text-sm font-black tabular-nums">{loading ? "…" : streak}</span>
                 </div>
               </div>
             </div>
           </div>
         </header>
 
-        {/* ---------------- MAIN VIEWPORT ---------------- */}
-        <main onScroll={onMainScroll} className="flex-1 overflow-y-auto px-3 pb-28 pt-4">
-          {tab === "flashcards" && (
-            <>
-              {/* progress */}
-              <div className="mb-4 rounded-3xl bg-white p-4 shadow-md ring-1 ring-slate-100">
-                <div className="mb-2 flex items-center justify-between">
-                  <p className="text-sm font-extrabold" style={{ color: BRAND.navy }}>
-                    Vocabulary progress
-                  </p>
-                  <span
-                    className="rounded-full px-2.5 py-0.5 text-xs font-extrabold text-white"
-                    style={{ backgroundColor: BRAND.navy }}
-                  >
-                    {progress}/{VOCAB.length} mastered
-                  </span>
-                </div>
-                <div className="h-3.5 w-full overflow-hidden rounded-full bg-slate-100">
-                  <div
-                    className="h-full rounded-full transition-all duration-500"
-                    style={{ width: `${pct}%`, background: `linear-gradient(90deg, ${BRAND.navy}, ${BRAND.red})` }}
-                  />
-                </div>
-                {progress === VOCAB.length && (
-                  <p className="ac-fade mt-2 text-center text-sm font-extrabold" style={{ color: BRAND.red }}>
-                    🎉 All cards mastered — you're a Camp Champion!
-                  </p>
-                )}
-              </div>
-
-              {/* grid */}
-              {progress === VOCAB.length ? (
-                <div className="ac-fade mt-6 rounded-3xl bg-white p-8 text-center shadow-md ring-1 ring-slate-100">
-                  <div className="text-6xl">🎉⛺</div>
-                  <p className="mt-3 text-lg font-extrabold" style={{ color: BRAND.navy }}>
-                    Awesome! You mastered all words for today!
-                  </p>
-                  <p className="mt-1 text-sm font-bold text-slate-500">
-                    Come back tomorrow for a new adventure 🏕️
-                  </p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-2 gap-3">
-                  {VOCAB.filter((v) => !mastered.has(v.id) || hidingIds.has(v.id)).map((v) => (
-                    <div
-                      key={v.id}
-                      className={hidingIds.has(v.id) ? "pointer-events-none transition-all duration-400 opacity-0 scale-90" : "transition-all duration-300"}
-                      style={hidingIds.has(v.id) ? { transition: "opacity 400ms ease, transform 400ms ease" } : undefined}
-                    >
-                      <Flashcard
-                        data={v}
-                        mastered={mastered.has(v.id)}
-                        onMaster={masterCard}
-                        onNotSure={unMaster}
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </>
-          )}
-
-          {tab === "speaking" && (
-            <GrammarReaction onReward={() => setSpeakingCoins((c) => c + 10)} />
-          )}
-
-          {tab === "camp" && (
-            <MyCamp
-              coins={coins}
-              campItems={campItems}
-              buyItem={buyCampItem}
-              campBoard={campBoard}
-              gameSolved={gameSolved}
-              solveCell={solveCampCell}
-              playerColor={BRAND.navy}
-            />
-          )}
+        {/* MAIN */}
+        <main className="flex-1 overflow-y-auto px-3 pb-6 pt-4">
+          {view === "hub" && <DashboardHub onPick={setView} name={name} />}
+          {view === "vocab" && <VocabularyQuest onBack={back} addCoins={addCoins} />}
+          {view === "grammar" && <GrammarLab onBack={back} addCoins={addCoins} />}
+          {view === "speaking" && <AISpeakingWorld onBack={back} addCoins={addCoins} />}
+          {view === "reading" && <ReadingAdventure onBack={back} addCoins={addCoins} />}
+          {view === "quiz" && <GrandUnitQuiz onBack={back} addCoins={addCoins} />}
         </main>
 
-        {/* ---------------- BOTTOM NAV ---------------- */}
-        <nav className="fixed bottom-0 left-1/2 z-40 w-full max-w-md -translate-x-1/2 border-t border-slate-100 bg-white px-3 py-2 shadow-2xl">
-          <div className="flex items-stretch justify-around gap-2">
-            {TABS.map(({ key, label, icon: Icon }) => {
-              const active = tab === key;
-              return (
-                <button
-                  key={key}
-                  onClick={() => switchTab(key)}
-                  style={active ? { background: `linear-gradient(135deg, ${BRAND.navy}, ${BRAND.navyDark})` } : undefined}
-                  className={[
-                    "flex flex-1 flex-col items-center gap-0.5 rounded-2xl py-1.5 transition-all duration-300",
-                    active
-                      ? "-translate-y-1 text-white shadow-lg"
-                      : "text-slate-400 hover:bg-slate-50 hover:text-slate-600",
-                  ].join(" ")}
-                >
-                  <Icon size={22} strokeWidth={active ? 2.6 : 2} />
-                  <span className="text-[11px] font-extrabold leading-none">{label}</span>
-                </button>
-              );
-            })}
-          </div>
-        </nav>
+        {/* AVATAR PICKER */}
+        <AvatarPicker open={pickerOpen} onClose={() => setPickerOpen(false)}
+          owned={owned} equipped={avatar} coins={coins}
+          onEquip={equipAvatar} onUnlock={unlockAvatar} />
 
-        {/* ---------------- AVATAR PICKER ---------------- */}
-        <AvatarPicker
-          open={pickerOpen}
-          onClose={() => setPickerOpen(false)}
-          owned={owned}
-          equipped={avatar}
-          coins={coins}
-          onEquip={equipAvatar}
-          onUnlock={unlockAvatar}
-        />
-
-        {/* ---------------- CELEBRATION ---------------- */}
         <Confetti burst={confettiBurst} />
         {celebrateName && (
           <div className="pointer-events-none fixed inset-x-0 top-24 flex justify-center px-6" style={{ zIndex: 71 }}>
-            <div
-              className="ac-banner flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-extrabold text-white shadow-2xl"
-              style={{ background: `linear-gradient(135deg, ${BRAND.navy}, ${BRAND.red})` }}
-            >
+            <div className="ac-banner flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-extrabold text-white shadow-2xl"
+              style={{ background: `linear-gradient(135deg, ${BRAND.navy}, ${BRAND.red})` }}>
               <PartyPopper size={18} /> Mở khóa {celebrateName}!
             </div>
           </div>
