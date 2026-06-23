@@ -2946,6 +2946,87 @@ function ProfileModal({ open, onClose, name, onSave, saving, avatarEmoji, onOpen
 }
 
 // =================================================================
+// Tier 1 — Star League (7 Level Space Stations)
+// =================================================================
+const LEVELS = [
+  { n:0, title:"Starter Constellation", glow:"#a5b4fc", core:"radial-gradient(circle at 30% 30%, #e0e7ff, #6366f1 55%, #1e1b4b)", unlocked:false },
+  { n:1, title:"Galaxy Level 1",        glow:"#22d3ee", core:"radial-gradient(circle at 30% 30%, #cffafe, #06b6d4 55%, #083344)", unlocked:false },
+  { n:2, title:"Galaxy Level 2",        glow:"#34d399", core:"radial-gradient(circle at 30% 30%, #d1fae5, #10b981 55%, #064e3b)", unlocked:false },
+  { n:3, title:"Galaxy Level 3",        glow:"#facc15", core:"radial-gradient(circle at 30% 30%, #fef9c3, #eab308 55%, #422006)", unlocked:false },
+  { n:4, title:"Galaxy Level 4",        glow:"#fb923c", core:"radial-gradient(circle at 30% 30%, #ffedd5, #f97316 55%, #7c2d12)", unlocked:false },
+  { n:5, title:"Galaxy Level 5",        glow:"#f472b6", core:"radial-gradient(circle at 30% 30%, #fce7f3, #ec4899 55%, #500724)", unlocked:true  },
+  { n:6, title:"Galaxy Level 6",        glow:"#c084fc", core:"radial-gradient(circle at 30% 30%, #f3e8ff, #9333ea 55%, #3b0764)", unlocked:false },
+];
+
+function StarLeague({ onEnterLevel5 }) {
+  const [toast, setToast] = useState(null);
+  const timer = useRef(null);
+  function tap(l) {
+    if (l.unlocked) { onEnterLevel5(); return; }
+    setToast("Galaxy Locked! Explore Level 5 first! 🚀");
+    clearTimeout(timer.current);
+    timer.current = setTimeout(() => setToast(null), 1800);
+  }
+  useEffect(() => () => clearTimeout(timer.current), []);
+  return (
+    <div className="ac-fade">
+      <div className="px-1 pb-4 pt-1 text-center">
+        <h1 className="text-2xl font-black text-white gx-neon-text" style={{ color:"#fbcfe8" }}>⭐ The Star League</h1>
+        <p className="mt-1 text-xs font-bold text-indigo-200">Pick your galaxy level to begin your cosmic journey</p>
+      </div>
+      <div className="grid grid-cols-2 gap-4 px-1">
+        {LEVELS.map((l) => (
+          <button
+            key={l.n}
+            onClick={() => tap(l)}
+            className="group relative flex flex-col items-center rounded-2xl gx-glass p-3 transition-transform active:scale-95 hover:scale-[1.04]"
+            style={{ boxShadow: l.unlocked ? `0 0 22px ${l.glow}88, inset 0 0 0 1px ${l.glow}66` : "inset 0 0 0 1px rgba(255,255,255,.08)" }}
+            aria-label={`${l.title}${l.unlocked ? "" : " (locked)"}`}
+          >
+            <div className="relative my-2 h-20 w-20 gx-bob" style={{ animationDelay: `${l.n * 0.25}s` }}>
+              <div className="absolute inset-[-10px] rounded-full gx-spin-slow"
+                style={{ border:`2px dashed ${l.glow}99`, opacity:l.unlocked?0.9:0.3, filter:`drop-shadow(0 0 6px ${l.glow}aa)` }} />
+              <div className="absolute inset-0 rounded-full"
+                style={{
+                  background:l.core,
+                  boxShadow:l.unlocked
+                    ? `0 0 26px ${l.glow}cc, inset -6px -8px 14px rgba(0,0,0,.45)`
+                    : `0 0 10px rgba(255,255,255,.1), inset -6px -8px 14px rgba(0,0,0,.55)`,
+                  filter:l.unlocked ? "none" : "grayscale(.6) brightness(.7)",
+                }} />
+              {/* Antenna/station detail */}
+              <div className="absolute left-1/2 -top-2 h-3 w-[2px] -translate-x-1/2 rounded-full"
+                style={{ background:l.glow, boxShadow:`0 0 6px ${l.glow}` }} />
+              <div className="absolute left-1/2 -top-3 h-1.5 w-1.5 -translate-x-1/2 rounded-full"
+                style={{ background:"#fff", boxShadow:`0 0 8px ${l.glow}` }} />
+              {!l.unlocked && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="rounded-full bg-black/60 px-2 py-0.5 text-base ring-1 ring-white/30">🔒</span>
+                </div>
+              )}
+              <div className="pointer-events-none absolute inset-[-4px] rounded-full opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                style={{ boxShadow:`0 0 0 4px ${l.glow}55, 0 0 28px ${l.glow}` }} />
+            </div>
+            <p className="text-[10px] font-extrabold tracking-wide" style={{ color: l.unlocked ? l.glow : "#94a3b8" }}>
+              {l.n === 0 ? "STARTER" : `LEVEL ${l.n}`}
+            </p>
+            <p className="truncate text-sm font-black text-white" style={{ color: l.unlocked ? "#fff" : "#cbd5e1" }}>{l.title}</p>
+          </button>
+        ))}
+      </div>
+      {toast && (
+        <div className="pointer-events-none fixed inset-x-0 bottom-8 z-50 flex justify-center px-4">
+          <div className="ac-fade rounded-full gx-glass px-4 py-2 text-sm font-black text-white shadow-2xl"
+            style={{ boxShadow:"0 0 18px #f472b6, inset 0 0 0 1px #f472b666" }}>
+            {toast}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// =================================================================
 // Tier 2 — Unit Galaxy (8 orbital planet units)
 // =================================================================
 const UNITS = [
@@ -2959,22 +3040,30 @@ const UNITS = [
   { n:8, title:"Festival Star",   emoji:"🎆", ring:"#f472b6", core:"radial-gradient(circle at 30% 30%, #fef3c7, #ec4899 40%, #6d28d9)", glow:"#f472b6", unlocked:false },
 ];
 
-function UnitGalaxy({ onEnterUnit1 }) {
+function UnitGalaxy({ onEnterUnit1, onBackToLevels }) {
   const [toast, setToast] = useState(null);
   const timer = useRef(null);
   function tap(u) {
     if (u.unlocked) { onEnterUnit1(); return; }
-    setToast(`Mission locked! Complete Unit 1 first! 🚀`);
+    setToast(`Mission locked! Complete Unit 1: Adventure Camp first! ☄️`);
     clearTimeout(timer.current);
     timer.current = setTimeout(() => setToast(null), 1800);
   }
   useEffect(() => () => clearTimeout(timer.current), []);
   return (
     <div className="ac-fade">
+      <button
+        onClick={onBackToLevels}
+        className="mb-3 inline-flex items-center gap-2 rounded-full gx-glass px-3 py-1.5 text-xs font-black text-white transition hover:scale-105 active:scale-95"
+        style={{ boxShadow:"0 0 14px #22d3ee66, inset 0 0 0 1px #22d3ee55" }}
+      >
+        🛸 Warp Back to Levels
+      </button>
       <div className="px-1 pb-4 pt-1 text-center">
-        <h1 className="text-2xl font-black text-white gx-neon-text" style={{ color:"#a5f3fc" }}>🌌 Choose Your Planet</h1>
-        <p className="mt-1 text-xs font-bold text-indigo-200">Tap a glowing world to begin its mission</p>
+        <h1 className="text-2xl font-black text-white gx-neon-text" style={{ color:"#a5f3fc" }}>🌌 The Solar Matrix</h1>
+        <p className="mt-1 text-xs font-bold text-indigo-200">Galaxy Level 5 · Tap a glowing world to begin</p>
       </div>
+
       <div className="grid grid-cols-2 gap-4 px-1">
         {UNITS.map((u) => (
           <button
