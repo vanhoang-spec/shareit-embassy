@@ -3402,6 +3402,16 @@ export default function AdventureCamp() {
                 </button>
               </div>
               <div className="flex shrink-0 items-center gap-2">
+                <button
+                  onClick={() => setMusicOn(v => !v)}
+                  aria-label={musicOn ? "Mute music" : "Play music"}
+                  title={musicOn ? "Mute music" : "Play music"}
+                  className="flex h-9 w-9 items-center justify-center rounded-full bg-white/15 ring-1 ring-white/25 text-white text-base transition hover:scale-110 active:scale-95"
+                  style={{ boxShadow: musicOn ? "0 0 12px #22d3ee99" : "none" }}
+                >
+                  <span>{musicOn ? "🎵" : "🔇"}</span>
+                </button>
+
                 <div className={`flex items-center gap-1 rounded-full bg-white px-3 py-1.5 shadow ${coinPop ? "ac-pop" : ""}`}
                   style={{ color: "#1e1b4b" }}>
                   {loading ? <Loader2 size={14} className="animate-spin" /> : <Coins size={14} style={{ color: "#f59e0b" }} />}
