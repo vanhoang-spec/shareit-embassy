@@ -1567,26 +1567,43 @@ export default function AdventureCamp() {
   const [avatar, setAvatar] = useState("dan"); // default: Hổ (Tiger) — a free starter
   const [spent, setSpent] = useState(0);
   const [profileBonus, setProfileBonus] = useState(0);
+  const [profileLoaded, setProfileLoaded] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [confettiBurst, setConfettiBurst] = useState(0); // increments to retrigger
   const [celebrateName, setCelebrateName] = useState(null);
   const confettiTimer = useRef(null);
 
-  // Load synced coins from profile on mount
+  // Load synced coins from profile on mount and on auth state changes
   useEffect(() => {
-    (async () => {
+    let cancelled = false;
+    async function loadProfile() {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.user) return;
+      if (cancelled) return;
+      if (!session?.user) {
+        setProfileLoaded(true); // no user → nothing to load
+        return;
+      }
       const { data } = await supabase
         .from("profiles")
         .select("total_coins")
         .eq("id", session.user.id)
         .maybeSingle();
+      if (cancelled) return;
       if (data && typeof data.total_coins === "number") {
         setProfileBonus(Math.max(0, data.total_coins - 100));
       }
-    })();
+      setProfileLoaded(true);
+    }
+    loadProfile();
+    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_IN" || event === "USER_UPDATED") {
+        setProfileLoaded(false);
+        loadProfile();
+      }
+    });
+    return () => { cancelled = true; sub.subscription.unsubscribe(); };
   }, []);
+
 
 
   function applyScroll(y) {
@@ -1690,8 +1707,11 @@ export default function AdventureCamp() {
     return () => clearTimeout(id);
   }, [gameCoins, spent]);
 
-  // Sync coin total to Lovable Cloud profile (when signed in)
+  // Sync coin total to Lovable Cloud profile (when signed in).
+  // Gated on profileLoaded to avoid overwriting the saved value with the
+  // initial render's 100 before the fetch resolves.
   useEffect(() => {
+    if (!profileLoaded) return;
     let cancelled = false;
     (async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -1702,7 +1722,8 @@ export default function AdventureCamp() {
         .eq("id", session.user.id);
     })();
     return () => { cancelled = true; };
-  }, [coins]);
+  }, [coins, profileLoaded]);
+
 
   function masterCard(id) {
     setMastered((prev) => {
@@ -1794,10 +1815,15 @@ export default function AdventureCamp() {
               <div className="flex flex-col items-end gap-1.5">
                 <div className="coin-wrap flex cursor-default items-center gap-1.5 rounded-full bg-white/95 px-3 py-1 shadow-md ring-2 ring-yellow-300">
                   <Coins className={`coin-ico text-yellow-500 ${coinPop ? "ac-pop" : ""}`} size={18} />
-                  <span className={`text-sm font-extrabold text-yellow-700 ${coinPop ? "ac-pop" : ""}`}>
-                    {coins} Coins
-                  </span>
+                  {profileLoaded ? (
+                    <span className={`text-sm font-extrabold text-yellow-700 ${coinPop ? "ac-pop" : ""}`}>
+                      {coins} Coins
+                    </span>
+                  ) : (
+                    <Loader2 size={14} className="animate-spin text-yellow-700" />
+                  )}
                 </div>
+
                 <div
                   className="flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-extrabold text-white shadow"
                   style={{ backgroundColor: BRAND.red }}
