@@ -2945,10 +2945,110 @@ function ProfileModal({ open, onClose, name, onSave, saving, avatarEmoji, onOpen
 }
 
 // =================================================================
+// Tier 2 — Unit Galaxy (8 orbital planet units)
+// =================================================================
+const UNITS = [
+  { n:1, title:"Adventure Camp",  emoji:"🏕️", ring:"#34d399", core:"radial-gradient(circle at 30% 30%, #bef264, #16a34a 55%, #064e3b)", glow:"#34d399", unlocked:true  },
+  { n:2, title:"Gadget Nebula",   emoji:"🤖", ring:"#22d3ee", core:"radial-gradient(circle at 30% 30%, #67e8f9, #0891b2 55%, #0e1741)", glow:"#22d3ee", unlocked:false },
+  { n:3, title:"Wild Safari",     emoji:"🦁", ring:"#a3e635", core:"radial-gradient(circle at 30% 30%, #bbf7d0, #16a34a 55%, #14532d)", glow:"#a3e635", unlocked:false },
+  { n:4, title:"Future City",     emoji:"🌆", ring:"#c084fc", core:"radial-gradient(circle at 30% 30%, #f0abfc, #9333ea 55%, #3b0764)", glow:"#c084fc", unlocked:false },
+  { n:5, title:"Eco Planet",      emoji:"🌍", ring:"#38bdf8", core:"radial-gradient(circle at 30% 30%, #bae6fd, #0284c7 55%, #082f49)", glow:"#38bdf8", unlocked:false },
+  { n:6, title:"Healthy Life",    emoji:"☀️", ring:"#fb923c", core:"radial-gradient(circle at 30% 30%, #fde68a, #f97316 55%, #7c2d12)", glow:"#fb923c", unlocked:false },
+  { n:7, title:"Ancient History", emoji:"🏺", ring:"#facc15", core:"radial-gradient(circle at 30% 30%, #fef08a, #ca8a04 55%, #422006)", glow:"#facc15", unlocked:false },
+  { n:8, title:"Festival Star",   emoji:"🎆", ring:"#f472b6", core:"radial-gradient(circle at 30% 30%, #fef3c7, #ec4899 40%, #6d28d9)", glow:"#f472b6", unlocked:false },
+];
+
+function UnitGalaxy({ onEnterUnit1 }) {
+  const [toast, setToast] = useState(null);
+  const timer = useRef(null);
+  function tap(u) {
+    if (u.unlocked) { onEnterUnit1(); return; }
+    setToast(`Mission locked! Complete Unit 1 first! 🚀`);
+    clearTimeout(timer.current);
+    timer.current = setTimeout(() => setToast(null), 1800);
+  }
+  useEffect(() => () => clearTimeout(timer.current), []);
+  return (
+    <div className="ac-fade">
+      <div className="px-1 pb-4 pt-1 text-center">
+        <h1 className="text-2xl font-black text-white gx-neon-text" style={{ color:"#a5f3fc" }}>🌌 Choose Your Planet</h1>
+        <p className="mt-1 text-xs font-bold text-indigo-200">Tap a glowing world to begin its mission</p>
+      </div>
+      <div className="grid grid-cols-2 gap-4 px-1">
+        {UNITS.map((u) => (
+          <button
+            key={u.n}
+            onClick={() => tap(u)}
+            className="group relative flex flex-col items-center rounded-2xl gx-glass p-3 transition-transform active:scale-95 hover:scale-[1.04]"
+            style={{ boxShadow: u.unlocked ? `0 0 22px ${u.glow}66, inset 0 0 0 1px ${u.glow}55` : "inset 0 0 0 1px rgba(255,255,255,.08)" }}
+            aria-label={`Unit ${u.n}: ${u.title}${u.unlocked ? "" : " (locked)"}`}
+          >
+            {/* Planet */}
+            <div className="relative my-2 h-20 w-20 gx-bob" style={{ animationDelay: `${u.n * 0.25}s` }}>
+              {/* Orbit ring */}
+              <div
+                className="absolute inset-[-8px] rounded-full gx-spin-slow"
+                style={{
+                  border: `2px dashed ${u.ring}99`,
+                  opacity: u.unlocked ? 0.9 : 0.35,
+                  filter: `drop-shadow(0 0 6px ${u.glow}aa)`,
+                }}
+              />
+              {/* Core planet */}
+              <div
+                className="absolute inset-0 rounded-full"
+                style={{
+                  background: u.core,
+                  boxShadow: u.unlocked
+                    ? `0 0 26px ${u.glow}cc, inset -6px -8px 14px rgba(0,0,0,.45)`
+                    : `0 0 12px rgba(255,255,255,.12), inset -6px -8px 14px rgba(0,0,0,.55)`,
+                  filter: u.unlocked ? "none" : "grayscale(.55) brightness(.7)",
+                }}
+              />
+              {/* Tiny moon */}
+              <div
+                className="absolute -right-1 -top-1 h-3 w-3 rounded-full"
+                style={{ background:"#fff", boxShadow:`0 0 8px ${u.glow}` }}
+              />
+              {/* Pulse on hover (group) */}
+              <div
+                className="absolute inset-[-4px] rounded-full opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                style={{ boxShadow:`0 0 0 4px ${u.glow}55, 0 0 28px ${u.glow}` }}
+              />
+              {/* Lock badge */}
+              {!u.unlocked && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="rounded-full bg-black/60 px-2 py-0.5 text-base ring-1 ring-white/30">🔒</span>
+                </div>
+              )}
+              {/* Emoji label floats next to planet */}
+              <div className="pointer-events-none absolute -bottom-2 -left-2 text-lg drop-shadow">{u.emoji}</div>
+            </div>
+            <div className="mt-1 w-full text-center">
+              <p className="text-[11px] font-extrabold tracking-wide" style={{ color: u.unlocked ? u.glow : "#94a3b8" }}>UNIT {u.n}</p>
+              <p className="truncate text-sm font-black text-white gx-neon-text" style={{ color: u.unlocked ? "#fff" : "#cbd5e1" }}>{u.title}</p>
+            </div>
+          </button>
+        ))}
+      </div>
+      {toast && (
+        <div className="pointer-events-none fixed inset-x-0 bottom-8 z-50 flex justify-center px-4">
+          <div className="ac-fade rounded-full gx-glass px-4 py-2 text-sm font-black text-white shadow-2xl"
+            style={{ boxShadow:"0 0 18px #a78bfa, inset 0 0 0 1px #a78bfa66" }}>
+            {toast}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// =================================================================
 // App — header + view router (no bottom nav)
 // =================================================================
 export default function AdventureCamp() {
-  const [view, setView] = useState("hub"); // hub | vocab | grammar | speaking | reading | quiz
+  const [view, setView] = useState("galaxy"); // galaxy | hub | vocab | grammar | speaking | reading | quiz
+
   const [coins, setCoins] = useState(0);
   const [streak, setStreak] = useState(0);
   const [name, setName] = useState("");
@@ -3101,13 +3201,26 @@ export default function AdventureCamp() {
 
         {/* MAIN */}
         <main className="relative flex-1 overflow-y-auto px-3 pb-6 pt-4">
-          {view === "hub" && <DashboardHub onPick={setView} name={name} />}
+          {view === "galaxy" && <UnitGalaxy onEnterUnit1={() => setView("hub")} />}
+          {view === "hub" && (
+            <>
+              <button
+                onClick={() => setView("galaxy")}
+                className="mb-3 inline-flex items-center gap-2 rounded-full gx-glass px-3 py-1.5 text-xs font-black text-white transition hover:scale-105 active:scale-95"
+                style={{ boxShadow:"0 0 14px #a78bfa66, inset 0 0 0 1px #a78bfa55" }}
+              >
+                🚀 Fly Back to Galaxy
+              </button>
+              <DashboardHub onPick={setView} name={name} />
+            </>
+          )}
           {view === "vocab" && <VocabularyQuest onBack={back} addCoins={addCoins} />}
           {view === "grammar" && <GrammarLab onBack={back} addCoins={addCoins} />}
           {view === "speaking" && <AISpeakingWorld onBack={back} addCoins={addCoins} />}
           {view === "reading" && <ReadingAdventure onBack={back} addCoins={addCoins} />}
           {view === "quiz" && <GrandUnitQuiz onBack={back} addCoins={addCoins} />}
         </main>
+
 
         {/* AVATAR PICKER */}
         <AvatarPicker open={pickerOpen} onClose={() => setPickerOpen(false)}
