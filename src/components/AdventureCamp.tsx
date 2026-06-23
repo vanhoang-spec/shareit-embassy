@@ -1815,10 +1815,15 @@ export default function AdventureCamp() {
               <div className="flex flex-col items-end gap-1.5">
                 <div className="coin-wrap flex cursor-default items-center gap-1.5 rounded-full bg-white/95 px-3 py-1 shadow-md ring-2 ring-yellow-300">
                   <Coins className={`coin-ico text-yellow-500 ${coinPop ? "ac-pop" : ""}`} size={18} />
-                  <span className={`text-sm font-extrabold text-yellow-700 ${coinPop ? "ac-pop" : ""}`}>
-                    {coins} Coins
-                  </span>
+                  {profileLoaded ? (
+                    <span className={`text-sm font-extrabold text-yellow-700 ${coinPop ? "ac-pop" : ""}`}>
+                      {coins} Coins
+                    </span>
+                  ) : (
+                    <Loader2 size={14} className="animate-spin text-yellow-700" />
+                  )}
                 </div>
+
                 <div
                   className="flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-extrabold text-white shadow"
                   style={{ backgroundColor: BRAND.red }}
