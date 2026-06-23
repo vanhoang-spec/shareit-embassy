@@ -14,7 +14,110 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      curriculum: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string | null
+          lesson: number
+          meaning: string | null
+          unit: number
+          updated_at: string
+          word_or_phrase: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          lesson: number
+          meaning?: string | null
+          unit: number
+          updated_at?: string
+          word_or_phrase: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          lesson?: number
+          meaning?: string | null
+          unit?: number
+          updated_at?: string
+          word_or_phrase?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          current_badge: string | null
+          id: string
+          streak_days: number
+          student_name: string | null
+          total_coins: number
+          updated_at: string
+          xp: number
+        }
+        Insert: {
+          created_at?: string
+          current_badge?: string | null
+          id: string
+          streak_days?: number
+          student_name?: string | null
+          total_coins?: number
+          updated_at?: string
+          xp?: number
+        }
+        Update: {
+          created_at?: string
+          current_badge?: string | null
+          id?: string
+          streak_days?: number
+          student_name?: string | null
+          total_coins?: number
+          updated_at?: string
+          xp?: number
+        }
+        Relationships: []
+      }
+      student_progress: {
+        Row: {
+          card_id: string
+          created_at: string
+          id: string
+          mastery_level: number
+          next_review_date: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          card_id: string
+          created_at?: string
+          id?: string
+          mastery_level?: number
+          next_review_date?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          card_id?: string
+          created_at?: string
+          id?: string
+          mastery_level?: number
+          next_review_date?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_progress_card_id_fkey"
+            columns: ["card_id"]
+            isOneToOne: false
+            referencedRelation: "curriculum"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
