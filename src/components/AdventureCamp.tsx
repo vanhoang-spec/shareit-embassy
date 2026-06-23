@@ -3036,36 +3036,58 @@ export default function AdventureCamp() {
 
   function back() { setView("hub"); }
 
+  // Profile modal state + name persistence
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [savingName, setSavingName] = useState(false);
+  async function saveName(newName) {
+    const uid = userIdRef.current;
+    if (!uid) return;
+    setSavingName(true);
+    const { error } = await supabase.from("profiles").update({ student_name: newName }).eq("id", uid);
+    setSavingName(false);
+    if (!error) {
+      setName(newName);
+      setProfileOpen(false);
+    }
+  }
+
   return (
-    <div className="flex min-h-screen w-full justify-center bg-gradient-to-b from-blue-100 via-white to-red-50 font-sans">
+    <div className="flex min-h-screen w-full justify-center font-sans gx-shell">
       <style>{STYLES}</style>
-      <div className="relative flex h-screen w-full max-w-md flex-col overflow-hidden bg-gradient-to-b from-blue-50 to-white shadow-2xl" style={{ height: "100dvh" }}>
+      <div className="relative flex h-screen w-full max-w-md flex-col overflow-hidden shadow-2xl gx-shell" style={{ height: "100dvh" }}>
+        <StarField count={50} />
         {/* HEADER */}
         <header className="sticky top-0 z-40 shadow-lg">
-          <div className="bg-white">
+          <div className="bg-white/95 backdrop-blur">
             <div className="flex items-center justify-center px-4 pb-2 pt-2.5">
               <img src={LOGO_URI} alt="Embassy Language" className="h-9 w-auto select-none" draggable={false} />
             </div>
           </div>
-          <div style={{ height: 3, background: `linear-gradient(90deg, ${BRAND.navy}, ${BRAND.red})` }} />
-          <div className="px-4 pb-3 pt-3" style={{ background: `linear-gradient(135deg, ${BRAND.navy} 0%, ${BRAND.navyDark} 100%)` }}>
+          <div style={{ height: 3, background: `linear-gradient(90deg, #22d3ee, #a78bfa, #ec4899)` }} />
+          <div className="relative px-4 pb-3 pt-3" style={{ background: "linear-gradient(135deg,#0b0628 0%, #1e1b4b 60%, #4c1d95 100%)" }}>
             <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
               <div className="flex min-w-0 items-center gap-2.5">
-                <button onClick={() => setPickerOpen(true)}
+                <button
+                  onClick={() => setPickerOpen(true)}
                   className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-2xl transition-transform hover:scale-105 active:scale-95"
-                  style={{ boxShadow: `0 0 0 3px ${BRAND.red}, 0 2px 6px rgba(0,0,0,.25)` }}
-                  aria-label="Change avatar">
-                  <span>{currentAvatar?.emoji || "🐯"}</span>
+                  style={{ boxShadow: "0 0 0 3px #22d3ee, 0 0 18px #a78bfa" }}
+                  aria-label="Change avatar"
+                >
+                  <span>{currentAvatar?.emoji || "🧑‍🚀"}</span>
                 </button>
-                <div className="min-w-0 leading-tight">
-                  <p className="truncate text-sm font-extrabold text-white">{name || "Explorer"}</p>
-                  <p className="text-[11px] font-bold text-blue-200">{currentAvatar?.name || "Adventurer"}</p>
-                </div>
+                <button
+                  onClick={() => setProfileOpen(true)}
+                  className="min-w-0 text-left leading-tight rounded-lg px-1 transition hover:bg-white/10"
+                  aria-label="Edit profile"
+                >
+                  <p className="truncate text-sm font-extrabold text-white">{name || "Space Cadet"} <span className="text-cyan-300">✎</span></p>
+                  <p className="text-[11px] font-bold text-indigo-200">{currentAvatar?.name || "Galactic Explorer"}</p>
+                </button>
               </div>
               <div className="flex shrink-0 items-center gap-2">
                 <div className={`flex items-center gap-1 rounded-full bg-white px-3 py-1.5 shadow ${coinPop ? "ac-pop" : ""}`}
-                  style={{ color: BRAND.navy }}>
-                  {loading ? <Loader2 size={14} className="animate-spin" /> : <Coins size={14} style={{ color: BRAND.gold }} />}
+                  style={{ color: "#1e1b4b" }}>
+                  {loading ? <Loader2 size={14} className="animate-spin" /> : <Coins size={14} style={{ color: "#f59e0b" }} />}
                   <span className="text-sm font-black tabular-nums">{loading ? "…" : coins}</span>
                 </div>
                 <div className="flex items-center gap-1 rounded-full bg-white/15 px-3 py-1.5 ring-1 ring-white/25 text-white">
@@ -3078,7 +3100,7 @@ export default function AdventureCamp() {
         </header>
 
         {/* MAIN */}
-        <main className="flex-1 overflow-y-auto px-3 pb-6 pt-4">
+        <main className="relative flex-1 overflow-y-auto px-3 pb-6 pt-4">
           {view === "hub" && <DashboardHub onPick={setView} name={name} />}
           {view === "vocab" && <VocabularyQuest onBack={back} addCoins={addCoins} />}
           {view === "grammar" && <GrammarLab onBack={back} addCoins={addCoins} />}
@@ -3092,12 +3114,25 @@ export default function AdventureCamp() {
           owned={owned} equipped={avatar} coins={coins}
           onEquip={equipAvatar} onUnlock={unlockAvatar} />
 
+        {/* PROFILE MODAL */}
+        <ProfileModal
+          open={profileOpen}
+          onClose={() => setProfileOpen(false)}
+          name={name}
+          onSave={saveName}
+          saving={savingName}
+          avatarEmoji={currentAvatar?.emoji}
+          onOpenAvatar={() => { setProfileOpen(false); setPickerOpen(true); }}
+          coins={coins}
+          streak={streak}
+        />
+
         <Confetti burst={confettiBurst} />
         {celebrateName && (
           <div className="pointer-events-none fixed inset-x-0 top-24 flex justify-center px-6" style={{ zIndex: 71 }}>
             <div className="ac-banner flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-extrabold text-white shadow-2xl"
-              style={{ background: `linear-gradient(135deg, ${BRAND.navy}, ${BRAND.red})` }}>
-              <PartyPopper size={18} /> Mở khóa {celebrateName}!
+              style={{ background: "linear-gradient(135deg,#22d3ee,#a78bfa,#ec4899)" }}>
+              <PartyPopper size={18} /> Unlocked {celebrateName}!
             </div>
           </div>
         )}
