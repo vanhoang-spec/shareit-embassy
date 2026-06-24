@@ -29,6 +29,7 @@ import {
 import {
   COSMIC_AVATARS, COSMIC_AVATAR_BY_ID,
   VocabularyQuestU2, RocketFuelMission, AISpeakingWorldU2, ReadingAdventureU2, Planet5ArenaU2,
+  VocabularyQuestU3, NebulaBridge, ReadingAdventureU3, Planet5ArenaU3,
   CosmicSpeakingNebula,
 } from "./Unit2";
 
