@@ -2129,7 +2129,7 @@ export function Planet5ArenaU3({ onBack, addCoins }) {
 // =================================================================
 
 // ---------- PLANET 1 U4: reuses flashcard + speaking shells with unit=4 ----------
-export function VocabularyQuestU4({ onBack, addCoins }) {
+export function VocabularyQuestU4({ onBack, addCoins, level = "level_5" }) {
   const [tab, setTab] = useState("l1");
   return (
     <div className="ac-fade">
