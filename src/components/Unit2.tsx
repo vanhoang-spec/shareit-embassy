@@ -1843,8 +1843,8 @@ export function NebulaBridge({ onBack, addCoins }) {
 }
 
 // ---------- PLANET 4 U3: Reading Comet · History of News ----------
-export function ReadingAdventureU3({ onBack, addCoins, unit = 3, title = "📰 The History of News" }) {
-  const data = getUnitData(unit).reading;
+export function ReadingAdventureU3({ onBack, addCoins, unit = 3, level = "level_5", title = "📰 The History of News" }) {
+  const data = getUnitData(unit, level).reading;
   const [answers, setAnswers] = useState({});
   const [done, setDone] = useState(false);
   const awarded = useRef(false);
