@@ -3177,9 +3177,16 @@ const UNITS = [
   { n:8, title:"On Vacation!",   emoji:"🛳️", ring:"#22d3ee", core:"radial-gradient(circle at 30% 30%, #67e8f9, #0891b2 55%, #0e1741)", glow:"#22d3ee", unlocked:true  },
 ];
 
-function UnitGalaxy({ onEnterUnit, onBackToLevels }) {
+const LEVEL_UNLOCK_MAP = {
+  level_5: new Set([1, 2, 3, 4, 5, 6, 8]),
+  level_3: new Set([4, 5]),
+};
+
+function UnitGalaxy({ onEnterUnit, onBackToLevels, selectedLevel = "level_5" }) {
   const [toast, setToast] = useState(null);
   const timer = useRef(null);
+  const unlockedSet = LEVEL_UNLOCK_MAP[selectedLevel] || LEVEL_UNLOCK_MAP.level_5;
+  const units = UNITS.map((u) => ({ ...u, unlocked: unlockedSet.has(u.n) }));
   function tap(u) {
     if (u.unlocked) { onEnterUnit(u.n); return; }
     setToast(`Mission locked! Complete earlier units first! ☄️`);
@@ -3187,6 +3194,7 @@ function UnitGalaxy({ onEnterUnit, onBackToLevels }) {
     timer.current = setTimeout(() => setToast(null), 1800);
   }
   useEffect(() => () => clearTimeout(timer.current), []);
+  const levelLabel = selectedLevel === "level_3" ? "Galaxy Level 3" : "Galaxy Level 5";
   return (
     <div className="ac-fade">
       <button
@@ -3198,8 +3206,9 @@ function UnitGalaxy({ onEnterUnit, onBackToLevels }) {
       </button>
       <div className="px-1 pb-4 pt-1 text-center">
         <h1 className="text-2xl font-black text-white gx-neon-text" style={{ color:"#a5f3fc" }}>🌌 The Solar Matrix</h1>
-        <p className="mt-1 text-xs font-bold text-indigo-200">Galaxy Level 5 · Tap a glowing world to begin</p>
+        <p className="mt-1 text-xs font-bold text-indigo-200">{levelLabel} · Tap a glowing world to begin</p>
       </div>
+
 
       <div className="grid grid-cols-2 gap-4 px-1">
         {UNITS.map((u) => (
