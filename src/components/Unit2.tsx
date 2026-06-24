@@ -1364,13 +1364,14 @@ function DailyActionFlashcards({ addCoins, unit = 3 }) {
         <div className="grid grid-cols-2 gap-3">
           {items.map((v, i) => {
             if (mastered.has(i)) return null;
-            const showPast = tense[i] === "past";
-            const phrase = showPast ? v.past : v.word;
+            const showAlt = tense[i] === "alt" && !!v.alt;
+            const phrase = showAlt ? v.alt : v.word;
+            const hasAlt = !!v.alt;
             return (
               <div key={i} className="overflow-hidden rounded-3xl gx-glass shadow-lg ring-1 ring-white/10">
-                <div className="flex items-center justify-center py-4" style={{ background: showPast ? "linear-gradient(135deg,#8b5cf6,#ec4899)" : "linear-gradient(135deg,#f59e0b,#fbbf24)" }}>
+                <div className="relative flex items-center justify-center py-4" style={{ background: showAlt ? "linear-gradient(135deg,#8b5cf6,#ec4899)" : "linear-gradient(135deg,#f59e0b,#fbbf24)" }}>
                   <div className="grid h-16 w-28 place-items-center rounded-2xl bg-white/90 text-4xl shadow-inner">{v.emoji}</div>
-                  {showPast && <span className="absolute right-3 top-3 rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-extrabold text-purple-700 shadow">PAST ⚡</span>}
+                  {showAlt && <span className="absolute right-3 top-3 rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-extrabold text-purple-700 shadow">ALT ⚡</span>}
                 </div>
                 <div className="px-3 pb-3 pt-3">
                   <p key={phrase} className="ac-fade min-h-12 text-center text-base font-extrabold leading-tight text-white">{phrase}</p>
@@ -1383,9 +1384,13 @@ function DailyActionFlashcards({ addCoins, unit = 3 }) {
                     <button onClick={() => toggleMeaning(i)} className="flex items-center justify-center gap-1 rounded-2xl bg-white/10 py-2 text-white transition active:scale-95 ring-1 ring-white/20">
                       <span className="text-[11px] font-bold">{meaning[i] ? "👁️ Hide" : "👁️ Nghĩa từ"}</span>
                     </button>
-                    <button onClick={() => toggle(i)} className={`flex items-center justify-center gap-1 rounded-2xl py-2 transition active:scale-95 ${showPast ? "bg-purple-500 text-white" : "bg-amber-400/30 text-amber-100 ring-1 ring-amber-300/40"}`}>
-                      <span className="text-[11px] font-bold">Past Form ⏳</span>
-                    </button>
+                    {hasAlt ? (
+                      <button onClick={() => toggle(i)} className={`flex items-center justify-center gap-1 rounded-2xl py-2 transition active:scale-95 ${showAlt ? "bg-purple-500 text-white" : "bg-amber-400/30 text-amber-100 ring-1 ring-amber-300/40"}`}>
+                        <span className="text-[11px] font-bold">{formToggleLabel}</span>
+                      </button>
+                    ) : (
+                      <div className="rounded-2xl bg-white/5 py-2 text-center text-[11px] font-bold text-white/40 ring-1 ring-white/10">— No form —</div>
+                    )}
                   </div>
                   <div className="mt-1.5 grid grid-cols-2 gap-1.5">
                     <button onClick={() => speak(phrase)} className="flex items-center justify-center gap-1 rounded-2xl bg-cyan-500/20 py-2 text-cyan-200 transition active:scale-95 ring-1 ring-cyan-400/30">
