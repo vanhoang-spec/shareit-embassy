@@ -33,6 +33,7 @@ import {
   VocabularyQuestU4, OrbitalAlignment, ReadingAdventureU4, Planet5ArenaU4,
   VocabularyQuestU5, QuantumScale, ReadingAdventureU5, Planet5ArenaU5,
   VocabularyQuestU6, EcoBalancer, ReadingAdventureU6, Planet5ArenaU6,
+  VocabularyQuestU8, NebulaGateway, ReadingAdventureU8, Planet5ArenaU8,
   CosmicSpeakingNebula,
 } from "./Unit2";
 
