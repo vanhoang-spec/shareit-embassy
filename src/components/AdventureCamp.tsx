@@ -3167,7 +3167,7 @@ const UNITS = [
   { n:1, title:"Adventure Camp",  emoji:"🏕️", ring:"#34d399", core:"radial-gradient(circle at 30% 30%, #bef264, #16a34a 55%, #064e3b)", glow:"#34d399", unlocked:true  },
   { n:2, title:"Gadget Nebula",   emoji:"🌀", ring:"#22d3ee", core:"radial-gradient(circle at 30% 30%, #67e8f9, #0891b2 55%, #0e1741)", glow:"#22d3ee", unlocked:true  },
   { n:3, title:"Surprise!",      emoji:"☄️", ring:"#fbbf24", core:"radial-gradient(circle at 30% 30%, #fde68a, #f59e0b 55%, #422006)", glow:"#fbbf24", unlocked:true  },
-  { n:4, title:"Future City",     emoji:"🌆", ring:"#c084fc", core:"radial-gradient(circle at 30% 30%, #f0abfc, #9333ea 55%, #3b0764)", glow:"#c084fc", unlocked:false },
+  { n:4, title:"Myths & Legends", emoji:"🧜‍♀️", ring:"#c084fc", core:"radial-gradient(circle at 30% 30%, #f0abfc, #9333ea 55%, #3b0764)", glow:"#c084fc", unlocked:true  },
   { n:5, title:"Eco Planet",      emoji:"🌍", ring:"#38bdf8", core:"radial-gradient(circle at 30% 30%, #bae6fd, #0284c7 55%, #082f49)", glow:"#38bdf8", unlocked:false },
   { n:6, title:"Healthy Life",    emoji:"☀️", ring:"#fb923c", core:"radial-gradient(circle at 30% 30%, #fde68a, #f97316 55%, #7c2d12)", glow:"#fb923c", unlocked:false },
   { n:7, title:"Ancient History", emoji:"🏺", ring:"#facc15", core:"radial-gradient(circle at 30% 30%, #fef08a, #ca8a04 55%, #422006)", glow:"#facc15", unlocked:false },
