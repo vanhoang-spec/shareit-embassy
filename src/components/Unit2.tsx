@@ -658,210 +658,237 @@ export function ReadingAdventureU2({ onBack, addCoins }) {
 }
 
 // =================================================================
-// PLANET 5 — Cosmic Word Hunter (oi/oy phonics)
+// PLANET 5 — Supernova Quiz Arena (Unit 2)
+// Mode A: Phonics Rocket (oi / oy) · Mode B: Alien Trivia Quest
 // =================================================================
-const HUNTER_WORDS = ["COIN", "SOIL", "POINT", "BOY", "TOY", "JOY"];
-const GRID_SIZE = 10;
-function buildGrid() {
-  // Try multiple times to place all words; fall back to random fill.
-  for (let attempt = 0; attempt < 50; attempt++) {
-    const grid = Array.from({ length: GRID_SIZE }, () => Array(GRID_SIZE).fill(null));
-    const placed = [];
-    const dirs = [
-      [0, 1], [1, 0], [1, 1], [-1, 1],
-    ];
-    let ok = true;
-    for (const w of HUNTER_WORDS) {
-      let done = false;
-      for (let tries = 0; tries < 80 && !done; tries++) {
-        const [dr, dc] = dirs[Math.floor(Math.random() * dirs.length)];
-        const r0 = Math.floor(Math.random() * GRID_SIZE);
-        const c0 = Math.floor(Math.random() * GRID_SIZE);
-        const r1 = r0 + dr * (w.length - 1);
-        const c1 = c0 + dc * (w.length - 1);
-        if (r1 < 0 || r1 >= GRID_SIZE || c1 < 0 || c1 >= GRID_SIZE) continue;
-        let fits = true;
-        const cells = [];
-        for (let i = 0; i < w.length; i++) {
-          const r = r0 + dr * i, c = c0 + dc * i;
-          if (grid[r][c] && grid[r][c] !== w[i]) { fits = false; break; }
-          cells.push([r, c]);
-        }
-        if (!fits) continue;
-        cells.forEach(([r, c], i) => { grid[r][c] = w[i]; });
-        placed.push({ word: w, cells });
-        done = true;
-      }
-      if (!done) { ok = false; break; }
-    }
-    if (!ok) continue;
-    // fill blanks
-    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    for (let r = 0; r < GRID_SIZE; r++) for (let c = 0; c < GRID_SIZE; c++) {
-      if (!grid[r][c]) grid[r][c] = letters[Math.floor(Math.random() * 26)];
-    }
-    return { grid, placed };
+const PHONICS_ITEMS = [
+  { puzzle: "c _ _ n",  word: "coin",  sound: "oi" },
+  { puzzle: "s _ _ l",  word: "soil",  sound: "oi" },
+  { puzzle: "p _ _ nt", word: "point", sound: "oi" },
+  { puzzle: "b _ _",    word: "boy",   sound: "oy" },
+  { puzzle: "t _ _",    word: "toy",   sound: "oy" },
+  { puzzle: "j _ _",    word: "joy",   sound: "oy" },
+];
+function PhonicsRocket({ addCoins }) {
+  const [queue, setQueue] = useState(() => shuffle(PHONICS_ITEMS));
+  const [pos, setPos] = useState(0);
+  const [score, setScore] = useState(0);
+  const [flash, setFlash] = useState(null); // {ok, target}
+  const [done, setDone] = useState(false);
+  const cur = queue[pos];
+  function pick(sound) {
+    if (flash || done) return;
+    const ok = sound === cur.sound;
+    setFlash({ ok, target: sound });
+    if (ok) { setScore((s) => s + 1); addCoins?.(2); }
+    setTimeout(() => {
+      setFlash(null);
+      if (pos + 1 >= queue.length) {
+        setDone(true);
+        try { confetti({ particleCount: 130, spread: 80, origin: { y: 0.6 } }); } catch {}
+      } else setPos((p) => p + 1);
+    }, 700);
   }
-  // fallback (shouldn't happen)
-  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  const grid = Array.from({ length: GRID_SIZE }, () => Array.from({ length: GRID_SIZE }, () => letters[Math.floor(Math.random() * 26)]));
-  return { grid, placed: [] };
-}
-function lineCells(a, b) {
-  const dr = Math.sign(b[0] - a[0]), dc = Math.sign(b[1] - a[1]);
-  const len = Math.max(Math.abs(b[0] - a[0]), Math.abs(b[1] - a[1])) + 1;
-  // must be straight (horizontal, vertical, or 45° diag)
-  if (a[0] !== b[0] && a[1] !== b[1] && Math.abs(b[0] - a[0]) !== Math.abs(b[1] - a[1])) return null;
-  const cells = [];
-  for (let i = 0; i < len; i++) cells.push([a[0] + dr * i, a[1] + dc * i]);
-  return cells;
-}
-function playChime() {
-  try {
-    const AC = window.AudioContext || window.webkitAudioContext;
-    if (!AC) return;
-    const ctx = new AC();
-    const notes = [880, 1175, 1568];
-    notes.forEach((f, i) => {
-      const o = ctx.createOscillator(); const g = ctx.createGain();
-      o.type = "triangle"; o.frequency.value = f;
-      const t = ctx.currentTime + i * 0.08;
-      g.gain.setValueAtTime(0.0001, t);
-      g.gain.exponentialRampToValueAtTime(0.25, t + 0.01);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.25);
-      o.connect(g).connect(ctx.destination); o.start(t); o.stop(t + 0.3);
-    });
-    setTimeout(() => { try { ctx.close(); } catch {} }, 700);
-  } catch {}
-}
-
-export function WordHunterArena({ onBack, addCoins }) {
-  const [{ grid, placed }, setBoard] = useState(() => buildGrid());
-  const [start, setStart] = useState(null);
-  const [hover, setHover] = useState(null);
-  const [foundWords, setFoundWords] = useState(new Set());
-  const [foundCells, setFoundCells] = useState(() => new Set()); // "r,c"
-  const [popup, setPopup] = useState(null);
-  const awarded = useRef(false);
-
-  function cellKey(r, c) { return `${r},${c}`; }
-  function tap(r, c) {
-    if (!start) { setStart([r, c]); setHover([r, c]); return; }
-    const cells = lineCells(start, [r, c]);
-    if (!cells) { setStart([r, c]); setHover([r, c]); return; }
-    const word = cells.map(([rr, cc]) => grid[rr][cc]).join("");
-    const reversed = word.split("").reverse().join("");
-    const match = HUNTER_WORDS.find((w) => (w === word || w === reversed) && !foundWords.has(w));
-    if (match) {
-      const ns = new Set(foundWords); ns.add(match); setFoundWords(ns);
-      const nfc = new Set(foundCells); cells.forEach(([rr, cc]) => nfc.add(cellKey(rr, cc))); setFoundCells(nfc);
-      playChime();
-      setPopup({ word: match, sound: match.includes("OY") ? "/oy/" : "/oi/" });
-      setTimeout(() => setPopup(null), 1400);
-      if (ns.size === HUNTER_WORDS.length && !awarded.current) {
-        awarded.current = true; addCoins?.(30);
-        try { confetti({ particleCount: 200, spread: 100, startVelocity: 60, origin: { y: 0.6 } }); } catch {}
-      }
-    }
-    setStart(null); setHover(null);
-  }
-  function reset() {
-    setBoard(buildGrid()); setStart(null); setHover(null);
-    setFoundWords(new Set()); setFoundCells(new Set()); awarded.current = false;
-  }
-  const previewCells = useMemo(() => {
-    if (!start || !hover) return null;
-    return lineCells(start, hover);
-  }, [start, hover]);
-  const previewSet = new Set((previewCells || []).map(([r, c]) => cellKey(r, c)));
-  const allFound = foundWords.size === HUNTER_WORDS.length;
-
+  function reset() { setQueue(shuffle(PHONICS_ITEMS)); setPos(0); setScore(0); setDone(false); setFlash(null); }
   return (
-    <div className="ac-fade">
-      <BackBar onBack={onBack} color="#34d399" />
-      <div className="mb-3 rounded-3xl p-4 text-center gx-glass" style={{ boxShadow: "0 0 18px #34d39966" }}>
-        <p className="text-[11px] font-extrabold uppercase tracking-widest text-emerald-300">Planet 5 · Supernova Quiz Arena</p>
-        <p className="text-xl font-black text-white">🔭 Cosmic Word Hunter</p>
-        <p className="text-[11px] font-bold text-indigo-200">Find the hidden <b>oi</b> / <b>oy</b> phonics words.</p>
+    <div>
+      <div className="mb-3 flex items-center justify-between text-xs font-bold text-indigo-200">
+        <span>Word {Math.min(pos+1, queue.length)} / {queue.length}</span>
+        <span>Correct: <b className="text-white">{score}</b></span>
+        <button onClick={reset} className="rounded-full bg-white/10 px-3 py-1 font-black text-cyan-200 ring-1 ring-white/20">Reset</button>
       </div>
-
-      <div className="rounded-3xl gx-glass p-3">
-        <div className="grid gap-[3px]" style={{ gridTemplateColumns: `repeat(${GRID_SIZE}, minmax(0, 1fr))` }}>
-          {grid.map((row, r) =>
-            row.map((ch, c) => {
-              const k = cellKey(r, c);
-              const isStart = start && start[0] === r && start[1] === c;
-              const isPreview = previewSet.has(k);
-              const isFound = foundCells.has(k);
+      {!done ? (
+        <>
+          <div className="rounded-3xl gx-glass p-5 text-center" style={{ boxShadow: "0 0 18px #22d3ee44" }}>
+            <p className="text-[11px] font-extrabold uppercase tracking-widest text-cyan-300">Fill the missing phonics</p>
+            <p className="mt-2 text-4xl font-black tracking-widest text-white">{cur.puzzle}</p>
+            <p className="mt-1 text-xs font-bold text-indigo-200">Tap the rocket that matches the missing sound.</p>
+          </div>
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            {[
+              { id: "oi", grad: "linear-gradient(135deg,#06b6d4,#22d3ee)", glow: "#22d3ee" },
+              { id: "oy", grad: "linear-gradient(135deg,#a78bfa,#ec4899)", glow: "#ec4899" },
+            ].map((r) => {
+              const showRight = flash && r.id === cur.sound;
+              const showWrong = flash && r.id === flash.target && !flash.ok;
               return (
-                <button
-                  key={k}
-                  onClick={() => tap(r, c)}
-                  onMouseEnter={() => start && setHover([r, c])}
-                  className="aspect-square select-none rounded-md text-[11px] font-black sm:text-xs"
-                  style={{
-                    color: isFound ? "#0f172a" : "#e2e8f0",
-                    background: isFound
-                      ? "linear-gradient(135deg,#fde047,#facc15)"
-                      : isStart
-                        ? "linear-gradient(135deg,#67e8f9,#22d3ee)"
-                        : isPreview
-                          ? "rgba(167,139,250,.45)"
-                          : "rgba(255,255,255,.06)",
-                    boxShadow: isFound
-                      ? "0 0 10px #fde047, inset 0 0 0 1px #ca8a04"
-                      : isStart
-                        ? "0 0 10px #22d3ee, inset 0 0 0 1px #67e8f9"
-                        : "inset 0 0 0 1px rgba(255,255,255,.10)",
-                  }}
-                >
-                  {ch}
+                <button key={r.id} onClick={() => pick(r.id)} disabled={!!flash}
+                  className="relative flex h-40 flex-col items-center justify-end rounded-3xl pb-4 text-white shadow-xl transition active:scale-95"
+                  style={{ background: r.grad, boxShadow: `0 0 18px ${r.glow}88, inset 0 0 0 1px ${r.glow}` }}>
+                  <div className="text-6xl" style={{ filter: `drop-shadow(0 0 10px ${r.glow})` }}>🚀</div>
+                  <div className="mt-1 rounded-full bg-white/20 px-4 py-1 text-lg font-black tracking-widest">-{r.id}-</div>
+                  {showRight && <div className="absolute inset-0 grid place-items-center rounded-3xl bg-emerald-500/35 text-5xl">✓</div>}
+                  {showWrong && <div className="absolute inset-0 grid place-items-center rounded-3xl bg-rose-500/35 text-5xl">✗</div>}
                 </button>
               );
-            })
-          )}
+            })}
+          </div>
+          {flash && <p className="mt-3 text-center text-sm font-black" style={{ color: flash.ok ? "#34d399" : "#fda4af" }}>
+            {flash.ok ? `🎉 ${cur.word} → /${cur.sound}/  +2 coins` : `Almost! It's "${cur.word}" → /${cur.sound}/`}
+          </p>}
+        </>
+      ) : (
+        <div className="rounded-3xl gx-glass p-5 text-center" style={{ boxShadow: "0 0 22px #22d3ee" }}>
+          <p className="text-2xl font-black text-white">🌠 Phonics Mission Complete!</p>
+          <p className="mt-1 text-sm font-bold text-indigo-200">Score: {score}/{queue.length}</p>
+          <button onClick={reset} className="mt-3 rounded-full px-4 py-2 text-sm font-black text-slate-900"
+            style={{ background: "linear-gradient(135deg,#67e8f9,#a78bfa)", boxShadow: "0 0 14px #a78bfa88" }}>Play Again</button>
         </div>
-        <p className="mt-2 text-center text-[10px] text-indigo-300">Tap a start letter, then the end letter of the word.</p>
-      </div>
+      )}
+    </div>
+  );
+}
 
-      <div className="mt-3 rounded-3xl gx-glass p-3">
-        <p className="text-[11px] font-extrabold uppercase tracking-widest text-emerald-300">Hunt list</p>
-        <div className="mt-2 flex flex-wrap gap-2">
-          {HUNTER_WORDS.map((w) => {
-            const f = foundWords.has(w);
+// ===== Mode B: Alien Trivia Quest with lifelines =====
+const TRIVIA_QUESTIONS = [
+  { q: "Which gadget lets you read books on a screen?", choices: ["e-reader", "smartwatch", "portable speaker", "digital camera"], correct: 0 },
+  { q: "What do you call a small computer you can hold?", choices: ["tablet", "headphones", "printer", "campfire"], correct: 0 },
+  { q: "She ___ a song when the Wi-Fi stopped.", choices: ["was downloading", "downloaded", "downloads", "is downloading"], correct: 0 },
+  { q: "They ___ playing video games at 8 p.m.", choices: ["were", "was", "did", "are"], correct: 0 },
+  { q: "Which device plays music out loud?", choices: ["portable speaker", "e-reader", "tablet", "laptop"], correct: 0 },
+  { q: "What ___ you doing when I called?", choices: ["were", "was", "did", "are"], correct: 0 },
+  { q: "Pick the correct past continuous: ", choices: ["I was texting a friend.", "I am text a friend.", "I text a friend.", "I texted a friend yesterday."], correct: 0 },
+  { q: "Which word has the /oy/ sound?", choices: ["joy", "soil", "coin", "point"], correct: 0 },
+];
+function AlienTrivia({ addCoins }) {
+  const [pool] = useState(() => shuffle(TRIVIA_QUESTIONS));
+  const [idx, setIdx] = useState(0);
+  const [pick, setPick] = useState(null);
+  const [killed, setKilled] = useState(new Set()); // indexes killed by 50:50
+  const [fiftyLeft, setFiftyLeft] = useState(1);
+  const [shieldLeft, setShieldLeft] = useState(1);
+  const [shieldArmed, setShieldArmed] = useState(false);
+  const [hearts, setHearts] = useState(3);
+  const [done, setDone] = useState(null); // 'win' | 'lose'
+  const awarded = useRef(false);
+  const q = pool[idx];
+  function choose(i) {
+    if (pick !== null || done) return;
+    setPick(i);
+    const ok = i === q.correct;
+    if (!ok) {
+      if (shieldArmed) { setShieldArmed(false); setTimeout(() => nextQ(true), 1100); return; }
+      setHearts((h) => {
+        const nh = h - 1;
+        if (nh <= 0) setTimeout(() => setDone("lose"), 900);
+        return nh;
+      });
+    }
+    setTimeout(() => nextQ(ok), 1000);
+  }
+  function nextQ(ok) {
+    if (idx + 1 >= pool.length) {
+      if (!awarded.current && hearts > 0) {
+        awarded.current = true;
+        addCoins?.(30);
+        try { confetti({ particleCount: 220, spread: 110, startVelocity: 60, origin: { y: 0.6 } }); } catch {}
+        setDone("win");
+      }
+      return;
+    }
+    setIdx((n) => n + 1); setPick(null); setKilled(new Set());
+  }
+  function useFifty() {
+    if (fiftyLeft <= 0 || pick !== null) return;
+    const wrongs = q.choices.map((_, i) => i).filter((i) => i !== q.correct);
+    const kill = shuffle(wrongs).slice(0, 2);
+    setKilled(new Set(kill));
+    setFiftyLeft((n) => n - 1);
+  }
+  function useShield() {
+    if (shieldLeft <= 0 || shieldArmed || pick !== null) return;
+    setShieldArmed(true); setShieldLeft((n) => n - 1);
+  }
+  function restart() {
+    setIdx(0); setPick(null); setKilled(new Set()); setFiftyLeft(1); setShieldLeft(1);
+    setShieldArmed(false); setHearts(3); setDone(null); awarded.current = false;
+  }
+
+  if (done === "win") return (
+    <div className="rounded-3xl gx-glass p-6 text-center" style={{ boxShadow: "0 0 28px #facc15" }}>
+      <div className="text-5xl">🛸✨👨‍🚀</div>
+      <p className="mt-2 text-2xl font-black text-white">Astronaut Rescued!</p>
+      <p className="mt-1 text-sm font-bold text-indigo-200">+30 coins secured. Mission victory!</p>
+      <button onClick={restart} className="mt-4 rounded-full px-4 py-2 text-sm font-black text-slate-900"
+        style={{ background: "linear-gradient(135deg,#fde047,#facc15)", boxShadow: "0 0 14px #facc15" }}>Play Again</button>
+    </div>
+  );
+  if (done === "lose") return (
+    <div className="rounded-3xl gx-glass p-6 text-center" style={{ boxShadow: "0 0 22px #f43f5e88" }}>
+      <div className="text-5xl">💥</div>
+      <p className="mt-2 text-2xl font-black text-white">Mission Failed</p>
+      <p className="mt-1 text-sm font-bold text-rose-200">The alien fleet won this round. Try again, cadet!</p>
+      <button onClick={restart} className="mt-4 rounded-full bg-white/10 px-4 py-2 text-sm font-black text-white ring-1 ring-white/20">Retry</button>
+    </div>
+  );
+
+  return (
+    <div>
+      <div className="mb-3 flex items-center justify-between text-xs font-bold text-indigo-200">
+        <span>Question {idx+1} / {pool.length}</span>
+        <span>{"❤️".repeat(hearts)}{"🖤".repeat(3-hearts)}</span>
+      </div>
+      <div className="rounded-3xl gx-glass p-4" style={{ boxShadow: "0 0 18px #a78bfa55" }}>
+        <p className="text-[11px] font-extrabold uppercase tracking-widest text-cyan-300">🛸 Alien Trivia Quest</p>
+        <p className="mt-1 text-base font-black text-white">{q.q}</p>
+        <div className="mt-3 grid gap-2">
+          {q.choices.map((c, i) => {
+            const isPick = pick === i;
+            const showRight = pick !== null && i === q.correct;
+            const showWrong = isPick && i !== q.correct;
+            const isKilled = killed.has(i);
             return (
-              <span key={w} className="rounded-full px-3 py-1 text-xs font-black"
+              <button key={i} onClick={() => choose(i)} disabled={isKilled || pick !== null}
+                className="rounded-2xl px-3 py-3 text-left text-sm font-black text-white transition active:scale-95 disabled:opacity-30"
                 style={{
-                  background: f ? "linear-gradient(135deg,#fde047,#facc15)" : "rgba(255,255,255,.08)",
-                  color: f ? "#0f172a" : "#fff",
-                  boxShadow: f ? "0 0 12px #facc15" : "inset 0 0 0 1px rgba(255,255,255,.18)",
-                  textDecoration: f ? "line-through" : "none",
+                  background: showRight ? "linear-gradient(135deg,#10b981,#34d399)"
+                          : showWrong ? "linear-gradient(135deg,#f43f5e,#fb7185)"
+                          : "linear-gradient(135deg,#1e1b4b,#4c1d95)",
+                  boxShadow: isPick ? "0 0 14px #22d3ee88" : "inset 0 0 0 1px #a78bfa55",
+                  textDecoration: isKilled ? "line-through" : "none",
                 }}>
-                {w.toLowerCase()}
-              </span>
+                <span className="mr-2">{String.fromCharCode(65 + i)}.</span>{c}
+              </button>
             );
           })}
         </div>
-        <div className="mt-3 flex items-center justify-between">
-          <button onClick={reset} className="rounded-full bg-white/10 px-3 py-1 text-xs font-black text-white ring-1 ring-white/20">New Grid</button>
-          <span className="text-xs text-indigo-200">Found {foundWords.size}/{HUNTER_WORDS.length}</span>
-        </div>
-        {allFound && (
-          <div className="mt-3 rounded-2xl p-3 text-center text-sm font-black text-slate-900"
-            style={{ background: "linear-gradient(135deg,#fde047,#facc15)", boxShadow: "0 0 22px #facc15" }}>
-            🏅 Master Word Hunter! +30 coins
-          </div>
-        )}
+        {shieldArmed && <p className="mt-3 text-center text-xs font-black text-cyan-200">🛡️ Cosmic Shield armed — one wrong answer will be blocked.</p>}
       </div>
+      <div className="mt-3 grid grid-cols-2 gap-2">
+        <button onClick={useFifty} disabled={fiftyLeft <= 0 || pick !== null}
+          className="rounded-2xl px-3 py-3 text-xs font-black text-white transition active:scale-95 disabled:opacity-40"
+          style={{ background: "linear-gradient(135deg,#f59e0b,#ef4444)", boxShadow: "0 0 14px #f59e0b88" }}>
+          🔫 Laser Beam 50:50 <span className="ml-1 opacity-80">({fiftyLeft})</span>
+        </button>
+        <button onClick={useShield} disabled={shieldLeft <= 0 || shieldArmed || pick !== null}
+          className="rounded-2xl px-3 py-3 text-xs font-black text-white transition active:scale-95 disabled:opacity-40"
+          style={{ background: "linear-gradient(135deg,#06b6d4,#3b82f6)", boxShadow: "0 0 14px #06b6d488" }}>
+          🛡️ Cosmic Shield <span className="ml-1 opacity-80">({shieldLeft})</span>
+        </button>
+      </div>
+    </div>
+  );
+}
 
-      {popup && (
-        <div className="pointer-events-none fixed inset-x-0 top-24 z-50 flex justify-center px-6">
-          <div className="ac-fade rounded-full px-5 py-2 text-sm font-black text-slate-900 shadow-2xl"
-            style={{ background: "linear-gradient(135deg,#fde047,#facc15)", boxShadow: "0 0 20px #facc15" }}>
-            ✨ {popup.word.toLowerCase()} — <span className="font-extrabold">{popup.sound}</span>
-          </div>
-        </div>
-      )}
+export function Planet5ArenaU2({ onBack, addCoins }) {
+  const [mode, setMode] = useState("a"); // 'a' | 'b'
+  return (
+    <div className="ac-fade">
+      <BackBar onBack={onBack} color="#facc15" />
+      <div className="mb-3 rounded-3xl p-4 text-center gx-glass" style={{ boxShadow: "0 0 18px #facc1566" }}>
+        <p className="text-[11px] font-extrabold uppercase tracking-widest text-amber-300">Planet 5 · Supernova Quiz Arena</p>
+        <p className="text-xl font-black text-white">🏆 Choose your challenge</p>
+      </div>
+      <div className="mb-3 grid grid-cols-2 gap-2">
+        {[{k:"a",t:"🚀 Phonics Rocket"},{k:"b",t:"🛸 Alien Trivia"}].map((x) => (
+          <button key={x.k} onClick={() => setMode(x.k)}
+            className={`rounded-full px-3 py-2 text-xs font-black transition ${mode===x.k?"text-slate-900":"text-white"}`}
+            style={mode===x.k ? { background: "linear-gradient(135deg,#fde047,#facc15)", boxShadow: "0 0 14px #facc15" } : { background: "rgba(255,255,255,.08)", boxShadow: "inset 0 0 0 1px rgba(255,255,255,.18)" }}>
+            {x.t}
+          </button>
+        ))}
+      </div>
+      {mode === "a" ? <PhonicsRocket addCoins={addCoins} /> : <AlienTrivia addCoins={addCoins} />}
     </div>
   );
 }
