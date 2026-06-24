@@ -905,14 +905,14 @@ export const CURRICULUM_DATA = {
       quizGameMode: "FOUR_IN_A_ROW",
       vocabulary: {
         lesson_1: [
-          { word: "build a shelter",    past: "built a shelter",    emoji: "⛺" },
-          { word: "ride a zipline",     past: "rode a zipline",     emoji: "⚡" },
-          { word: "sleep in a tent",    past: "slept in a tent",    emoji: "⛺" },
-          { word: "go hiking",          past: "went hiking",        emoji: "🥾" },
-          { word: "go mountain biking", past: "went mountain biking", emoji: "🚲" },
-          { word: "cook on a campfire", past: "cooked on a campfire", emoji: "🔥" },
-          { word: "go horseback riding", past: "went horseback riding", emoji: "🐎" },
-          { word: "go canoeing",        past: "went canoeing",      emoji: "🛶" },
+          { word: "build a shelter",    past: "built a shelter",    vn: "dựng lều trú ẩn",       emoji: "⛺" },
+          { word: "ride a zipline",     past: "rode a zipline",     vn: "trượt đu dây tự do",    emoji: "⚡" },
+          { word: "sleep in a tent",    past: "slept in a tent",    vn: "ngủ trong lều",         emoji: "⛺" },
+          { word: "go hiking",          past: "went hiking",        vn: "đi bộ đường dài",       emoji: "🥾" },
+          { word: "go mountain biking", past: "went mountain biking", vn: "đi xe đạp địa hình",  emoji: "🚲" },
+          { word: "cook on a campfire", past: "cooked on a campfire", vn: "nấu ăn bên lửa trại", emoji: "🔥" },
+          { word: "go horseback riding", past: "went horseback riding", vn: "cưỡi ngựa",          emoji: "🐎" },
+          { word: "go canoeing",        past: "went canoeing",      vn: "chèo thuyền canoe",     emoji: "🛶" },
         ],
         lesson_5: ["jump on a trampoline","go climbing","play volleyball","make jewelry","play table tennis","play badminton","go ice skating","go bowling"],
       },
@@ -937,14 +937,14 @@ export const CURRICULUM_DATA = {
       quizGameMode: "ALIEN_TRIVIA",
       vocabulary: {
         lesson_1: [
-          { word: "smartwatch",     past: "smartwatch",     emoji: "⌚" },
-          { word: "laptop",         past: "laptop",         emoji: "💻" },
-          { word: "smartphone",     past: "smartphone",     emoji: "📱" },
-          { word: "tablet",         past: "tablet",         emoji: "📟" },
-          { word: "digital camera", past: "digital camera", emoji: "📷" },
-          { word: "e-reader",       past: "e-reader",       emoji: "📖" },
-          { word: "headphones",     past: "headphones",     emoji: "🎧" },
-          { word: "portable speaker", past: "portable speaker", emoji: "🔊" },
+          { word: "smartwatch",       past: "smartwatch",       vn: "đồng hồ thông minh",     emoji: "⌚" },
+          { word: "laptop",           past: "laptop",           vn: "máy tính xách tay",      emoji: "💻" },
+          { word: "smartphone",       past: "smartphone",       vn: "điện thoại thông minh",  emoji: "📱" },
+          { word: "tablet",           past: "tablet",           vn: "máy tính bảng",          emoji: "📟" },
+          { word: "digital camera",   past: "digital camera",   vn: "máy ảnh kỹ thuật số",    emoji: "📷" },
+          { word: "e-reader",         past: "e-reader",         vn: "máy đọc sách",           emoji: "📖" },
+          { word: "headphones",       past: "headphones",       vn: "tai nghe",               emoji: "🎧" },
+          { word: "portable speaker", past: "portable speaker", vn: "loa di động",            emoji: "🔊" },
         ],
         lesson_5: ["upload a photo","text a friend","stream a video","download a song","charge a phone","log in","print a document","search the internet"],
       },
@@ -969,14 +969,14 @@ export const CURRICULUM_DATA = {
       quizGameMode: "SPACE_DEFENSE_TRIVIA",
       vocabulary: {
         lesson_1: [
-          { word: "buy groceries",     past: "bought groceries",     emoji: "🛒" },
-          { word: "walk the dog",      past: "walked the dog",       emoji: "🦮" },
-          { word: "study for a test",  past: "studied for a test",   emoji: "📝" },
-          { word: "take out the trash", past: "took out the trash",  emoji: "🗑️" },
-          { word: "buy a present",     past: "bought a present",     emoji: "🎁" },
-          { word: "play chess",        past: "played chess",         emoji: "♟️" },
-          { word: "read the newspaper", past: "read the newspaper",  emoji: "📰" },
-          { word: "watch the news",    past: "watched the news",     emoji: "📺" },
+          { word: "buy groceries",      past: "bought groceries",     vn: "mua nhu yếu phẩm", emoji: "🛒" },
+          { word: "walk the dog",       past: "walked the dog",       vn: "dắt chó đi dạo",   emoji: "🦮" },
+          { word: "study for a test",   past: "studied for a test",   vn: "ôn thi",           emoji: "📝" },
+          { word: "take out the trash", past: "took out the trash",   vn: "đổ rác",           emoji: "🗑️" },
+          { word: "buy a present",      past: "bought a present",     vn: "mua quà",          emoji: "🎁" },
+          { word: "play chess",         past: "played chess",         vn: "chơi cờ vua",      emoji: "♟️" },
+          { word: "read the newspaper", past: "read the newspaper",   vn: "đọc báo giấy",     emoji: "📰" },
+          { word: "watch the news",     past: "watched the news",     vn: "xem thời sự",      emoji: "📺" },
         ],
         lesson_5: ["go online","listen to the radio","read a magazine","download an app","look at the screen","read a blog post"],
       },
@@ -1279,7 +1279,16 @@ function DailyActionFlashcards({ addCoins }) {
   const items = CURRICULUM_DATA.level_5.unit_3.vocabulary.lesson_1;
   const [mastered, setMastered] = useState(() => new Set());
   const [tense, setTense] = useState({}); // id -> 'past'
+  const [meaning, setMeaning] = useState({}); // id -> true
   function toggle(i) { setTense((p) => ({ ...p, [i]: p[i] === "past" ? "base" : "past" })); }
+  function toggleMeaning(i) { setMeaning((p) => ({ ...p, [i]: !p[i] })); }
+  function speakSlow(text) {
+    try {
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = "en-US"; u.rate = 0.5;
+      window.speechSynthesis?.cancel(); window.speechSynthesis?.speak(u);
+    } catch {}
+  }
   function master(i) {
     if (mastered.has(i)) return;
     setMastered((p) => {
@@ -1319,12 +1328,25 @@ function DailyActionFlashcards({ addCoins }) {
                 </div>
                 <div className="px-3 pb-3 pt-3">
                   <p key={phrase} className="ac-fade min-h-12 text-center text-base font-extrabold leading-tight text-white">{phrase}</p>
+                  <div className="mt-1 min-h-7 text-center">
+                    {meaning[i] ? (
+                      <p className="ac-fade rounded-xl bg-white/15 px-2 py-1 text-sm font-bold text-amber-100 ring-1 ring-amber-300/40" style={{ boxShadow: "0 0 10px #fbbf2455" }}>{v.vn}</p>
+                    ) : <span className="text-sm text-white/30">• • •</span>}
+                  </div>
                   <div className="mt-2 grid grid-cols-2 gap-1.5">
-                    <button onClick={() => speak(phrase)} className="flex items-center justify-center gap-1 rounded-2xl bg-cyan-500/20 py-2 text-cyan-200 transition active:scale-95 ring-1 ring-cyan-400/30">
-                      <Volume2 size={14}/><span className="text-[11px] font-bold">Listen</span>
+                    <button onClick={() => toggleMeaning(i)} className="flex items-center justify-center gap-1 rounded-2xl bg-white/10 py-2 text-white transition active:scale-95 ring-1 ring-white/20">
+                      <span className="text-[11px] font-bold">{meaning[i] ? "👁️ Hide" : "👁️ Nghĩa từ"}</span>
                     </button>
                     <button onClick={() => toggle(i)} className={`flex items-center justify-center gap-1 rounded-2xl py-2 transition active:scale-95 ${showPast ? "bg-purple-500 text-white" : "bg-amber-400/30 text-amber-100 ring-1 ring-amber-300/40"}`}>
-                      <span className="text-[11px] font-bold">Form ⚡</span>
+                      <span className="text-[11px] font-bold">Past Form ⏳</span>
+                    </button>
+                  </div>
+                  <div className="mt-1.5 grid grid-cols-2 gap-1.5">
+                    <button onClick={() => speak(phrase)} className="flex items-center justify-center gap-1 rounded-2xl bg-cyan-500/20 py-2 text-cyan-200 transition active:scale-95 ring-1 ring-cyan-400/30">
+                      <Volume2 size={14}/><span className="text-[11px] font-bold">🔊 Listen</span>
+                    </button>
+                    <button onClick={() => speakSlow(phrase)} className="flex items-center justify-center gap-1 rounded-2xl bg-amber-500/20 py-2 text-amber-100 transition active:scale-95 ring-1 ring-amber-300/40">
+                      <Volume2 size={14}/><span className="text-[11px] font-bold">🐌 Slow</span>
                     </button>
                   </div>
                   <button onClick={() => master(i)} className="mt-2 w-full rounded-2xl py-2 text-xs font-extrabold text-white transition active:scale-95"
