@@ -2938,12 +2938,14 @@ function StarField({ count = 40 }) {
   );
 }
 
-function DashboardHub({ onPick, name }) {
+function DashboardHub({ onPick, name, currentUnit = 1 }) {
+  const unitTitle = currentUnit === 2 ? "Gadget Nebula" : "Adventure Camp";
+  const unitEmoji = currentUnit === 2 ? "🌀" : "🌠";
   return (
     <div className="ac-fade relative">
       <div className="relative mb-4 overflow-hidden rounded-3xl p-4 text-center gx-glass">
-        <p className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-cyan-300 gx-neon-text" style={{ color: "#67e8f9" }}>Exploring: Level 5 🚀 Unit 1</p>
-        <p className="text-2xl font-black text-white">🌠 Adventure Camp</p>
+        <p className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-cyan-300 gx-neon-text" style={{ color: "#67e8f9" }}>Exploring: Share It! 5 🚀 Unit {currentUnit} - {unitTitle}</p>
+        <p className="text-2xl font-black text-white">{unitEmoji} {unitTitle}</p>
 
         <p className="mt-1 text-sm font-bold text-indigo-200">
           {name ? `Welcome, Captain ${name}!` : "Welcome, Space Cadet!"} Pick a planet to explore.
