@@ -1190,6 +1190,48 @@ export const CURRICULUM_DATA = {
         ],
       },
     },
+    unit_5: {
+      title: "Let's Play!",
+      icon: "⚽",
+      formToggleLabel: "-ing Form 🔄",
+      grammarGameMode: "COSMIC_BALLOON_POP",
+      quizGameMode: "ALIEN_TRIVIA",
+      vocabulary: {
+        lesson_1: [
+          { word: "play basketball", alt: "playing basketball", vn: "chơi bóng rổ",    emoji: "🏀" },
+          { word: "play soccer",     alt: "playing soccer",     vn: "chơi bóng đá",    emoji: "⚽" },
+          { word: "go swimming",     alt: "going swimming",     vn: "đi bơi",          emoji: "🏊" },
+          { word: "ride a bike",     alt: "riding a bike",      vn: "đi xe đạp",       emoji: "🚲" },
+          { word: "inline skate",    alt: "inline skating",     vn: "trượt patin",     emoji: "🛼" },
+          { word: "skateboard",      alt: "skateboarding",      vn: "trượt ván",       emoji: "🛹" },
+          { word: "play tennis",     alt: "playing tennis",     vn: "chơi quần vợt",   emoji: "🎾" },
+          { word: "dance",           alt: "dancing",            vn: "nhảy múa",        emoji: "💃" },
+        ],
+        lesson_5: [
+          { word: "play the guitar" },
+          { word: "sing songs" },
+          { word: "draw pictures" },
+          { word: "cook dinner" },
+          { word: "read books" },
+          { word: "watch cartoons" },
+        ],
+      },
+      ai_speak: [
+        "He is playing basketball with his friends in the park.",
+        "She is going swimming because the weather is very hot.",
+        "Are you riding a bike or inline skating right now?",
+        "My brother loves skateboarding but he cannot play tennis.",
+        "We are dancing and singing happy songs together today.",
+      ],
+      reading: {
+        text: "The Galactic Sports Day: Today is the annual Sports Day on the Space Station. All the alien children are excited. Toby is playing basketball with his floating drone buddy. Luna is going swimming in the zero-gravity pool. Some cosmic campers are riding bikes, and others are inline skating down the neon hallways.",
+        questions: [
+          { q: "Today is the annual Sports Day on the Space Station.", a: true  },
+          { q: "Luna is playing tennis in the kitchen.",               a: false },
+          { q: "The children are riding bikes and inline skating.",    a: true  },
+        ],
+      },
+    },
   },
 };
 
