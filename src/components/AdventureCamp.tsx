@@ -2943,8 +2943,8 @@ function StarField({ count = 40 }) {
 }
 
 function DashboardHub({ onPick, name, currentUnit = 1 }) {
-  const unitTitle = currentUnit === 4 ? "Myths & Legends" : currentUnit === 3 ? "Surprise!" : currentUnit === 2 ? "Gadget Nebula" : "Adventure Camp";
-  const unitEmoji = currentUnit === 4 ? "🧜‍♀️" : currentUnit === 3 ? "☄️" : currentUnit === 2 ? "🌀" : "🌠";
+  const unitTitle = currentUnit === 5 ? "Let's Cook!" : currentUnit === 4 ? "Myths & Legends" : currentUnit === 3 ? "Surprise!" : currentUnit === 2 ? "Gadget Nebula" : "Adventure Camp";
+  const unitEmoji = currentUnit === 5 ? "🍳" : currentUnit === 4 ? "🧜‍♀️" : currentUnit === 3 ? "☄️" : currentUnit === 2 ? "🌀" : "🌠";
   return (
     <div className="ac-fade relative">
       <div className="relative mb-4 overflow-hidden rounded-3xl p-4 text-center gx-glass">
