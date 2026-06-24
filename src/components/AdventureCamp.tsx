@@ -3144,7 +3144,7 @@ function StarLeague({ onEnterLevel5 }) {
 // =================================================================
 const UNITS = [
   { n:1, title:"Adventure Camp",  emoji:"🏕️", ring:"#34d399", core:"radial-gradient(circle at 30% 30%, #bef264, #16a34a 55%, #064e3b)", glow:"#34d399", unlocked:true  },
-  { n:2, title:"Gadget Nebula",   emoji:"🤖", ring:"#22d3ee", core:"radial-gradient(circle at 30% 30%, #67e8f9, #0891b2 55%, #0e1741)", glow:"#22d3ee", unlocked:false },
+  { n:2, title:"Gadget Nebula",   emoji:"🌀", ring:"#22d3ee", core:"radial-gradient(circle at 30% 30%, #67e8f9, #0891b2 55%, #0e1741)", glow:"#22d3ee", unlocked:true  },
   { n:3, title:"Wild Safari",     emoji:"🦁", ring:"#a3e635", core:"radial-gradient(circle at 30% 30%, #bbf7d0, #16a34a 55%, #14532d)", glow:"#a3e635", unlocked:false },
   { n:4, title:"Future City",     emoji:"🌆", ring:"#c084fc", core:"radial-gradient(circle at 30% 30%, #f0abfc, #9333ea 55%, #3b0764)", glow:"#c084fc", unlocked:false },
   { n:5, title:"Eco Planet",      emoji:"🌍", ring:"#38bdf8", core:"radial-gradient(circle at 30% 30%, #bae6fd, #0284c7 55%, #082f49)", glow:"#38bdf8", unlocked:false },
