@@ -2946,8 +2946,8 @@ function StarField({ count = 40 }) {
 
 function DashboardHub({ onPick, name, currentUnit = 1, selectedLevel = "level_5" }) {
   const isL3 = selectedLevel === "level_3";
-  const l3Title = currentUnit === 5 ? "Let's Play!" : "Jobs";
-  const l3Emoji = currentUnit === 5 ? "⚽" : "🧑‍🚀";
+  const l3Title = currentUnit === 5 ? "Let's Play!" : "After School";
+  const l3Emoji = currentUnit === 5 ? "⚽" : "⏰";
   const l5Title = currentUnit === 8 ? "On Vacation!" : currentUnit === 6 ? "Save Our Planet!" : currentUnit === 5 ? "Let's Cook!" : currentUnit === 4 ? "Myths & Legends" : currentUnit === 3 ? "Surprise!" : currentUnit === 2 ? "Gadget Nebula" : "Adventure Camp";
   const l5Emoji = currentUnit === 8 ? "🛳️" : currentUnit === 6 ? "🌍" : currentUnit === 5 ? "🍳" : currentUnit === 4 ? "🧜‍♀️" : currentUnit === 3 ? "☄️" : currentUnit === 2 ? "🌀" : "🌠";
   const unitTitle = isL3 ? l3Title : l5Title;
