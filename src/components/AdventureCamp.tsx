@@ -30,6 +30,7 @@ import {
   COSMIC_AVATARS, COSMIC_AVATAR_BY_ID,
   VocabularyQuestU2, RocketFuelMission, AISpeakingWorldU2, ReadingAdventureU2, Planet5ArenaU2,
   VocabularyQuestU3, NebulaBridge, ReadingAdventureU3, Planet5ArenaU3,
+  VocabularyQuestU4, OrbitalAlignment, ReadingAdventureU4, Planet5ArenaU4,
   CosmicSpeakingNebula,
 } from "./Unit2";
 
@@ -2941,8 +2942,8 @@ function StarField({ count = 40 }) {
 }
 
 function DashboardHub({ onPick, name, currentUnit = 1 }) {
-  const unitTitle = currentUnit === 3 ? "Surprise!" : currentUnit === 2 ? "Gadget Nebula" : "Adventure Camp";
-  const unitEmoji = currentUnit === 3 ? "☄️" : currentUnit === 2 ? "🌀" : "🌠";
+  const unitTitle = currentUnit === 4 ? "Myths & Legends" : currentUnit === 3 ? "Surprise!" : currentUnit === 2 ? "Gadget Nebula" : "Adventure Camp";
+  const unitEmoji = currentUnit === 4 ? "🧜‍♀️" : currentUnit === 3 ? "☄️" : currentUnit === 2 ? "🌀" : "🌠";
   return (
     <div className="ac-fade relative">
       <div className="relative mb-4 overflow-hidden rounded-3xl p-4 text-center gx-glass">
@@ -3166,7 +3167,7 @@ const UNITS = [
   { n:1, title:"Adventure Camp",  emoji:"🏕️", ring:"#34d399", core:"radial-gradient(circle at 30% 30%, #bef264, #16a34a 55%, #064e3b)", glow:"#34d399", unlocked:true  },
   { n:2, title:"Gadget Nebula",   emoji:"🌀", ring:"#22d3ee", core:"radial-gradient(circle at 30% 30%, #67e8f9, #0891b2 55%, #0e1741)", glow:"#22d3ee", unlocked:true  },
   { n:3, title:"Surprise!",      emoji:"☄️", ring:"#fbbf24", core:"radial-gradient(circle at 30% 30%, #fde68a, #f59e0b 55%, #422006)", glow:"#fbbf24", unlocked:true  },
-  { n:4, title:"Future City",     emoji:"🌆", ring:"#c084fc", core:"radial-gradient(circle at 30% 30%, #f0abfc, #9333ea 55%, #3b0764)", glow:"#c084fc", unlocked:false },
+  { n:4, title:"Myths & Legends", emoji:"🧜‍♀️", ring:"#c084fc", core:"radial-gradient(circle at 30% 30%, #f0abfc, #9333ea 55%, #3b0764)", glow:"#c084fc", unlocked:true  },
   { n:5, title:"Eco Planet",      emoji:"🌍", ring:"#38bdf8", core:"radial-gradient(circle at 30% 30%, #bae6fd, #0284c7 55%, #082f49)", glow:"#38bdf8", unlocked:false },
   { n:6, title:"Healthy Life",    emoji:"☀️", ring:"#fb923c", core:"radial-gradient(circle at 30% 30%, #fde68a, #f97316 55%, #7c2d12)", glow:"#fb923c", unlocked:false },
   { n:7, title:"Ancient History", emoji:"🏺", ring:"#facc15", core:"radial-gradient(circle at 30% 30%, #fef08a, #ca8a04 55%, #422006)", glow:"#facc15", unlocked:false },
@@ -3739,11 +3740,11 @@ export default function AdventureCamp() {
             </>
           )}
 
-          {view === "vocab" && (currentUnit === 3 ? <VocabularyQuestU3 onBack={back} addCoins={addCoins} /> : currentUnit === 2 ? <VocabularyQuestU2 onBack={back} addCoins={addCoins} /> : <VocabularyQuest onBack={back} addCoins={addCoins} />)}
-          {view === "grammar" && (currentUnit === 3 ? <NebulaBridge onBack={back} addCoins={addCoins} /> : currentUnit === 2 ? <RocketFuelMission onBack={back} addCoins={addCoins} /> : <GrammarLab onBack={back} addCoins={addCoins} />)}
+          {view === "vocab" && (currentUnit === 4 ? <VocabularyQuestU4 onBack={back} addCoins={addCoins} /> : currentUnit === 3 ? <VocabularyQuestU3 onBack={back} addCoins={addCoins} /> : currentUnit === 2 ? <VocabularyQuestU2 onBack={back} addCoins={addCoins} /> : <VocabularyQuest onBack={back} addCoins={addCoins} />)}
+          {view === "grammar" && (currentUnit === 4 ? <OrbitalAlignment onBack={back} addCoins={addCoins} /> : currentUnit === 3 ? <NebulaBridge onBack={back} addCoins={addCoins} /> : currentUnit === 2 ? <RocketFuelMission onBack={back} addCoins={addCoins} /> : <GrammarLab onBack={back} addCoins={addCoins} />)}
           {view === "speaking" && <CosmicSpeakingNebula onBack={back} addCoins={addCoins} unit={currentUnit} />}
-          {view === "reading" && (currentUnit === 3 ? <ReadingAdventureU3 onBack={back} addCoins={addCoins} /> : currentUnit === 2 ? <ReadingAdventureU2 onBack={back} addCoins={addCoins} /> : <ReadingAdventure onBack={back} addCoins={addCoins} />)}
-          {view === "quiz" && (currentUnit === 3 ? <Planet5ArenaU3 onBack={back} addCoins={addCoins} /> : currentUnit === 2 ? <Planet5ArenaU2 onBack={back} addCoins={addCoins} /> : <GrandUnitQuiz onBack={back} addCoins={addCoins} />)}
+          {view === "reading" && (currentUnit === 4 ? <ReadingAdventureU4 onBack={back} addCoins={addCoins} /> : currentUnit === 3 ? <ReadingAdventureU3 onBack={back} addCoins={addCoins} /> : currentUnit === 2 ? <ReadingAdventureU2 onBack={back} addCoins={addCoins} /> : <ReadingAdventure onBack={back} addCoins={addCoins} />)}
+          {view === "quiz" && (currentUnit === 4 ? <Planet5ArenaU4 onBack={back} addCoins={addCoins} /> : currentUnit === 3 ? <Planet5ArenaU3 onBack={back} addCoins={addCoins} /> : currentUnit === 2 ? <Planet5ArenaU2 onBack={back} addCoins={addCoins} /> : <GrandUnitQuiz onBack={back} addCoins={addCoins} />)}
         </main>
 
 

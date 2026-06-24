@@ -994,6 +994,38 @@ export const CURRICULUM_DATA = {
         ],
       },
     },
+    unit_4: {
+      title: "Myths & Legends",
+      icon: "🧜‍♀️",
+      grammarGameMode: "ORBITAL_ALIGNMENT",
+      quizGameMode: "QUANTUM_MEMORY_MATCH",
+      vocabulary: {
+        lesson_1: [
+          { word: "minotaur", past: "minotaur", vn: "quái vật nhân ngưu",       emoji: "🐂" },
+          { word: "mermaid",  past: "mermaid",  vn: "nàng tiên cá",            emoji: "🧜‍♀️" },
+          { word: "phoenix",  past: "phoenix",  vn: "chim phượng hoàng",       emoji: "🦅" },
+          { word: "dragon",   past: "dragon",   vn: "con rồng",                emoji: "🐉" },
+          { word: "centaur",  past: "centaur",  vn: "nhân mã",                 emoji: "🏹" },
+          { word: "unicorn",  past: "unicorn",  vn: "kỳ lân",                  emoji: "🦄" },
+          { word: "pegasus",  past: "pegasus",  vn: "ngựa có cánh pegasus",    emoji: "🐎" },
+          { word: "kraken",   past: "kraken",   vn: "quái vật mực khổng lồ",   emoji: "🦑" },
+        ],
+        lesson_5: ["tell a story","paint a picture","write a poem","sing a song","read a comic","make a statue"],
+      },
+      ai_speak: [
+        "A minotaur was a monster that lived in a giant labyrinth.",
+        "Mermaids were mythical creatures who lived deep in the ocean.",
+        "The phoenix is a magical bird that can be reborn from fire.",
+      ],
+      reading: {
+        text: "The Legend of Atlantis: Long ago, Greek philosophers wrote stories about a magnificent, powerful island nation called Atlantis. This utopian city possessed incredible technology, golden temples, and vast wealth. However, the legends claim that the people became greedy, angering the ancient gods. In a single day and night of misfortune, the entire island was swallowed by the sea, disappearing forever into the dark Atlantic ocean.",
+        questions: [
+          { q: "Atlantis was a real city that scientists found yesterday.", a: false },
+          { q: "Legends say the island was swallowed by the sea.", a: true },
+          { q: "The story discusses a famous myth about a sunken island.", a: true },
+        ],
+      },
+    },
   },
 };
 
@@ -1275,8 +1307,8 @@ export function AISpeakNebula({ onBack, addCoins, unit = 1 }) {
 // =================================================================
 
 // ---------- PLANET 1 U3: Daily Action flashcards + Lesson 5 speaking ----------
-function DailyActionFlashcards({ addCoins }) {
-  const items = CURRICULUM_DATA.level_5.unit_3.vocabulary.lesson_1;
+function DailyActionFlashcards({ addCoins, unit = 3 }) {
+  const items = getUnitData(unit).vocabulary.lesson_1;
   const [mastered, setMastered] = useState(() => new Set());
   const [tense, setTense] = useState({}); // id -> 'past'
   const [meaning, setMeaning] = useState({}); // id -> true
@@ -1370,8 +1402,8 @@ function DailyActionFlashcards({ addCoins }) {
   );
 }
 
-function DailyPhraseSpeaking({ addCoins }) {
-  const phrases = CURRICULUM_DATA.level_5.unit_3.vocabulary.lesson_5.map((p) => ({ text: p, emoji: "🎙️" }));
+function DailyPhraseSpeaking({ addCoins, unit = 3 }) {
+  const phrases = getUnitData(unit).vocabulary.lesson_5.map((p) => ({ text: p, emoji: "🎙️" }));
   const [idx, setIdx] = useState(0);
   const [phase, setPhase] = useState("idle");
   const [transcript, setTranscript] = useState("");
@@ -1634,8 +1666,8 @@ export function NebulaBridge({ onBack, addCoins }) {
 }
 
 // ---------- PLANET 4 U3: Reading Comet · History of News ----------
-export function ReadingAdventureU3({ onBack, addCoins }) {
-  const data = CURRICULUM_DATA.level_5.unit_3.reading;
+export function ReadingAdventureU3({ onBack, addCoins, unit = 3, title = "📰 The History of News" }) {
+  const data = getUnitData(unit).reading;
   const [answers, setAnswers] = useState({});
   const [done, setDone] = useState(false);
   const awarded = useRef(false);
@@ -1659,7 +1691,7 @@ export function ReadingAdventureU3({ onBack, addCoins }) {
       <BackBar onBack={onBack} color="#22d3ee" />
       <div className="mb-3 rounded-3xl p-4 text-center gx-glass" style={{ boxShadow: "0 0 18px #22d3ee66" }}>
         <p className="text-[11px] font-extrabold uppercase tracking-widest text-cyan-300">Planet 4 · Reading Comet</p>
-        <p className="text-xl font-black text-white">📰 The History of News</p>
+        <p className="text-xl font-black text-white">{title}</p>
       </div>
       <div className="rounded-3xl gx-glass p-4 text-sm leading-relaxed text-indigo-100 whitespace-pre-line">
         {data.text}
@@ -1910,6 +1942,346 @@ export function Planet5ArenaU3({ onBack, addCoins }) {
         ))}
       </div>
       {mode === "a" ? <PhonicsRocketU3 addCoins={addCoins} /> : <SpaceDefenseTrivia addCoins={addCoins} />}
+    </div>
+  );
+}
+
+
+// =================================================================
+// 🧜‍♀️ UNIT 4 — Myths & Legends · planet components
+// =================================================================
+
+// ---------- PLANET 1 U4: reuses flashcard + speaking shells with unit=4 ----------
+export function VocabularyQuestU4({ onBack, addCoins }) {
+  const [tab, setTab] = useState("l1");
+  return (
+    <div className="ac-fade">
+      <BackBar onBack={onBack} color="#a78bfa" />
+      <div className="mb-3 rounded-3xl p-4 text-center gx-glass" style={{ boxShadow: "0 0 18px #a78bfa66" }}>
+        <p className="text-[11px] font-extrabold uppercase tracking-widest text-violet-300">Planet 1 · Vocabulary Orbit</p>
+        <p className="text-xl font-black text-white">🧜‍♀️ Mythical Creatures Galaxy</p>
+      </div>
+      <div className="mb-3 grid grid-cols-2 gap-2">
+        {[{k:"l1",t:"Lesson 1 · Flashcards"},{k:"l5",t:"Lesson 5 · Speaking"}].map((x) => (
+          <button key={x.k} onClick={() => setTab(x.k)}
+            className={`rounded-full px-3 py-2 text-xs font-black transition ${tab===x.k ? "text-slate-900" : "text-white"}`}
+            style={tab===x.k ? { background: "linear-gradient(135deg,#a78bfa,#ec4899)", boxShadow: "0 0 14px #a78bfa88" } : { background: "rgba(255,255,255,.08)", boxShadow: "inset 0 0 0 1px rgba(255,255,255,.18)" }}>
+            {x.t}
+          </button>
+        ))}
+      </div>
+      {tab === "l1" ? <DailyActionFlashcards addCoins={addCoins} unit={4} /> : <DailyPhraseSpeaking addCoins={addCoins} unit={4} />}
+    </div>
+  );
+}
+
+// ---------- PLANET 4 U4: Atlantis reading ----------
+export function ReadingAdventureU4({ onBack, addCoins }) {
+  return <ReadingAdventureU3 onBack={onBack} addCoins={addCoins} unit={4} title="🏛️ The Legend of Atlantis" />;
+}
+
+// ---------- PLANET 2 U4: Orbital Sentence Alignment ----------
+const ORBITAL_SENTENCES = [
+  { words: ["A","mermaid","is","a","creature","that","has","a","fish","tail."] },
+  { words: ["Centaurs","were","warriors","who","were","half","man","and","half","horse."] },
+  { words: ["Dragons","are","monsters","which","breathe","fire."] },
+];
+export function OrbitalAlignment({ onBack, addCoins }) {
+  const [idx, setIdx] = useState(0);
+  const [pool, setPool] = useState(() => shuffle(ORBITAL_SENTENCES[0].words.map((w, i) => ({ w, i }))));
+  const [picked, setPicked] = useState([]); // array of {w,i}
+  const [flash, setFlash] = useState(null); // 'ok'|'bad'
+  const [done, setDone] = useState(false);
+  const awarded = useRef(false);
+  const target = ORBITAL_SENTENCES[idx].words;
+
+  function pick(node) {
+    if (flash) return;
+    const nextPicked = [...picked, node];
+    const expected = target[nextPicked.length - 1];
+    if (node.w !== expected) {
+      setFlash("bad");
+      setTimeout(() => { setFlash(null); setPicked([]); setPool(shuffle(target.map((w, i) => ({ w, i })))); }, 700);
+      return;
+    }
+    setPicked(nextPicked);
+    setPool(pool.filter((p) => p.i !== node.i));
+    if (nextPicked.length === target.length) {
+      setFlash("ok");
+      setTimeout(() => {
+        setFlash(null);
+        if (idx + 1 >= ORBITAL_SENTENCES.length) {
+          if (!awarded.current) { awarded.current = true; addCoins?.(15); try { confetti({ particleCount: 180, spread: 100, origin: { y: 0.6 } }); } catch {} }
+          setDone(true);
+        } else {
+          const ni = idx + 1;
+          setIdx(ni);
+          setPicked([]);
+          setPool(shuffle(ORBITAL_SENTENCES[ni].words.map((w, i) => ({ w, i }))));
+        }
+      }, 700);
+    }
+  }
+
+  function reset() {
+    setIdx(0); setPicked([]); setPool(shuffle(ORBITAL_SENTENCES[0].words.map((w, i) => ({ w, i })))); setDone(false); awarded.current = false;
+  }
+
+  return (
+    <div className="ac-fade">
+      <BackBar onBack={onBack} color="#a78bfa" />
+      <div className="mb-3 rounded-3xl p-4 text-center gx-glass" style={{ boxShadow: "0 0 18px #a78bfa66" }}>
+        <p className="text-[11px] font-extrabold uppercase tracking-widest text-violet-300">Planet 2 · Grammar Black Hole</p>
+        <p className="text-xl font-black text-white">🪐 Orbital Sentence Alignment</p>
+        <p className="text-[11px] font-bold text-indigo-200">Tap floating word nodes in the right order to form a stable gravity beam.</p>
+      </div>
+
+      {!done ? (
+        <>
+          <div className="mb-3 flex items-center justify-between text-xs font-bold text-indigo-200">
+            <span>Sentence {idx + 1} / {ORBITAL_SENTENCES.length}</span>
+            <button onClick={reset} className="rounded-full bg-white/10 px-3 py-1 font-black text-violet-200 ring-1 ring-white/20">Reset</button>
+          </div>
+
+          <div className="rounded-3xl gx-glass p-4 min-h-[80px]" style={{ boxShadow: flash === "ok" ? "0 0 22px #34d399" : flash === "bad" ? "0 0 22px #f43f5e" : "0 0 14px #a78bfa55" }}>
+            <p className="text-[11px] font-extrabold uppercase tracking-widest text-cyan-300">⚡ Gravity beam</p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {picked.length === 0 && <span className="text-xs text-white/40">Tap a word below to start aligning…</span>}
+              {picked.map((p, i) => (
+                <span key={i} className="rounded-2xl px-3 py-1.5 text-sm font-black text-white" style={{ background: "linear-gradient(135deg,#10b981,#22d3ee)", boxShadow: "0 0 10px #22d3ee88" }}>{p.w}</span>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-3 rounded-3xl gx-glass p-3">
+            <p className="text-[11px] font-extrabold uppercase tracking-widest text-violet-300">Floating word nodes</p>
+            <div className="mt-2 flex flex-wrap gap-2 justify-center">
+              {pool.map((p) => (
+                <button key={p.i} onClick={() => pick(p)} disabled={!!flash}
+                  className="rounded-full px-3 py-2 text-sm font-black text-white shadow active:scale-95 transition"
+                  style={{ background: "radial-gradient(circle at 30% 30%, #c4b5fd, #6d28d9 70%)", boxShadow: "0 0 14px #a78bfa88, inset 0 0 0 1px #c4b5fd66", animation: "csnFloat 3s ease-in-out infinite" }}>
+                  {p.w}
+                </button>
+              ))}
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="rounded-3xl gx-glass p-5 text-center" style={{ boxShadow: "0 0 22px #34d399" }}>
+          <p className="text-2xl font-black text-white">🪐 Orbits aligned!</p>
+          <p className="mt-1 text-sm font-bold text-indigo-200">All three gravity beams stable. +15 coins awarded!</p>
+          <div className="mt-3 flex justify-center gap-2">
+            <button onClick={reset} className="rounded-full px-4 py-2 text-sm font-black text-slate-900"
+              style={{ background: "linear-gradient(135deg,#c4b5fd,#a78bfa)", boxShadow: "0 0 14px #a78bfa88" }}>Replay</button>
+            <button onClick={onBack} className="rounded-full bg-white/10 px-4 py-2 text-sm font-black text-white ring-1 ring-white/20">Back</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ---------- PLANET 5 U4 · Mode A: Phonics Rocket -tion/-sion ----------
+const PHONICS_ITEMS_U4 = [
+  { word: "invention",   sound: "tion" },
+  { word: "decision",    sound: "sion" },
+  { word: "celebration", sound: "tion" },
+  { word: "vision",      sound: "sion" },
+  { word: "exploration", sound: "tion" },
+  { word: "television",  sound: "sion" },
+];
+function PhonicsRocketU4({ addCoins }) {
+  const [queue, setQueue] = useState(() => shuffle(PHONICS_ITEMS_U4));
+  const [pos, setPos] = useState(0);
+  const [score, setScore] = useState(0);
+  const [flash, setFlash] = useState(null);
+  const [done, setDone] = useState(false);
+  const cur = queue[pos];
+  function pick(sound) {
+    if (flash || done) return;
+    const ok = sound === cur.sound;
+    setFlash({ ok, target: sound });
+    if (ok) { setScore((s) => s + 1); addCoins?.(2); }
+    setTimeout(() => {
+      setFlash(null);
+      if (pos + 1 >= queue.length) {
+        setDone(true);
+        try { confetti({ particleCount: 130, spread: 80, origin: { y: 0.6 } }); } catch {}
+      } else setPos((p) => p + 1);
+    }, 700);
+  }
+  function reset() { setQueue(shuffle(PHONICS_ITEMS_U4)); setPos(0); setScore(0); setDone(false); setFlash(null); }
+  return (
+    <div>
+      <div className="mb-3 flex items-center justify-between text-xs font-bold text-indigo-200">
+        <span>Word {Math.min(pos+1, queue.length)} / {queue.length}</span>
+        <span>Correct: <b className="text-white">{score}</b></span>
+        <button onClick={reset} className="rounded-full bg-white/10 px-3 py-1 font-black text-cyan-200 ring-1 ring-white/20">Reset</button>
+      </div>
+      {!done ? (
+        <>
+          <div className="rounded-3xl gx-glass p-5 text-center" style={{ boxShadow: "0 0 18px #a78bfa44" }}>
+            <p className="text-[11px] font-extrabold uppercase tracking-widest text-violet-300">Which suffix sound does this word make?</p>
+            <p className="mt-2 text-3xl font-black tracking-wide text-white">{cur.word}</p>
+            <button onClick={() => speak(cur.word)} className="mt-2 rounded-full bg-white/10 px-3 py-1 text-xs font-black text-violet-200 ring-1 ring-white/20">🔊 Hear it</button>
+          </div>
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            {[
+              { id: "tion", label: "-tion /ʃn/", grad: "linear-gradient(135deg,#06b6d4,#22d3ee)", glow: "#22d3ee" },
+              { id: "sion", label: "-sion /ʒn/", grad: "linear-gradient(135deg,#a78bfa,#ec4899)", glow: "#ec4899" },
+            ].map((r) => {
+              const showRight = flash && r.id === cur.sound;
+              const showWrong = flash && r.id === flash.target && !flash.ok;
+              return (
+                <button key={r.id} onClick={() => pick(r.id)} disabled={!!flash}
+                  className="relative flex h-40 flex-col items-center justify-end rounded-3xl pb-4 text-white shadow-xl transition active:scale-95"
+                  style={{ background: r.grad, boxShadow: `0 0 18px ${r.glow}88, inset 0 0 0 1px ${r.glow}` }}>
+                  <div className="text-6xl" style={{ filter: `drop-shadow(0 0 10px ${r.glow})` }}>🚀</div>
+                  <div className="mt-1 rounded-full bg-white/20 px-4 py-1 text-sm font-black tracking-wide">{r.label}</div>
+                  {showRight && <div className="absolute inset-0 grid place-items-center rounded-3xl bg-emerald-500/35 text-5xl">✓</div>}
+                  {showWrong && <div className="absolute inset-0 grid place-items-center rounded-3xl bg-rose-500/35 text-5xl">✗</div>}
+                </button>
+              );
+            })}
+          </div>
+          {flash && <p className="mt-3 text-center text-sm font-black" style={{ color: flash.ok ? "#34d399" : "#fda4af" }}>
+            {flash.ok ? `🎉 ${cur.word} → -${cur.sound}  +2 coins` : `Almost! "${cur.word}" → -${cur.sound}`}
+          </p>}
+        </>
+      ) : (
+        <div className="rounded-3xl gx-glass p-5 text-center" style={{ boxShadow: "0 0 22px #a78bfa" }}>
+          <p className="text-2xl font-black text-white">🌠 Phonics Mission Complete!</p>
+          <p className="mt-1 text-sm font-bold text-indigo-200">Score: {score}/{queue.length}</p>
+          <button onClick={reset} className="mt-3 rounded-full px-4 py-2 text-sm font-black text-slate-900"
+            style={{ background: "linear-gradient(135deg,#c4b5fd,#a78bfa)", boxShadow: "0 0 14px #a78bfa88" }}>Play Again</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ---------- PLANET 5 U4 · Mode B: Quantum Memory Match ----------
+function QuantumMemoryMatch({ addCoins }) {
+  const PAIRS = [
+    { id: "minotaur", word: "Minotaur", emoji: "🐂" },
+    { id: "dragon",   word: "Dragon",   emoji: "🐉" },
+    { id: "mermaid",  word: "Mermaid",  emoji: "🧜‍♀️" },
+    { id: "phoenix",  word: "Phoenix",  emoji: "🦅" },
+    { id: "unicorn",  word: "Unicorn",  emoji: "🦄" },
+    { id: "kraken",   word: "Kraken",   emoji: "🦑" },
+  ];
+  const build = () => shuffle(
+    PAIRS.flatMap((p) => [
+      { key: `${p.id}-w`, pairId: p.id, label: p.word, kind: "word" },
+      { key: `${p.id}-e`, pairId: p.id, label: p.emoji, kind: "emoji" },
+    ])
+  );
+  const [cards, setCards] = useState(build);
+  const [flipped, setFlipped] = useState([]); // indexes
+  const [matched, setMatched] = useState(() => new Set());
+  const [moves, setMoves] = useState(0);
+  const [done, setDone] = useState(false);
+  const awarded = useRef(false);
+  const lock = useRef(false);
+
+  function flip(i) {
+    if (lock.current) return;
+    if (flipped.includes(i) || matched.has(cards[i].pairId)) return;
+    const next = [...flipped, i];
+    setFlipped(next);
+    if (next.length === 2) {
+      setMoves((m) => m + 1);
+      const [a, b] = next;
+      if (cards[a].pairId === cards[b].pairId) {
+        setTimeout(() => {
+          setMatched((p) => {
+            const n = new Set(p); n.add(cards[a].pairId);
+            if (n.size === PAIRS.length && !awarded.current) {
+              awarded.current = true;
+              addCoins?.(30);
+              try { confetti({ particleCount: 220, spread: 110, startVelocity: 60, origin: { y: 0.6 } }); } catch {}
+              setTimeout(() => setDone(true), 400);
+            }
+            return n;
+          });
+          setFlipped([]);
+        }, 450);
+      } else {
+        lock.current = true;
+        setTimeout(() => { setFlipped([]); lock.current = false; }, 850);
+      }
+    }
+  }
+  function reset() {
+    setCards(build()); setFlipped([]); setMatched(new Set()); setMoves(0); setDone(false); awarded.current = false; lock.current = false;
+  }
+
+  if (done) return (
+    <div className="rounded-3xl gx-glass p-6 text-center" style={{ boxShadow: "0 0 28px #a78bfa" }}>
+      <div className="text-5xl">🎴✨🪐</div>
+      <p className="mt-2 text-2xl font-black text-white">Quantum board cleared!</p>
+      <p className="mt-1 text-sm font-bold text-violet-200">All pairs matched in {moves} moves · +30 coins secured to your profile.</p>
+      <button onClick={reset} className="mt-4 rounded-full px-4 py-2 text-sm font-black text-slate-900"
+        style={{ background: "linear-gradient(135deg,#c4b5fd,#a78bfa)", boxShadow: "0 0 14px #a78bfa" }}>Play Again</button>
+    </div>
+  );
+
+  return (
+    <div>
+      <div className="mb-3 flex items-center justify-between text-xs font-bold text-indigo-200">
+        <span>Matched: <b className="text-white">{matched.size}/{PAIRS.length}</b></span>
+        <span>Moves: <b className="text-white">{moves}</b></span>
+        <button onClick={reset} className="rounded-full bg-white/10 px-3 py-1 font-black text-violet-200 ring-1 ring-white/20">Reset</button>
+      </div>
+      <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3">
+        {cards.map((c, i) => {
+          const isOpen = flipped.includes(i) || matched.has(c.pairId);
+          const isMatched = matched.has(c.pairId);
+          return (
+            <button key={c.key} onClick={() => flip(i)}
+              className="relative aspect-[3/4] rounded-2xl text-white font-black transition active:scale-95"
+              style={{
+                background: isMatched
+                  ? "linear-gradient(135deg,#10b981,#34d399)"
+                  : isOpen
+                    ? "linear-gradient(135deg,#1e1b4b,#4c1d95)"
+                    : "radial-gradient(circle at 30% 30%, #4338ca, #1e1b4b 70%)",
+                boxShadow: isOpen ? "0 0 16px #a78bfa88, inset 0 0 0 1px #c4b5fd66" : "0 0 10px #4338ca88, inset 0 0 0 1px #6366f155",
+              }}>
+              <div className="absolute inset-0 grid place-items-center">
+                {isOpen ? (
+                  <span className={c.kind === "emoji" ? "text-4xl sm:text-5xl" : "text-sm sm:text-base px-1 text-center"}>{c.label}</span>
+                ) : (
+                  <span className="text-3xl opacity-80">🌌</span>
+                )}
+              </div>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+export function Planet5ArenaU4({ onBack, addCoins }) {
+  const [mode, setMode] = useState("a");
+  return (
+    <div className="ac-fade">
+      <BackBar onBack={onBack} color="#a78bfa" />
+      <div className="mb-3 rounded-3xl p-4 text-center gx-glass" style={{ boxShadow: "0 0 18px #a78bfa66" }}>
+        <p className="text-[11px] font-extrabold uppercase tracking-widest text-violet-300">Planet 5 · Supernova Quiz Arena</p>
+        <p className="text-xl font-black text-white">🏆 Choose your challenge</p>
+      </div>
+      <div className="mb-3 grid grid-cols-2 gap-2">
+        {[{k:"a",t:"🚀 Phonics Rocket"},{k:"b",t:"🎴 Quantum Memory"}].map((x) => (
+          <button key={x.k} onClick={() => setMode(x.k)}
+            className={`rounded-full px-3 py-2 text-xs font-black transition ${mode===x.k?"text-slate-900":"text-white"}`}
+            style={mode===x.k ? { background: "linear-gradient(135deg,#c4b5fd,#a78bfa)", boxShadow: "0 0 14px #a78bfa" } : { background: "rgba(255,255,255,.08)", boxShadow: "inset 0 0 0 1px rgba(255,255,255,.18)" }}>
+            {x.t}
+          </button>
+        ))}
+      </div>
+      {mode === "a" ? <PhonicsRocketU4 addCoins={addCoins} /> : <QuantumMemoryMatch addCoins={addCoins} />}
     </div>
   );
 }
