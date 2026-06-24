@@ -901,18 +901,19 @@ export const CURRICULUM_DATA = {
     unit_1: {
       title: "Adventure Camp",
       icon: "🪐",
+      formToggleLabel: "Past Form ⏳",
       grammarGameMode: "ASTEROID_SMASHER",
       quizGameMode: "FOUR_IN_A_ROW",
       vocabulary: {
         lesson_1: [
-          { word: "build a shelter",    past: "built a shelter",    vn: "dựng lều trú ẩn",       emoji: "⛺" },
-          { word: "ride a zipline",     past: "rode a zipline",     vn: "trượt đu dây tự do",    emoji: "⚡" },
-          { word: "sleep in a tent",    past: "slept in a tent",    vn: "ngủ trong lều",         emoji: "⛺" },
-          { word: "go hiking",          past: "went hiking",        vn: "đi bộ đường dài",       emoji: "🥾" },
-          { word: "go mountain biking", past: "went mountain biking", vn: "đi xe đạp địa hình",  emoji: "🚲" },
-          { word: "cook on a campfire", past: "cooked on a campfire", vn: "nấu ăn bên lửa trại", emoji: "🔥" },
-          { word: "go horseback riding", past: "went horseback riding", vn: "cưỡi ngựa",          emoji: "🐎" },
-          { word: "go canoeing",        past: "went canoeing",      vn: "chèo thuyền canoe",     emoji: "🛶" },
+          { word: "build a shelter",    alt: "built a shelter",    vn: "dựng lều trú ẩn",       emoji: "⛺" },
+          { word: "ride a zipline",     alt: "rode a zipline",     vn: "trượt đu dây tự do",    emoji: "⚡" },
+          { word: "sleep in a tent",    alt: "slept in a tent",    vn: "ngủ trong lều",         emoji: "⛺" },
+          { word: "go hiking",          alt: "went hiking",        vn: "đi bộ đường dài",       emoji: "🥾" },
+          { word: "go mountain biking", alt: "went mountain biking", vn: "đi xe đạp địa hình",  emoji: "🚲" },
+          { word: "cook on a campfire", alt: "cooked on a campfire", vn: "nấu ăn bên lửa trại", emoji: "🔥" },
+          { word: "go horseback riding", alt: "went horseback riding", vn: "cưỡi ngựa",          emoji: "🐎" },
+          { word: "go canoeing",        alt: "went canoeing",      vn: "chèo thuyền canoe",     emoji: "🛶" },
         ],
         lesson_5: ["jump on a trampoline","go climbing","play volleyball","make jewelry","play table tennis","play badminton","go ice skating","go bowling"],
       },
@@ -920,6 +921,8 @@ export const CURRICULUM_DATA = {
         "I cooked dinner on a campfire last night.",
         "I built a shelter and I slept in it.",
         "This morning we went hiking and I rode on a zipline.",
+        "Did you go horseback riding yesterday afternoon?",
+        "We didn't go canoeing because it started raining.",
       ],
       reading: {
         text: "Camp Energy Journal: Yesterday was amazing. We built a shelter in the woods. Later, we cooked on a campfire...",
@@ -933,18 +936,19 @@ export const CURRICULUM_DATA = {
     unit_2: {
       title: "Gadget Nebula",
       icon: "🌀",
+      formToggleLabel: "Plural Form 👥",
       grammarGameMode: "ROCKET_FUEL",
       quizGameMode: "ALIEN_TRIVIA",
       vocabulary: {
         lesson_1: [
-          { word: "smartwatch",       past: "smartwatch",       vn: "đồng hồ thông minh",     emoji: "⌚" },
-          { word: "laptop",           past: "laptop",           vn: "máy tính xách tay",      emoji: "💻" },
-          { word: "smartphone",       past: "smartphone",       vn: "điện thoại thông minh",  emoji: "📱" },
-          { word: "tablet",           past: "tablet",           vn: "máy tính bảng",          emoji: "📟" },
-          { word: "digital camera",   past: "digital camera",   vn: "máy ảnh kỹ thuật số",    emoji: "📷" },
-          { word: "e-reader",         past: "e-reader",         vn: "máy đọc sách",           emoji: "📖" },
-          { word: "headphones",       past: "headphones",       vn: "tai nghe",               emoji: "🎧" },
-          { word: "portable speaker", past: "portable speaker", vn: "loa di động",            emoji: "🔊" },
+          { word: "smartwatch",       alt: "smartwatches",       vn: "đồng hồ thông minh",     emoji: "⌚" },
+          { word: "laptop",           alt: "laptops",            vn: "máy tính xách tay",      emoji: "💻" },
+          { word: "smartphone",       alt: "smartphones",        vn: "điện thoại thông minh",  emoji: "📱" },
+          { word: "tablet",           alt: "tablets",            vn: "máy tính bảng",          emoji: "📟" },
+          { word: "digital camera",   alt: "digital cameras",    vn: "máy ảnh kỹ thuật số",    emoji: "📷" },
+          { word: "e-reader",         alt: "e-readers",          vn: "máy đọc sách",           emoji: "📖" },
+          { word: "headphones",                                  vn: "tai nghe",               emoji: "🎧" },
+          { word: "portable speaker", alt: "portable speakers",  vn: "loa di động",            emoji: "🔊" },
         ],
         lesson_5: ["upload a photo","text a friend","stream a video","download a song","charge a phone","log in","print a document","search the internet"],
       },
@@ -952,6 +956,8 @@ export const CURRICULUM_DATA = {
         "At nine o'clock last night, I was streaming a video.",
         "He was texting a friend when the Wi-Fi stopped.",
         "They were listening to music during class.",
+        "What were you downloading when your laptop died?",
+        "She was charging her smartphone while talking to me.",
       ],
       reading: {
         text: "Vlogging Kit & Tech Tools Review: This smartwatch is excellent for tracking steps. The portable speaker is loud...",
@@ -965,18 +971,19 @@ export const CURRICULUM_DATA = {
     unit_3: {
       title: "Surprise!",
       icon: "☄️",
+      formToggleLabel: "Past Form ⏳",
       grammarGameMode: "NEBULA_BRIDGE",
       quizGameMode: "SPACE_DEFENSE_TRIVIA",
       vocabulary: {
         lesson_1: [
-          { word: "buy groceries",      past: "bought groceries",     vn: "mua nhu yếu phẩm", emoji: "🛒" },
-          { word: "walk the dog",       past: "walked the dog",       vn: "dắt chó đi dạo",   emoji: "🦮" },
-          { word: "study for a test",   past: "studied for a test",   vn: "ôn thi",           emoji: "📝" },
-          { word: "take out the trash", past: "took out the trash",   vn: "đổ rác",           emoji: "🗑️" },
-          { word: "buy a present",      past: "bought a present",     vn: "mua quà",          emoji: "🎁" },
-          { word: "play chess",         past: "played chess",         vn: "chơi cờ vua",      emoji: "♟️" },
-          { word: "read the newspaper", past: "read the newspaper",   vn: "đọc báo giấy",     emoji: "📰" },
-          { word: "watch the news",     past: "watched the news",     vn: "xem thời sự",      emoji: "📺" },
+          { word: "buy groceries",      alt: "bought groceries",     vn: "mua nhu yếu phẩm", emoji: "🛒" },
+          { word: "walk the dog",       alt: "walked the dog",       vn: "dắt chó đi dạo",   emoji: "🦮" },
+          { word: "study for a test",   alt: "studied for a test",   vn: "ôn thi",           emoji: "📝" },
+          { word: "take out the trash", alt: "took out the trash",   vn: "đổ rác",           emoji: "🗑️" },
+          { word: "buy a present",      alt: "bought a present",     vn: "mua quà",          emoji: "🎁" },
+          { word: "play chess",         alt: "played chess",         vn: "chơi cờ vua",      emoji: "♟️" },
+          { word: "read the newspaper", alt: "read the newspaper",   vn: "đọc báo giấy",     emoji: "📰" },
+          { word: "watch the news",     alt: "watched the news",     vn: "xem thời sự",      emoji: "📺" },
         ],
         lesson_5: ["go online","listen to the radio","read a magazine","download an app","look at the screen","read a blog post"],
       },
@@ -984,6 +991,8 @@ export const CURRICULUM_DATA = {
         "A man was walking his dog when it ran into the street.",
         "What were you doing when the bell rang this morning?",
         "Dad and Seb were buying groceries when the accident happened.",
+        "She was studying for a test when her friend called her.",
+        "They were playing chess when they heard a loud noise outside.",
       ],
       reading: {
         text: "The History of News: Long ago, there were no radios, televisions, or smartphones. People got their daily updates from a town crier in the busy town square. The crier would ring a heavy bell and shout important announcements to everyone around the world. Later, printing presses were invented, and people started reading the newspaper to discover what was happening.",
@@ -997,18 +1006,19 @@ export const CURRICULUM_DATA = {
     unit_4: {
       title: "Myths & Legends",
       icon: "🧜‍♀️",
+      formToggleLabel: "Plural Form 👥",
       grammarGameMode: "ORBITAL_ALIGNMENT",
       quizGameMode: "QUANTUM_MEMORY_MATCH",
       vocabulary: {
         lesson_1: [
-          { word: "minotaur", past: "minotaur", vn: "quái vật nhân ngưu",       emoji: "🐂" },
-          { word: "mermaid",  past: "mermaid",  vn: "nàng tiên cá",            emoji: "🧜‍♀️" },
-          { word: "phoenix",  past: "phoenix",  vn: "chim phượng hoàng",       emoji: "🦅" },
-          { word: "dragon",   past: "dragon",   vn: "con rồng",                emoji: "🐉" },
-          { word: "centaur",  past: "centaur",  vn: "nhân mã",                 emoji: "🏹" },
-          { word: "unicorn",  past: "unicorn",  vn: "kỳ lân",                  emoji: "🦄" },
-          { word: "pegasus",  past: "pegasus",  vn: "ngựa có cánh pegasus",    emoji: "🐎" },
-          { word: "kraken",   past: "kraken",   vn: "quái vật mực khổng lồ",   emoji: "🦑" },
+          { word: "minotaur", alt: "minotaurs",   vn: "quái vật nhân ngưu",       emoji: "🐂" },
+          { word: "mermaid",  alt: "mermaids",    vn: "nàng tiên cá",            emoji: "🧜‍♀️" },
+          { word: "phoenix",  alt: "phoenixes",   vn: "chim phượng hoàng",       emoji: "🦅" },
+          { word: "dragon",   alt: "dragons",     vn: "con rồng",                emoji: "🐉" },
+          { word: "centaur",  alt: "centaurs",    vn: "nhân mã",                 emoji: "🏹" },
+          { word: "unicorn",  alt: "unicorns",    vn: "kỳ lân",                  emoji: "🦄" },
+          { word: "pegasus",  alt: "pegasuses",   vn: "ngựa có cánh pegasus",    emoji: "🐎" },
+          { word: "kraken",   alt: "krakens",     vn: "quái vật mực khổng lồ",   emoji: "🦑" },
         ],
         lesson_5: ["tell a story","paint a picture","write a poem","sing a song","read a comic","make a statue"],
       },
@@ -1016,6 +1026,8 @@ export const CURRICULUM_DATA = {
         "A minotaur was a monster that lived in a giant labyrinth.",
         "Mermaids were mythical creatures who lived deep in the ocean.",
         "The phoenix is a magical bird that can be reborn from fire.",
+        "Dragons are powerful creatures that breathe fire and guard gold.",
+        "The centaur was a legendary warrior who was half man and half horse.",
       ],
       reading: {
         text: "The Legend of Atlantis: Long ago, Greek philosophers wrote stories about a magnificent, powerful island nation called Atlantis. This utopian city possessed incredible technology, golden temples, and vast wealth. However, the legends claim that the people became greedy, angering the ancient gods. In a single day and night of misfortune, the entire island was swallowed by the sea, disappearing forever into the dark Atlantic ocean.",
@@ -1308,11 +1320,13 @@ export function AISpeakNebula({ onBack, addCoins, unit = 1 }) {
 
 // ---------- PLANET 1 U3: Daily Action flashcards + Lesson 5 speaking ----------
 function DailyActionFlashcards({ addCoins, unit = 3 }) {
-  const items = getUnitData(unit).vocabulary.lesson_1;
+  const unitData = getUnitData(unit);
+  const items = unitData.vocabulary.lesson_1;
+  const formToggleLabel = unitData.formToggleLabel || "Alt Form";
   const [mastered, setMastered] = useState(() => new Set());
-  const [tense, setTense] = useState({}); // id -> 'past'
+  const [tense, setTense] = useState({}); // id -> 'alt'
   const [meaning, setMeaning] = useState({}); // id -> true
-  function toggle(i) { setTense((p) => ({ ...p, [i]: p[i] === "past" ? "base" : "past" })); }
+  function toggle(i) { setTense((p) => ({ ...p, [i]: p[i] === "alt" ? "base" : "alt" })); }
   function toggleMeaning(i) { setMeaning((p) => ({ ...p, [i]: !p[i] })); }
   function speakSlow(text) {
     try {
@@ -1350,13 +1364,14 @@ function DailyActionFlashcards({ addCoins, unit = 3 }) {
         <div className="grid grid-cols-2 gap-3">
           {items.map((v, i) => {
             if (mastered.has(i)) return null;
-            const showPast = tense[i] === "past";
-            const phrase = showPast ? v.past : v.word;
+            const showAlt = tense[i] === "alt" && !!v.alt;
+            const phrase = showAlt ? v.alt : v.word;
+            const hasAlt = !!v.alt;
             return (
               <div key={i} className="overflow-hidden rounded-3xl gx-glass shadow-lg ring-1 ring-white/10">
-                <div className="flex items-center justify-center py-4" style={{ background: showPast ? "linear-gradient(135deg,#8b5cf6,#ec4899)" : "linear-gradient(135deg,#f59e0b,#fbbf24)" }}>
+                <div className="relative flex items-center justify-center py-4" style={{ background: showAlt ? "linear-gradient(135deg,#8b5cf6,#ec4899)" : "linear-gradient(135deg,#f59e0b,#fbbf24)" }}>
                   <div className="grid h-16 w-28 place-items-center rounded-2xl bg-white/90 text-4xl shadow-inner">{v.emoji}</div>
-                  {showPast && <span className="absolute right-3 top-3 rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-extrabold text-purple-700 shadow">PAST ⚡</span>}
+                  {showAlt && <span className="absolute right-3 top-3 rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-extrabold text-purple-700 shadow">ALT ⚡</span>}
                 </div>
                 <div className="px-3 pb-3 pt-3">
                   <p key={phrase} className="ac-fade min-h-12 text-center text-base font-extrabold leading-tight text-white">{phrase}</p>
@@ -1369,9 +1384,13 @@ function DailyActionFlashcards({ addCoins, unit = 3 }) {
                     <button onClick={() => toggleMeaning(i)} className="flex items-center justify-center gap-1 rounded-2xl bg-white/10 py-2 text-white transition active:scale-95 ring-1 ring-white/20">
                       <span className="text-[11px] font-bold">{meaning[i] ? "👁️ Hide" : "👁️ Nghĩa từ"}</span>
                     </button>
-                    <button onClick={() => toggle(i)} className={`flex items-center justify-center gap-1 rounded-2xl py-2 transition active:scale-95 ${showPast ? "bg-purple-500 text-white" : "bg-amber-400/30 text-amber-100 ring-1 ring-amber-300/40"}`}>
-                      <span className="text-[11px] font-bold">Past Form ⏳</span>
-                    </button>
+                    {hasAlt ? (
+                      <button onClick={() => toggle(i)} className={`flex items-center justify-center gap-1 rounded-2xl py-2 transition active:scale-95 ${showAlt ? "bg-purple-500 text-white" : "bg-amber-400/30 text-amber-100 ring-1 ring-amber-300/40"}`}>
+                        <span className="text-[11px] font-bold">{formToggleLabel}</span>
+                      </button>
+                    ) : (
+                      <div className="rounded-2xl bg-white/5 py-2 text-center text-[11px] font-bold text-white/40 ring-1 ring-white/10">— No form —</div>
+                    )}
                   </div>
                   <div className="mt-1.5 grid grid-cols-2 gap-1.5">
                     <button onClick={() => speak(phrase)} className="flex items-center justify-center gap-1 rounded-2xl bg-cyan-500/20 py-2 text-cyan-200 transition active:scale-95 ring-1 ring-cyan-400/30">
