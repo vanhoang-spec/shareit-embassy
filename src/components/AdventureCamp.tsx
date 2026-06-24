@@ -3738,8 +3738,8 @@ export default function AdventureCamp() {
 
         {/* MAIN */}
         <main className="relative flex-1 overflow-y-auto px-3 pb-6 pt-4">
-          {view === "levels" && <StarLeague onEnterLevel5={() => setView("galaxy")} />}
-          {view === "galaxy" && <UnitGalaxy onEnterUnit={(n) => { setCurrentUnit(n); setView("hub"); }} onBackToLevels={() => setView("levels")} />}
+          {view === "levels" && <StarLeague onEnterLevel={(lvl) => { setSelectedLevel(lvl); setView("galaxy"); }} />}
+          {view === "galaxy" && <UnitGalaxy selectedLevel={selectedLevel} onEnterUnit={(n) => { setCurrentUnit(n); setView("hub"); }} onBackToLevels={() => setView("levels")} />}
           {view === "hub" && (
             <>
               <button
