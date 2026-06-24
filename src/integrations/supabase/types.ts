@@ -49,6 +49,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          avatar_id: string
           created_at: string
           current_badge: string | null
           id: string
@@ -59,6 +60,7 @@ export type Database = {
           xp: number
         }
         Insert: {
+          avatar_id?: string
           created_at?: string
           current_badge?: string | null
           id: string
@@ -69,6 +71,7 @@ export type Database = {
           xp?: number
         }
         Update: {
+          avatar_id?: string
           created_at?: string
           current_badge?: string | null
           id?: string
