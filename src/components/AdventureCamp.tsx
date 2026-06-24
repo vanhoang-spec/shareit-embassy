@@ -3755,9 +3755,10 @@ export default function AdventureCamp() {
           open={profileOpen}
           onClose={() => setProfileOpen(false)}
           name={name}
-          onSave={saveName}
+          cosmicAvatarId={cosmicAvatarId}
+          onSave={saveProfile}
           saving={savingName}
-          avatarEmoji={currentAvatar?.emoji}
+          avatarEmoji={COSMIC_AVATAR_BY_ID[cosmicAvatarId]?.emoji}
           onOpenAvatar={() => { setProfileOpen(false); setPickerOpen(true); }}
           coins={coins}
           streak={streak}
