@@ -1147,125 +1147,35 @@ export const CURRICULUM_DATA = {
   },
   level_3: {
     unit_4: {
-      title: "After School",
+      title: "After School Shell",
       icon: "⏰",
-      formToggleLabel: "He/She Form 👤",
+      formToggleLabel: "Form 👤",
       grammarGameMode: "COSMIC_BALLOON_POP",
       quizGameMode: "ALIEN_TRIVIA",
       vocabulary: {
-        lesson_1: [
-          { word: "do homework",          alt: "does homework",         vn: "làm bài tập về nhà",        emoji: "📝" },
-          { word: "practice the piano",   alt: "practices the piano",   vn: "luyện đàn piano",           emoji: "🎹" },
-          { word: "go to English class",  alt: "goes to English class", vn: "đi học lớp tiếng Anh",      emoji: "🇬🇧" },
-          { word: "have a snack",         alt: "has a snack",           vn: "ăn nhẹ / ăn vặt",           emoji: "🍪" },
-          { word: "watch a video",        alt: "watches a video",       vn: "xem video",                 emoji: "📺" },
-          { word: "go to gymnastics",     alt: "goes to gymnastics",    vn: "đi tập thể dục dụng cụ",    emoji: "🤸" },
-          { word: "wash the dishes",      alt: "washes the dishes",     vn: "rửa chén bát",              emoji: "🧽" },
-          { word: "play video games",     alt: "plays video games",     vn: "chơi trò chơi điện tử",     emoji: "🎮" },
-        ],
-        lesson_5: [
-          { word: "take art classes" },
-          { word: "play soccer" },
-          { word: "go to ballet class" },
-          { word: "do karate" },
-          { word: "play the violin" },
-          { word: "sing in the choir" },
-        ],
+        lesson_1: [],
+        lesson_5: [],
       },
-      ai_speak: [
-        "What do you do after school? I do my homework.",
-        "He goes to English class and he doesn't wash the dishes.",
-        "Does she practice the piano or play video games?",
-        "What does he do after school? He goes to gymnastics.",
-        "Do you take art classes or do karate after school?",
-      ],
+      ai_speak: [],
       reading: {
-        text: "After-School Fun: Every day after school, the children on the Space Station have lots of fun. Toby does his homework first, and then he plays cosmic video games. Ellen practices the piano with her music robot buddy. In the afternoon, some cosmic campers go to English class or gymnastics. What do you do after school?",
-        questions: [
-          { q: "Toby plays video games before doing his homework.", a: false },
-          { q: "Ellen practices the piano with a robot.",            a: true  },
-          { q: "Some campers go to English class after school.",     a: true  },
-        ],
-      },
-      games: {
-        grammar: [
-          { question: "What ___ you do after school? I watch a video.", answer: "do",      choices: ["do", "does", "doing"] },
-          { question: "He ___ to English class at 4 o'clock.",          answer: "goes",    choices: ["goes", "go", "going"] },
-          { question: "She ___ wash the dishes after having a snack.",  answer: "doesn't", choices: ["doesn't", "don't", "isn't"] },
-          { question: "What ___ your sister do? She practices the piano.", answer: "does", choices: ["does", "do", "is"] },
-        ],
-        phonics: {
-          categories: ["-ch", "-sh"],
-          words: [
-            { text: "chair",   cat: "-ch" },
-            { text: "teacher", cat: "-ch" },
-            { text: "ostrich", cat: "-ch" },
-            { text: "ship",    cat: "-sh" },
-            { text: "fish",    cat: "-sh" },
-            { text: "brush",   cat: "-sh" },
-          ],
-        },
+        text: "Waiting for content update...",
+        questions: [],
       },
     },
     unit_5: {
-      title: "Let's Play!",
+      title: "Let's Play Shell",
       icon: "⚽",
-      formToggleLabel: "-ing Form 🔄",
+      formToggleLabel: "Form 🔄",
       grammarGameMode: "COSMIC_BALLOON_POP",
       quizGameMode: "ALIEN_TRIVIA",
       vocabulary: {
-        lesson_1: [
-          { word: "play basketball", alt: "playing basketball", vn: "chơi bóng rổ",    emoji: "🏀" },
-          { word: "play soccer",     alt: "playing soccer",     vn: "chơi bóng đá",    emoji: "⚽" },
-          { word: "go swimming",     alt: "going swimming",     vn: "đi bơi",          emoji: "🏊" },
-          { word: "ride a bike",     alt: "riding a bike",      vn: "đi xe đạp",       emoji: "🚲" },
-          { word: "inline skate",    alt: "inline skating",     vn: "trượt patin",     emoji: "🛼" },
-          { word: "skateboard",      alt: "skateboarding",      vn: "trượt ván",       emoji: "🛹" },
-          { word: "play tennis",     alt: "playing tennis",     vn: "chơi quần vợt",   emoji: "🎾" },
-          { word: "dance",           alt: "dancing",            vn: "nhảy múa",        emoji: "💃" },
-        ],
-        lesson_5: [
-          { word: "play the guitar" },
-          { word: "sing songs" },
-          { word: "draw pictures" },
-          { word: "cook dinner" },
-          { word: "read books" },
-          { word: "watch cartoons" },
-        ],
+        lesson_1: [],
+        lesson_5: [],
       },
-      ai_speak: [
-        "He is playing basketball with his friends in the park.",
-        "She is going swimming because the weather is very hot.",
-        "Are you riding a bike or inline skating right now?",
-        "My brother loves skateboarding but he cannot play tennis.",
-        "We are dancing and singing happy songs together today.",
-      ],
+      ai_speak: [],
       reading: {
-        text: "The Galactic Sports Day: Today is the annual Sports Day on the Space Station. All the alien children are excited. Toby is playing basketball with his floating drone buddy. Luna is going swimming in the zero-gravity pool. Some cosmic campers are riding bikes, and others are inline skating down the neon hallways.",
-        questions: [
-          { q: "Today is the annual Sports Day on the Space Station.", a: true  },
-          { q: "Luna is playing tennis in the kitchen.",               a: false },
-          { q: "The children are riding bikes and inline skating.",    a: true  },
-        ],
-      },
-      games: {
-        grammar: [
-          { question: "What ___ you doing right now? I'm playing soccer.", answer: "are",    choices: ["are", "is", "am"] },
-          { question: "Look! Tim is ___ his new red bike.",                answer: "riding", choices: ["riding", "ride", "rides"] },
-          { question: "They are ___ swimming in the deep pool.",           answer: "going",  choices: ["going", "go", "goes"] },
-          { question: "Is she dancing in the room? No, she ___.",          answer: "isn't",  choices: ["isn't", "aren't", "doesn't"] },
-        ],
-        phonics: {
-          categories: ["-ai-", "-ay-"],
-          words: [
-            { text: "rain",  cat: "-ai-" },
-            { text: "train", cat: "-ai-" },
-            { text: "paint", cat: "-ai-" },
-            { text: "play",  cat: "-ay-" },
-            { text: "day",   cat: "-ay-" },
-            { text: "gray",  cat: "-ay-" },
-          ],
-        },
+        text: "Waiting for content update...",
+        questions: [],
       },
     },
   },
@@ -1274,8 +1184,22 @@ export const CURRICULUM_DATA = {
 
 
 function getUnitData(unit, level = "level_5") {
-  const lvl = CURRICULUM_DATA[level] || CURRICULUM_DATA.level_5;
-  return lvl[`unit_${unit}`] || CURRICULUM_DATA.level_5[`unit_${unit}`] || CURRICULUM_DATA.level_5.unit_1;
+  const lvl = CURRICULUM_DATA[level];
+  if (lvl && lvl[`unit_${unit}`]) return lvl[`unit_${unit}`];
+  // Only fall back to level_5 if the requested level itself is unknown.
+  if (!lvl) {
+    return CURRICULUM_DATA.level_5[`unit_${unit}`] || CURRICULUM_DATA.level_5.unit_1;
+  }
+  // Requested level exists but unit missing → empty shell, no level_5 leak.
+  return {
+    title: "",
+    icon: "",
+    formToggleLabel: "",
+    vocabulary: { lesson_1: [], lesson_5: [] },
+    ai_speak: [],
+    reading: { text: "Waiting for content update...", questions: [] },
+    games: { grammar: [], phonics: { categories: [], words: [] } },
+  };
 }
 
 
@@ -1284,8 +1208,8 @@ function normalizeWord(w) {
 }
 
 // Locked framework component — UI/audio engine NEVER changes; only data swaps via `unit`.
-export function AISpeakNebula({ onBack, addCoins, unit = 1 }) {
-  const sentences = getUnitData(unit).ai_speak;
+export function AISpeakNebula({ onBack, addCoins, unit = 1, level = "level_5" }) {
+  const sentences = getUnitData(unit, level).ai_speak;
 
   const [idx, setIdx] = useState(0);
   const [recording, setRecording] = useState(false);
@@ -1553,8 +1477,8 @@ export function AISpeakNebula({ onBack, addCoins, unit = 1 }) {
 // =================================================================
 
 // ---------- PLANET 1 U3: Daily Action flashcards + Lesson 5 speaking ----------
-function DailyActionFlashcards({ addCoins, unit = 3 }) {
-  const unitData = getUnitData(unit);
+function DailyActionFlashcards({ addCoins, unit = 3, level = "level_5" }) {
+  const unitData = getUnitData(unit, level);
   const items = unitData.vocabulary.lesson_1;
   const formToggleLabel = unitData.formToggleLabel || "Alt Form";
   const [mastered, setMastered] = useState(() => new Set());
@@ -1655,8 +1579,8 @@ function DailyActionFlashcards({ addCoins, unit = 3 }) {
   );
 }
 
-function DailyPhraseSpeaking({ addCoins, unit = 3 }) {
-  const phrases = getUnitData(unit).vocabulary.lesson_5.map((p) => ({ text: p, emoji: "🎙️" }));
+function DailyPhraseSpeaking({ addCoins, unit = 3, level = "level_5" }) {
+  const phrases = getUnitData(unit, level).vocabulary.lesson_5.map((p) => ({ text: p, emoji: "🎙️" }));
   const [idx, setIdx] = useState(0);
   const [phase, setPhase] = useState("idle");
   const [transcript, setTranscript] = useState("");
@@ -1919,8 +1843,8 @@ export function NebulaBridge({ onBack, addCoins }) {
 }
 
 // ---------- PLANET 4 U3: Reading Comet · History of News ----------
-export function ReadingAdventureU3({ onBack, addCoins, unit = 3, title = "📰 The History of News" }) {
-  const data = getUnitData(unit).reading;
+export function ReadingAdventureU3({ onBack, addCoins, unit = 3, level = "level_5", title = "📰 The History of News" }) {
+  const data = getUnitData(unit, level).reading;
   const [answers, setAnswers] = useState({});
   const [done, setDone] = useState(false);
   const awarded = useRef(false);
@@ -2205,7 +2129,7 @@ export function Planet5ArenaU3({ onBack, addCoins }) {
 // =================================================================
 
 // ---------- PLANET 1 U4: reuses flashcard + speaking shells with unit=4 ----------
-export function VocabularyQuestU4({ onBack, addCoins }) {
+export function VocabularyQuestU4({ onBack, addCoins, level = "level_5" }) {
   const [tab, setTab] = useState("l1");
   return (
     <div className="ac-fade">
@@ -2223,14 +2147,14 @@ export function VocabularyQuestU4({ onBack, addCoins }) {
           </button>
         ))}
       </div>
-      {tab === "l1" ? <DailyActionFlashcards addCoins={addCoins} unit={4} /> : <DailyPhraseSpeaking addCoins={addCoins} unit={4} />}
+      {tab === "l1" ? <DailyActionFlashcards addCoins={addCoins} unit={4} level={level} /> : <DailyPhraseSpeaking addCoins={addCoins} unit={4} level={level} />}
     </div>
   );
 }
 
 // ---------- PLANET 4 U4: Atlantis reading ----------
-export function ReadingAdventureU4({ onBack, addCoins }) {
-  return <ReadingAdventureU3 onBack={onBack} addCoins={addCoins} unit={4} title="🏛️ The Legend of Atlantis" />;
+export function ReadingAdventureU4({ onBack, addCoins, level = "level_5" }) {
+  return <ReadingAdventureU3 onBack={onBack} addCoins={addCoins} unit={4} level={level} title="🏛️ The Legend of Atlantis" />;
 }
 
 // ---------- PLANET 2 U4: Orbital Sentence Alignment ----------
@@ -2545,7 +2469,7 @@ export function Planet5ArenaU4({ onBack, addCoins }) {
 // =================================================================
 
 // ---------- PLANET 1 U5: Cooking vocabulary ----------
-export function VocabularyQuestU5({ onBack, addCoins }) {
+export function VocabularyQuestU5({ onBack, addCoins, level = "level_5" }) {
   const [tab, setTab] = useState("l1");
   return (
     <div className="ac-fade">
@@ -2563,14 +2487,14 @@ export function VocabularyQuestU5({ onBack, addCoins }) {
           </button>
         ))}
       </div>
-      {tab === "l1" ? <DailyActionFlashcards addCoins={addCoins} unit={5} /> : <DailyPhraseSpeaking addCoins={addCoins} unit={5} />}
+      {tab === "l1" ? <DailyActionFlashcards addCoins={addCoins} unit={5} level={level} /> : <DailyPhraseSpeaking addCoins={addCoins} unit={5} level={level} />}
     </div>
   );
 }
 
 // ---------- PLANET 4 U5: Galaxy Bakery reading ----------
-export function ReadingAdventureU5({ onBack, addCoins }) {
-  return <ReadingAdventureU3 onBack={onBack} addCoins={addCoins} unit={5} title="🍰 The Galaxy Bakery" />;
+export function ReadingAdventureU5({ onBack, addCoins, level = "level_5" }) {
+  return <ReadingAdventureU3 onBack={onBack} addCoins={addCoins} unit={5} level={level} title="🍰 The Galaxy Bakery" />;
 }
 
 // ---------- PLANET 2 U5: Quantum Ingredient Scale ----------
