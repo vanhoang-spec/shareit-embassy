@@ -29,6 +29,7 @@ import {
 import {
   COSMIC_AVATARS, COSMIC_AVATAR_BY_ID,
   VocabularyQuestU2, RocketFuelMission, AISpeakingWorldU2, ReadingAdventureU2, Planet5ArenaU2,
+  CosmicSpeakingNebula,
 } from "./Unit2";
 
 // ----- Brand kit (from Embassy Language logo) -----
