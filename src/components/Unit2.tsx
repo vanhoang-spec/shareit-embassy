@@ -892,3 +892,284 @@ export function Planet5ArenaU2({ onBack, addCoins }) {
     </div>
   );
 }
+
+// =================================================================
+// 🌌 UNIFIED COSMIC SPEAKING NEBULA — Planet 3 (Unit 1 + Unit 2)
+// =================================================================
+const SPEAKING_SENTENCES = {
+  1: [
+    "I cooked dinner on a campfire last night.",
+    "I built a shelter and I slept in it.",
+    "This morning we went hiking and I rode on a zipline.",
+  ],
+  2: [
+    "At nine o'clock last night, I was streaming a video.",
+    "He was texting a friend when the Wi-Fi stopped.",
+    "They were listening to music during class.",
+  ],
+};
+
+function normalizeWord(w) {
+  return (w || "").toLowerCase().replace(/[^a-z0-9']/g, "");
+}
+
+export function CosmicSpeakingNebula({ onBack, addCoins, unit = 1 }) {
+  const sentences = SPEAKING_SENTENCES[unit] || SPEAKING_SENTENCES[1];
+  const [idx, setIdx] = useState(0);
+  const [recording, setRecording] = useState(false);
+  const [transcript, setTranscript] = useState("");
+  const [audioUrl, setAudioUrl] = useState(null);
+  const [result, setResult] = useState(null); // { stars, pct, matched:boolean[] }
+  const [ttsOn, setTtsOn] = useState(false);
+
+  const recRef = useRef(null);
+  const mediaRef = useRef(null);
+  const streamRef = useRef(null);
+  const chunksRef = useRef([]);
+  const finalRef = useRef("");
+  const playbackRef = useRef(null);
+  const awarded = useRef(new Set());
+
+  const target = sentences[idx];
+  const targetWords = target.split(/\s+/);
+
+  useEffect(() => () => {
+    try { recRef.current && recRef.current.stop(); } catch {}
+    try { mediaRef.current && mediaRef.current.state !== "inactive" && mediaRef.current.stop(); } catch {}
+    if (streamRef.current) streamRef.current.getTracks().forEach((t) => t.stop());
+    if (audioUrl) URL.revokeObjectURL(audioUrl);
+    if (typeof window !== "undefined" && window.speechSynthesis) window.speechSynthesis.cancel();
+  }, []);
+
+  function resetTrial() {
+    setTranscript(""); setResult(null); finalRef.current = "";
+    if (audioUrl) { URL.revokeObjectURL(audioUrl); setAudioUrl(null); }
+  }
+
+  function sayAloud() {
+    if (typeof window === "undefined" || !window.speechSynthesis) return;
+    const synth = window.speechSynthesis; synth.cancel();
+    const u = new SpeechSynthesisUtterance(target);
+    u.lang = "en-US"; u.rate = 0.9; u.pitch = 1.05;
+    u.onstart = () => setTtsOn(true);
+    u.onend = () => setTtsOn(false);
+    u.onerror = () => setTtsOn(false);
+    synth.speak(u);
+  }
+
+  async function startRec() {
+    resetTrial();
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      streamRef.current = stream;
+      const mime = ["audio/webm", "audio/mp4"].find((t) => MediaRecorder.isTypeSupported(t)) || "";
+      const rec = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream);
+      chunksRef.current = [];
+      rec.ondataavailable = (e) => { if (e.data && e.data.size) chunksRef.current.push(e.data); };
+      rec.onstop = () => {
+        const blob = new Blob(chunksRef.current, { type: rec.mimeType || "audio/webm" });
+        if (blob.size > 0) setAudioUrl(URL.createObjectURL(blob));
+        stream.getTracks().forEach((t) => t.stop());
+      };
+      rec.start();
+      mediaRef.current = rec;
+    } catch {
+      alert("Please allow microphone access to play! 🎤");
+      return;
+    }
+
+    const SR = typeof window !== "undefined" && (window.SpeechRecognition || window.webkitSpeechRecognition);
+    if (SR) {
+      const r = new SR();
+      r.lang = "en-US"; r.continuous = false; r.interimResults = true;
+      r.onresult = (ev) => {
+        let interim = "";
+        for (let i = ev.resultIndex; i < ev.results.length; i++) {
+          const res = ev.results[i];
+          if (res.isFinal) finalRef.current += " " + res[0].transcript;
+          else interim += res[0].transcript;
+        }
+        setTranscript((finalRef.current + " " + interim).trim());
+      };
+      r.onerror = () => {};
+      try { r.start(); recRef.current = r; } catch {}
+    }
+    setRecording(true);
+  }
+
+  function stopRec() {
+    try { recRef.current && recRef.current.stop(); } catch {}
+    try { mediaRef.current && mediaRef.current.stop(); } catch {}
+    setRecording(false);
+    setTimeout(() => {
+      const said = (finalRef.current || transcript || "").trim();
+      const saidWords = said.split(/\s+/).map(normalizeWord).filter(Boolean);
+      const pool = saidWords.slice();
+      const matched = targetWords.map((w) => {
+        const n = normalizeWord(w);
+        const i = pool.indexOf(n);
+        if (i !== -1) { pool.splice(i, 1); return true; }
+        return false;
+      });
+      const hits = matched.filter(Boolean).length;
+      const pct = Math.round((hits / targetWords.length) * 100);
+      let stars = 1;
+      if (pct >= 90) stars = 5;
+      else if (pct >= 80) stars = 4;
+      else if (pct >= 60) stars = 3;
+      else if (pct >= 40) stars = 2;
+      setResult({ stars, pct, matched });
+      if (pct > 80 && !awarded.current.has(idx)) {
+        awarded.current.add(idx);
+        try { confetti({ particleCount: 140, spread: 80, origin: { y: 0.6 } }); } catch {}
+        addCoins?.(10);
+      }
+    }, 380);
+  }
+
+  function playMyVoice() {
+    if (!audioUrl) return;
+    if (!playbackRef.current) playbackRef.current = new Audio(audioUrl);
+    else playbackRef.current.src = audioUrl;
+    playbackRef.current.currentTime = 0;
+    playbackRef.current.play().catch(() => {});
+  }
+
+  function go(dir) {
+    setIdx((i) => (i + dir + sentences.length) % sentences.length);
+    resetTrial();
+  }
+
+  return (
+    <div className="ac-fade">
+      {/* Back */}
+      <button onClick={onBack}
+        className="mb-3 inline-flex items-center gap-2 rounded-full gx-glass px-3 py-1.5 text-xs font-black text-white transition hover:scale-105 active:scale-95"
+        style={{ boxShadow: "0 0 14px #22d3ee66, inset 0 0 0 1px #22d3ee55" }}>
+        <ArrowLeft size={14} /> Fly Back to Galaxy
+      </button>
+
+      {/* Title */}
+      <div className="mb-4 rounded-3xl gx-glass p-4 text-center" style={{ boxShadow: "0 0 22px #ec489966" }}>
+        <p className="text-[11px] font-extrabold uppercase tracking-widest text-pink-300">Planet 3 · AI Voice Nebula</p>
+        <p className="text-xl font-black text-white">🌌 Speak Into the Cosmos</p>
+      </div>
+
+      {/* Carousel + target */}
+      <div className="rounded-3xl gx-glass p-5" style={{ boxShadow: "0 0 28px rgba(139,92,246,.35)" }}>
+        <div className="mb-3 flex items-center justify-between text-xs font-black text-cyan-200">
+          <button onClick={() => go(-1)} className="rounded-full bg-white/10 px-3 py-1.5 ring-1 ring-white/20 hover:bg-white/20">◀ Previous</button>
+          <span className="text-indigo-200">Sentence {idx + 1} / {sentences.length}</span>
+          <button onClick={() => go(1)} className="rounded-full bg-white/10 px-3 py-1.5 ring-1 ring-white/20 hover:bg-white/20">Next ▶</button>
+        </div>
+
+        <div
+          className="relative rounded-3xl p-6 text-center"
+          style={{
+            background: "linear-gradient(135deg, rgba(236,72,153,.12), rgba(139,92,246,.12), rgba(34,211,238,.12))",
+            boxShadow: "0 0 0 3px rgba(244,114,182,.55), 0 0 28px rgba(244,114,182,.55), inset 0 0 24px rgba(139,92,246,.25)",
+          }}
+        >
+          <div className="flex items-start justify-center gap-3">
+            <p className="text-2xl font-black leading-snug text-white sm:text-3xl">
+              {result
+                ? targetWords.map((w, i) => (
+                    <span key={i}
+                      style={{
+                        color: result.matched[i] ? "#34d399" : "#fb7185",
+                        textShadow: result.matched[i] ? "0 0 10px #34d399" : "0 0 10px #fb7185",
+                      }}>
+                      {w}{i < targetWords.length - 1 ? " " : ""}
+                    </span>
+                  ))
+                : `"${target}"`}
+            </p>
+            <button onClick={sayAloud}
+              className="mt-1 shrink-0 rounded-full p-2 text-cyan-200 ring-1 ring-cyan-300/40 hover:bg-white/10"
+              title="Listen">
+              <Volume2 size={20} className={ttsOn ? "ac-pop" : ""} />
+            </button>
+          </div>
+        </div>
+
+        {/* Giant Mic */}
+        <div className="mt-6 flex flex-col items-center">
+          <button
+            onClick={recording ? stopRec : startRec}
+            className="relative grid h-28 w-28 place-items-center rounded-full transition-transform hover:scale-105 active:scale-95"
+            style={{
+              background: recording
+                ? "radial-gradient(circle at 30% 30%, #fda4af, #e11d48 60%, #881337)"
+                : "radial-gradient(circle at 30% 30%, #67e8f9, #06b6d4 55%, #0e7490)",
+              boxShadow: recording
+                ? "0 0 0 6px rgba(244,63,94,.25), 0 0 38px rgba(244,63,94,.85)"
+                : "0 0 0 6px rgba(34,211,238,.18), 0 0 26px rgba(34,211,238,.65)",
+              animation: "csnFloat 3.4s ease-in-out infinite",
+            }}
+          >
+            {recording && (
+              <>
+                <span className="absolute inset-0 rounded-full" style={{ animation: "csnHalo 1.2s ease-out infinite", boxShadow: "0 0 0 0 rgba(244,63,94,.55)" }} />
+                <span className="absolute inset-0 rounded-full" style={{ animation: "csnHalo 1.2s ease-out .35s infinite", boxShadow: "0 0 0 0 rgba(244,63,94,.45)" }} />
+              </>
+            )}
+            <Mic size={42} className="text-white drop-shadow" />
+          </button>
+          <p className="mt-2 text-xs font-black uppercase tracking-widest text-indigo-100">
+            {recording ? "Listening… tap to stop" : "Tap to speak"}
+          </p>
+        </div>
+
+        {/* Live transcript box */}
+        <div
+          className="mt-5 min-h-[64px] rounded-2xl p-4 text-center"
+          style={{
+            background: "rgba(15,23,42,.55)",
+            backdropFilter: "blur(10px)",
+            boxShadow: "inset 0 0 0 1px rgba(34,211,238,.35), 0 0 18px rgba(34,211,238,.25)",
+          }}
+        >
+          <p className="text-[10px] font-extrabold uppercase tracking-widest text-cyan-300">Live transcript</p>
+          <p className="mt-1 text-base font-bold text-white">
+            {transcript || <span className="text-slate-400">Your words will appear here…</span>}
+          </p>
+        </div>
+
+        {/* Feedback */}
+        {result && (
+          <div className="mt-5 flex flex-col items-center gap-3">
+            <div className="flex items-center gap-1">
+              {[0,1,2,3,4].map((i) => (
+                <span key={i} className="text-3xl transition-transform"
+                  style={{
+                    transform: i < result.stars ? "scale(1.15)" : "scale(.9)",
+                    filter: i < result.stars ? "drop-shadow(0 0 10px #fde047)" : "grayscale(1) opacity(.4)",
+                  }}>⭐</span>
+              ))}
+            </div>
+            <p className="text-sm font-black text-white">
+              Accuracy: <span style={{ color: result.pct > 80 ? "#34d399" : "#fbbf24" }}>{result.pct}%</span>
+              {result.pct > 80 && <span className="ml-2 text-emerald-300">+10 cosmic coins!</span>}
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              <button onClick={playMyVoice} disabled={!audioUrl}
+                className="rounded-full px-4 py-2 text-sm font-black text-white shadow-lg disabled:opacity-50"
+                style={{ background: "linear-gradient(135deg,#22d3ee,#8b5cf6)", boxShadow: "0 0 18px #22d3ee66" }}>
+                Play My Voice 🎧
+              </button>
+              <button onClick={resetTrial}
+                className="rounded-full bg-white/10 px-4 py-2 text-sm font-black text-white ring-1 ring-white/20 hover:bg-white/20">
+                Try Again
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <style>{`
+        @keyframes csnFloat { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-6px) } }
+        @keyframes csnHalo  { 0% { box-shadow: 0 0 0 0 rgba(244,63,94,.55) } 100% { box-shadow: 0 0 0 28px rgba(244,63,94,0) } }
+      `}</style>
+    </div>
+  );
+}
