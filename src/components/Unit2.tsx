@@ -2469,7 +2469,7 @@ export function Planet5ArenaU4({ onBack, addCoins }) {
 // =================================================================
 
 // ---------- PLANET 1 U5: Cooking vocabulary ----------
-export function VocabularyQuestU5({ onBack, addCoins }) {
+export function VocabularyQuestU5({ onBack, addCoins, level = "level_5" }) {
   const [tab, setTab] = useState("l1");
   return (
     <div className="ac-fade">
