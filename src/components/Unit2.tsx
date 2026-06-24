@@ -994,6 +994,38 @@ export const CURRICULUM_DATA = {
         ],
       },
     },
+    unit_4: {
+      title: "Myths & Legends",
+      icon: "🧜‍♀️",
+      grammarGameMode: "ORBITAL_ALIGNMENT",
+      quizGameMode: "QUANTUM_MEMORY_MATCH",
+      vocabulary: {
+        lesson_1: [
+          { word: "minotaur", past: "minotaur", vn: "quái vật nhân ngưu",       emoji: "🐂" },
+          { word: "mermaid",  past: "mermaid",  vn: "nàng tiên cá",            emoji: "🧜‍♀️" },
+          { word: "phoenix",  past: "phoenix",  vn: "chim phượng hoàng",       emoji: "🦅" },
+          { word: "dragon",   past: "dragon",   vn: "con rồng",                emoji: "🐉" },
+          { word: "centaur",  past: "centaur",  vn: "nhân mã",                 emoji: "🏹" },
+          { word: "unicorn",  past: "unicorn",  vn: "kỳ lân",                  emoji: "🦄" },
+          { word: "pegasus",  past: "pegasus",  vn: "ngựa có cánh pegasus",    emoji: "🐎" },
+          { word: "kraken",   past: "kraken",   vn: "quái vật mực khổng lồ",   emoji: "🦑" },
+        ],
+        lesson_5: ["tell a story","paint a picture","write a poem","sing a song","read a comic","make a statue"],
+      },
+      ai_speak: [
+        "A minotaur was a monster that lived in a giant labyrinth.",
+        "Mermaids were mythical creatures who lived deep in the ocean.",
+        "The phoenix is a magical bird that can be reborn from fire.",
+      ],
+      reading: {
+        text: "The Legend of Atlantis: Long ago, Greek philosophers wrote stories about a magnificent, powerful island nation called Atlantis. This utopian city possessed incredible technology, golden temples, and vast wealth. However, the legends claim that the people became greedy, angering the ancient gods. In a single day and night of misfortune, the entire island was swallowed by the sea, disappearing forever into the dark Atlantic ocean.",
+        questions: [
+          { q: "Atlantis was a real city that scientists found yesterday.", a: false },
+          { q: "Legends say the island was swallowed by the sea.", a: true },
+          { q: "The story discusses a famous myth about a sunken island.", a: true },
+        ],
+      },
+    },
   },
 };
 
