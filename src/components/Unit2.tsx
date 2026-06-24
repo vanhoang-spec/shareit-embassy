@@ -1145,7 +1145,54 @@ export const CURRICULUM_DATA = {
       },
     },
   },
+  level_3: {
+    unit_4: {
+      title: "Jobs",
+      icon: "🧑‍🚀",
+      formToggleLabel: "Plural Form 👥",
+      grammarGameMode: "COSMIC_BALLOON_POP",
+      quizGameMode: "ALIEN_TRIVIA",
+      vocabulary: {
+        lesson_1: [
+          { word: "doctor",         alt: "doctors",         vn: "bác sĩ",            emoji: "🩺" },
+          { word: "nurse",          alt: "nurses",          vn: "y tá",              emoji: "🧑‍⚕️" },
+          { word: "firefighter",    alt: "firefighters",    vn: "lính cứu hỏa",      emoji: "🧑‍🚒" },
+          { word: "pilot",          alt: "pilots",          vn: "phi công",          emoji: "🧑‍✈️" },
+          { word: "bus driver",     alt: "bus drivers",     vn: "tài xế xe buýt",    emoji: "🚌" },
+          { word: "police officer", alt: "police officers", vn: "cảnh sát",          emoji: "👮" },
+          { word: "farmer",         alt: "farmers",         vn: "nông dân",          emoji: "👨‍🌾" },
+          { word: "actor",          alt: "actors",          vn: "diễn viên",         emoji: "🎭" },
+        ],
+        lesson_5: [
+          { word: "help sick people" },
+          { word: "drive a bus" },
+          { word: "grow food" },
+          { word: "fly a plane" },
+          { word: "cook food" },
+          { word: "make art" },
+          { word: "act in plays" },
+          { word: "play music" },
+        ],
+      },
+      ai_speak: [
+        "He is a firefighter and he works at the fire station.",
+        "Does she work in a hospital? Yes, she does.",
+        "A pilot flies planes high up in the blue sky.",
+        "Where does a farmer work? A farmer works on a farm.",
+        "What does a chef do? A chef cooks delicious food.",
+      ],
+      reading: {
+        text: "Meet Firefighter Sarah: Sarah is a brave firefighter. She works at a busy spaceport fire station. Every morning, she checks her big red fire truck and puts on her heavy safety suit. She drives fast to help people and rescue cute animals from tricky situations. Firefighters are important community helpers who keep our neighborhoods safe day and night!",
+        questions: [
+          { q: "Sarah works at a fire station.",                     a: true  },
+          { q: "Sarah drives a small blue motorcycle.",              a: false },
+          { q: "Firefighters help keep people and animals safe.",    a: true  },
+        ],
+      },
+    },
+  },
 };
+
 
 
 function getUnitData(unit) {
