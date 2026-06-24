@@ -894,27 +894,89 @@ export function Planet5ArenaU2({ onBack, addCoins }) {
 }
 
 // =================================================================
-// 🌌 UNIFIED COSMIC SPEAKING NEBULA — Planet 3 (Unit 1 + Unit 2)
+// 🌌 LOCKED CURRICULUM DATA MATRIX — feeds AISpeakNebula + other planets
 // =================================================================
-const SPEAKING_SENTENCES = {
-  1: [
-    "I cooked dinner on a campfire last night.",
-    "I built a shelter and I slept in it.",
-    "This morning we went hiking and I rode on a zipline.",
-  ],
-  2: [
-    "At nine o'clock last night, I was streaming a video.",
-    "He was texting a friend when the Wi-Fi stopped.",
-    "They were listening to music during class.",
-  ],
+export const CURRICULUM_DATA = {
+  level_5: {
+    unit_1: {
+      title: "Adventure Camp",
+      icon: "🪐",
+      grammarGameMode: "ASTEROID_SMASHER",
+      quizGameMode: "FOUR_IN_A_ROW",
+      vocabulary: {
+        lesson_1: [
+          { word: "build a shelter",    past: "built a shelter",    emoji: "⛺" },
+          { word: "ride a zipline",     past: "rode a zipline",     emoji: "⚡" },
+          { word: "sleep in a tent",    past: "slept in a tent",    emoji: "⛺" },
+          { word: "go hiking",          past: "went hiking",        emoji: "🥾" },
+          { word: "go mountain biking", past: "went mountain biking", emoji: "🚲" },
+          { word: "cook on a campfire", past: "cooked on a campfire", emoji: "🔥" },
+          { word: "go horseback riding", past: "went horseback riding", emoji: "🐎" },
+          { word: "go canoeing",        past: "went canoeing",      emoji: "🛶" },
+        ],
+        lesson_5: ["jump on a trampoline","go climbing","play volleyball","make jewelry","play table tennis","play badminton","go ice skating","go bowling"],
+      },
+      ai_speak: [
+        "I cooked dinner on a campfire last night.",
+        "I built a shelter and I slept in it.",
+        "This morning we went hiking and I rode on a zipline.",
+      ],
+      reading: {
+        text: "Camp Energy Journal: Yesterday was amazing. We built a shelter in the woods. Later, we cooked on a campfire...",
+        questions: [
+          { q: "They built a shelter yesterday.", a: true },
+          { q: "They cooked inside a kitchen.",   a: false },
+          { q: "They slept in a hotel.",          a: false },
+        ],
+      },
+    },
+    unit_2: {
+      title: "Gadget Nebula",
+      icon: "🌀",
+      grammarGameMode: "ROCKET_FUEL",
+      quizGameMode: "ALIEN_TRIVIA",
+      vocabulary: {
+        lesson_1: [
+          { word: "smartwatch",     past: "smartwatch",     emoji: "⌚" },
+          { word: "laptop",         past: "laptop",         emoji: "💻" },
+          { word: "smartphone",     past: "smartphone",     emoji: "📱" },
+          { word: "tablet",         past: "tablet",         emoji: "📟" },
+          { word: "digital camera", past: "digital camera", emoji: "📷" },
+          { word: "e-reader",       past: "e-reader",       emoji: "📖" },
+          { word: "headphones",     past: "headphones",     emoji: "🎧" },
+          { word: "portable speaker", past: "portable speaker", emoji: "🔊" },
+        ],
+        lesson_5: ["upload a photo","text a friend","stream a video","download a song","charge a phone","log in","print a document","search the internet"],
+      },
+      ai_speak: [
+        "At nine o'clock last night, I was streaming a video.",
+        "He was texting a friend when the Wi-Fi stopped.",
+        "They were listening to music during class.",
+      ],
+      reading: {
+        text: "Vlogging Kit & Tech Tools Review: This smartwatch is excellent for tracking steps. The portable speaker is loud...",
+        questions: [
+          { q: "The smartwatch tracks steps.",   a: true },
+          { q: "The speaker is very quiet.",     a: false },
+          { q: "The review talks about cooking.", a: false },
+        ],
+      },
+    },
+  },
 };
+
+function getUnitData(unit) {
+  return unit === 2 ? CURRICULUM_DATA.level_5.unit_2 : CURRICULUM_DATA.level_5.unit_1;
+}
 
 function normalizeWord(w) {
   return (w || "").toLowerCase().replace(/[^a-z0-9']/g, "");
 }
 
-export function CosmicSpeakingNebula({ onBack, addCoins, unit = 1 }) {
-  const sentences = SPEAKING_SENTENCES[unit] || SPEAKING_SENTENCES[1];
+// Locked framework component — UI/audio engine NEVER changes; only data swaps via `unit`.
+export function AISpeakNebula({ onBack, addCoins, unit = 1 }) {
+  const sentences = getUnitData(unit).ai_speak;
+
   const [idx, setIdx] = useState(0);
   const [recording, setRecording] = useState(false);
   const [transcript, setTranscript] = useState("");
