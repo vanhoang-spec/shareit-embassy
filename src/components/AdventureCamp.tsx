@@ -2944,13 +2944,19 @@ function StarField({ count = 40 }) {
   );
 }
 
-function DashboardHub({ onPick, name, currentUnit = 1 }) {
-  const unitTitle = currentUnit === 8 ? "On Vacation!" : currentUnit === 6 ? "Save Our Planet!" : currentUnit === 5 ? "Let's Cook!" : currentUnit === 4 ? "Myths & Legends" : currentUnit === 3 ? "Surprise!" : currentUnit === 2 ? "Gadget Nebula" : "Adventure Camp";
-  const unitEmoji = currentUnit === 8 ? "🛳️" : currentUnit === 6 ? "🌍" : currentUnit === 5 ? "🍳" : currentUnit === 4 ? "🧜‍♀️" : currentUnit === 3 ? "☄️" : currentUnit === 2 ? "🌀" : "🌠";
+function DashboardHub({ onPick, name, currentUnit = 1, selectedLevel = "level_5" }) {
+  const isL3 = selectedLevel === "level_3";
+  const l3Title = currentUnit === 5 ? "Let's Play!" : "Jobs";
+  const l3Emoji = currentUnit === 5 ? "⚽" : "🧑‍🚀";
+  const l5Title = currentUnit === 8 ? "On Vacation!" : currentUnit === 6 ? "Save Our Planet!" : currentUnit === 5 ? "Let's Cook!" : currentUnit === 4 ? "Myths & Legends" : currentUnit === 3 ? "Surprise!" : currentUnit === 2 ? "Gadget Nebula" : "Adventure Camp";
+  const l5Emoji = currentUnit === 8 ? "🛳️" : currentUnit === 6 ? "🌍" : currentUnit === 5 ? "🍳" : currentUnit === 4 ? "🧜‍♀️" : currentUnit === 3 ? "☄️" : currentUnit === 2 ? "🌀" : "🌠";
+  const unitTitle = isL3 ? l3Title : l5Title;
+  const unitEmoji = isL3 ? l3Emoji : l5Emoji;
+  const levelLabel = isL3 ? "Share It! 3" : "Share It! 5";
   return (
     <div className="ac-fade relative">
       <div className="relative mb-4 overflow-hidden rounded-3xl p-4 text-center gx-glass">
-        <p className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-cyan-300 gx-neon-text" style={{ color: "#67e8f9" }}>Exploring: Share It! 5 🚀 Unit {currentUnit} - {unitTitle}</p>
+        <p className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-cyan-300 gx-neon-text" style={{ color: "#67e8f9" }}>Exploring: {levelLabel} 🚀 Unit {currentUnit} - {unitTitle}</p>
         <p className="text-2xl font-black text-white">{unitEmoji} {unitTitle}</p>
 
         <p className="mt-1 text-sm font-bold text-indigo-200">
