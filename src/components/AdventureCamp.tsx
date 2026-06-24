@@ -3647,14 +3647,17 @@ export default function AdventureCamp() {
   // Profile modal state + name persistence
   const [profileOpen, setProfileOpen] = useState(false);
   const [savingName, setSavingName] = useState(false);
-  async function saveName(newName) {
+  async function saveProfile(newName, newAvatarId) {
     const uid = userIdRef.current;
     if (!uid) return;
     setSavingName(true);
-    const { error } = await supabase.from("profiles").update({ student_name: newName }).eq("id", uid);
+    const patch = { student_name: newName };
+    if (newAvatarId && COSMIC_AVATAR_BY_ID[newAvatarId]) patch.avatar_id = newAvatarId;
+    const { error } = await supabase.from("profiles").update(patch).eq("id", uid);
     setSavingName(false);
     if (!error) {
       setName(newName);
+      if (newAvatarId) setCosmicAvatarId(newAvatarId);
       setProfileOpen(false);
     }
   }
