@@ -2493,8 +2493,8 @@ export function VocabularyQuestU5({ onBack, addCoins, level = "level_5" }) {
 }
 
 // ---------- PLANET 4 U5: Galaxy Bakery reading ----------
-export function ReadingAdventureU5({ onBack, addCoins }) {
-  return <ReadingAdventureU3 onBack={onBack} addCoins={addCoins} unit={5} title="🍰 The Galaxy Bakery" />;
+export function ReadingAdventureU5({ onBack, addCoins, level = "level_5" }) {
+  return <ReadingAdventureU3 onBack={onBack} addCoins={addCoins} unit={5} level={level} title="🍰 The Galaxy Bakery" />;
 }
 
 // ---------- PLANET 2 U5: Quantum Ingredient Scale ----------
