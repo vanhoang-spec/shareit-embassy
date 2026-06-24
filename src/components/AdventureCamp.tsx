@@ -3723,7 +3723,7 @@ export default function AdventureCamp() {
         {/* MAIN */}
         <main className="relative flex-1 overflow-y-auto px-3 pb-6 pt-4">
           {view === "levels" && <StarLeague onEnterLevel5={() => setView("galaxy")} />}
-          {view === "galaxy" && <UnitGalaxy onEnterUnit1={() => setView("hub")} onBackToLevels={() => setView("levels")} />}
+          {view === "galaxy" && <UnitGalaxy onEnterUnit={(n) => { setCurrentUnit(n); setView("hub"); }} onBackToLevels={() => setView("levels")} />}
           {view === "hub" && (
             <>
               <button
@@ -3733,15 +3733,15 @@ export default function AdventureCamp() {
               >
                 ☄️ Fly Back to Units
               </button>
-              <DashboardHub onPick={setView} name={name} />
+              <DashboardHub onPick={setView} name={name} currentUnit={currentUnit} />
             </>
           )}
 
-          {view === "vocab" && <VocabularyQuest onBack={back} addCoins={addCoins} />}
-          {view === "grammar" && <GrammarLab onBack={back} addCoins={addCoins} />}
-          {view === "speaking" && <AISpeakingWorld onBack={back} addCoins={addCoins} />}
-          {view === "reading" && <ReadingAdventure onBack={back} addCoins={addCoins} />}
-          {view === "quiz" && <GrandUnitQuiz onBack={back} addCoins={addCoins} />}
+          {view === "vocab" && (currentUnit === 2 ? <VocabularyQuestU2 onBack={back} addCoins={addCoins} /> : <VocabularyQuest onBack={back} addCoins={addCoins} />)}
+          {view === "grammar" && (currentUnit === 2 ? <RocketFuelMission onBack={back} addCoins={addCoins} /> : <GrammarLab onBack={back} addCoins={addCoins} />)}
+          {view === "speaking" && (currentUnit === 2 ? <AISpeakingWorldU2 onBack={back} addCoins={addCoins} /> : <AISpeakingWorld onBack={back} addCoins={addCoins} />)}
+          {view === "reading" && (currentUnit === 2 ? <ReadingAdventureU2 onBack={back} addCoins={addCoins} /> : <ReadingAdventure onBack={back} addCoins={addCoins} />)}
+          {view === "quiz" && (currentUnit === 2 ? <WordHunterArena onBack={back} addCoins={addCoins} /> : <GrandUnitQuiz onBack={back} addCoins={addCoins} />)}
         </main>
 
 
