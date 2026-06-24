@@ -1320,11 +1320,13 @@ export function AISpeakNebula({ onBack, addCoins, unit = 1 }) {
 
 // ---------- PLANET 1 U3: Daily Action flashcards + Lesson 5 speaking ----------
 function DailyActionFlashcards({ addCoins, unit = 3 }) {
-  const items = getUnitData(unit).vocabulary.lesson_1;
+  const unitData = getUnitData(unit);
+  const items = unitData.vocabulary.lesson_1;
+  const formToggleLabel = unitData.formToggleLabel || "Alt Form";
   const [mastered, setMastered] = useState(() => new Set());
-  const [tense, setTense] = useState({}); // id -> 'past'
+  const [tense, setTense] = useState({}); // id -> 'alt'
   const [meaning, setMeaning] = useState({}); // id -> true
-  function toggle(i) { setTense((p) => ({ ...p, [i]: p[i] === "past" ? "base" : "past" })); }
+  function toggle(i) { setTense((p) => ({ ...p, [i]: p[i] === "alt" ? "base" : "alt" })); }
   function toggleMeaning(i) { setMeaning((p) => ({ ...p, [i]: !p[i] })); }
   function speakSlow(text) {
     try {
