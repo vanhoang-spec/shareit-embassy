@@ -2487,7 +2487,7 @@ export function VocabularyQuestU5({ onBack, addCoins, level = "level_5" }) {
           </button>
         ))}
       </div>
-      {tab === "l1" ? <DailyActionFlashcards addCoins={addCoins} unit={5} /> : <DailyPhraseSpeaking addCoins={addCoins} unit={5} />}
+      {tab === "l1" ? <DailyActionFlashcards addCoins={addCoins} unit={5} level={level} /> : <DailyPhraseSpeaking addCoins={addCoins} unit={5} level={level} />}
     </div>
   );
 }
