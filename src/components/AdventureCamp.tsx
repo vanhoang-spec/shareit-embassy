@@ -3755,7 +3755,7 @@ export default function AdventureCamp() {
               >
                 ☄️ Fly Back to Units
               </button>
-              <DashboardHub onPick={setView} name={name} currentUnit={currentUnit} />
+              <DashboardHub onPick={setView} name={name} currentUnit={currentUnit} selectedLevel={selectedLevel} />
             </>
           )}
 
