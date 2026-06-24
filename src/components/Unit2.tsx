@@ -1184,8 +1184,22 @@ export const CURRICULUM_DATA = {
 
 
 function getUnitData(unit, level = "level_5") {
-  const lvl = CURRICULUM_DATA[level] || CURRICULUM_DATA.level_5;
-  return lvl[`unit_${unit}`] || CURRICULUM_DATA.level_5[`unit_${unit}`] || CURRICULUM_DATA.level_5.unit_1;
+  const lvl = CURRICULUM_DATA[level];
+  if (lvl && lvl[`unit_${unit}`]) return lvl[`unit_${unit}`];
+  // Only fall back to level_5 if the requested level itself is unknown.
+  if (!lvl) {
+    return CURRICULUM_DATA.level_5[`unit_${unit}`] || CURRICULUM_DATA.level_5.unit_1;
+  }
+  // Requested level exists but unit missing → empty shell, no level_5 leak.
+  return {
+    title: "",
+    icon: "",
+    formToggleLabel: "",
+    vocabulary: { lesson_1: [], lesson_5: [] },
+    ai_speak: [],
+    reading: { text: "Waiting for content update...", questions: [] },
+    games: { grammar: [], phonics: { categories: [], words: [] } },
+  };
 }
 
 
