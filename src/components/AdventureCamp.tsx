@@ -3590,13 +3590,14 @@ export default function AdventureCamp() {
       if (!session?.user) { setLoading(false); return; }
       setUserId(session.user.id); userIdRef.current = session.user.id;
       const { data } = await supabase.from("profiles")
-        .select("total_coins,streak_days,student_name")
+        .select("total_coins,streak_days,student_name,avatar_id")
         .eq("id", session.user.id).maybeSingle();
       if (cancelled) return;
       if (data) {
         setCoins(typeof data.total_coins === "number" ? data.total_coins : 0);
         setStreak(typeof data.streak_days === "number" ? data.streak_days : 0);
         setName(data.student_name || "");
+        if (data.avatar_id && COSMIC_AVATAR_BY_ID[data.avatar_id]) setCosmicAvatarId(data.avatar_id);
       }
       setLoading(false);
     }
