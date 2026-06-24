@@ -26,6 +26,10 @@ import {
   Loader2,
   ArrowRight,
 } from "lucide-react";
+import {
+  COSMIC_AVATARS, COSMIC_AVATAR_BY_ID,
+  VocabularyQuestU2, RocketFuelMission, AISpeakingWorldU2, ReadingAdventureU2, WordHunterArena,
+} from "./Unit2";
 
 // ----- Brand kit (from Embassy Language logo) -----
 const BRAND = { navy: "#004088", navyDark: "#00264f", red: "#E81820", redDark: "#c8141b", gold: "#F5B301" };
@@ -2934,12 +2938,14 @@ function StarField({ count = 40 }) {
   );
 }
 
-function DashboardHub({ onPick, name }) {
+function DashboardHub({ onPick, name, currentUnit = 1 }) {
+  const unitTitle = currentUnit === 2 ? "Gadget Nebula" : "Adventure Camp";
+  const unitEmoji = currentUnit === 2 ? "🌀" : "🌠";
   return (
     <div className="ac-fade relative">
       <div className="relative mb-4 overflow-hidden rounded-3xl p-4 text-center gx-glass">
-        <p className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-cyan-300 gx-neon-text" style={{ color: "#67e8f9" }}>Exploring: Level 5 🚀 Unit 1</p>
-        <p className="text-2xl font-black text-white">🌠 Adventure Camp</p>
+        <p className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-cyan-300 gx-neon-text" style={{ color: "#67e8f9" }}>Exploring: Share It! 5 🚀 Unit {currentUnit} - {unitTitle}</p>
+        <p className="text-2xl font-black text-white">{unitEmoji} {unitTitle}</p>
 
         <p className="mt-1 text-sm font-bold text-indigo-200">
           {name ? `Welcome, Captain ${name}!` : "Welcome, Space Cadet!"} Pick a planet to explore.
@@ -2996,35 +3002,51 @@ function DashboardHub({ onPick, name }) {
 // =================================================================
 // Camper Profile — edit student_name (synced to Lovable Cloud)
 // =================================================================
-function ProfileModal({ open, onClose, name, onSave, saving, avatarEmoji, onOpenAvatar, coins, streak }) {
+function ProfileModal({ open, onClose, name, cosmicAvatarId, onSave, saving, avatarEmoji, onOpenAvatar, coins, streak }) {
   const [val, setVal] = useState(name || "");
-  useEffect(() => { if (open) setVal(name || ""); }, [open, name]);
+  const [picked, setPicked] = useState(cosmicAvatarId || "astronaut");
+  useEffect(() => { if (open) { setVal(name || ""); setPicked(cosmicAvatarId || "astronaut"); } }, [open, name, cosmicAvatarId]);
   if (!open) return null;
   const trimmed = val.trim();
-  const canSave = trimmed.length >= 1 && trimmed.length <= 40 && trimmed !== (name || "");
+  const dirty = (trimmed && trimmed !== (name || "")) || picked !== (cosmicAvatarId || "astronaut");
+  const canSave = trimmed.length >= 1 && trimmed.length <= 40 && dirty;
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center p-4" style={{ background: "rgba(3,3,30,.7)", backdropFilter: "blur(6px)" }}>
       <div className="relative w-full max-w-sm overflow-hidden rounded-3xl p-5 text-white shadow-2xl ring-1 ring-white/20 gx-glass ac-fade" style={{ background: "linear-gradient(160deg,#1e1b4b,#312e81 60%,#4c1d95)" }}>
         <StarField count={20} />
         <div className="relative">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-extrabold uppercase tracking-widest text-cyan-300 gx-neon-text" style={{color:"#67e8f9"}}>Camper Profile</p>
+            <p className="text-xs font-extrabold uppercase tracking-widest text-cyan-300 gx-neon-text" style={{color:"#67e8f9"}}>Cosmic Profile Center</p>
             <button onClick={onClose} className="rounded-full bg-white/10 p-1 ring-1 ring-white/20 hover:bg-white/20" aria-label="Close"><X size={16} /></button>
           </div>
-          <div className="mt-3 flex items-center gap-3">
-            <button onClick={onOpenAvatar} className="relative flex h-16 w-16 items-center justify-center rounded-full bg-white/10 text-3xl ring-2 ring-cyan-300/70 hover:scale-105 transition" style={{ boxShadow: "0 0 18px #22d3ee88" }}>
-              <span>{avatarEmoji || "🧑‍🚀"}</span>
-              <span className="absolute -bottom-1 -right-1 rounded-full bg-cyan-400 px-1.5 py-0.5 text-[9px] font-black text-slate-900">EDIT</span>
-            </button>
-            <div className="flex-1">
-              <p className="text-[11px] font-bold text-indigo-200">Captain Name</p>
-              <input
-                value={val}
-                onChange={(e) => setVal(e.target.value)}
-                maxLength={40}
-                placeholder="Your name"
-                className="mt-1 w-full rounded-xl bg-white/10 px-3 py-2 text-base font-extrabold text-white placeholder-white/40 outline-none ring-1 ring-white/20 focus:ring-cyan-300"
-              />
+          <div className="mt-3">
+            <p className="text-[11px] font-bold text-indigo-200">Captain Name</p>
+            <input
+              value={val}
+              onChange={(e) => setVal(e.target.value)}
+              maxLength={40}
+              placeholder="Your name"
+              className="mt-1 w-full rounded-xl bg-white/10 px-3 py-2 text-base font-extrabold text-white placeholder-white/40 outline-none ring-1 ring-white/20 focus:ring-cyan-300"
+            />
+          </div>
+          <div className="mt-4">
+            <p className="text-[11px] font-bold text-indigo-200">Choose Your Cosmic Avatar 🛰️</p>
+            <div className="mt-2 grid grid-cols-5 gap-2">
+              {COSMIC_AVATARS.map((a) => {
+                const sel = picked === a.id;
+                return (
+                  <button key={a.id} onClick={() => setPicked(a.id)}
+                    className="flex flex-col items-center rounded-2xl p-2 text-white transition active:scale-95"
+                    style={{
+                      background: sel ? "linear-gradient(135deg,#22d3ee33,#a78bfa33)" : "rgba(255,255,255,.06)",
+                      boxShadow: sel ? "0 0 14px #22d3ee, inset 0 0 0 2px #67e8f9" : "inset 0 0 0 1px rgba(255,255,255,.15)",
+                    }}
+                    aria-label={a.name}>
+                    <span className="text-2xl leading-none">{a.emoji}</span>
+                    <span className="mt-1 text-[8px] font-black uppercase tracking-wide text-indigo-100">{a.name.split(" ")[0]}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
           <div className="mt-4 grid grid-cols-2 gap-2 text-center">
@@ -3041,11 +3063,11 @@ function ProfileModal({ open, onClose, name, onSave, saving, avatarEmoji, onOpen
             <button onClick={onClose} className="flex-1 rounded-full bg-white/10 px-4 py-2 text-sm font-extrabold text-white ring-1 ring-white/20 hover:bg-white/20">Cancel</button>
             <button
               disabled={!canSave || saving}
-              onClick={() => onSave(trimmed)}
+              onClick={() => onSave(trimmed, picked)}
               className="flex-1 rounded-full px-4 py-2 text-sm font-black text-slate-900 shadow-lg transition disabled:cursor-not-allowed disabled:opacity-50"
               style={{ background: "linear-gradient(135deg,#67e8f9,#a78bfa)", boxShadow: "0 0 18px #a78bfa88" }}
             >
-              {saving ? <span className="inline-flex items-center gap-1"><Loader2 size={14} className="animate-spin"/>Saving…</span> : "Save 🚀"}
+              {saving ? <span className="inline-flex items-center gap-1"><Loader2 size={14} className="animate-spin"/>Saving…</span> : "Save My Profile 📝"}
             </button>
           </div>
         </div>
@@ -3140,7 +3162,7 @@ function StarLeague({ onEnterLevel5 }) {
 // =================================================================
 const UNITS = [
   { n:1, title:"Adventure Camp",  emoji:"🏕️", ring:"#34d399", core:"radial-gradient(circle at 30% 30%, #bef264, #16a34a 55%, #064e3b)", glow:"#34d399", unlocked:true  },
-  { n:2, title:"Gadget Nebula",   emoji:"🤖", ring:"#22d3ee", core:"radial-gradient(circle at 30% 30%, #67e8f9, #0891b2 55%, #0e1741)", glow:"#22d3ee", unlocked:false },
+  { n:2, title:"Gadget Nebula",   emoji:"🌀", ring:"#22d3ee", core:"radial-gradient(circle at 30% 30%, #67e8f9, #0891b2 55%, #0e1741)", glow:"#22d3ee", unlocked:true  },
   { n:3, title:"Wild Safari",     emoji:"🦁", ring:"#a3e635", core:"radial-gradient(circle at 30% 30%, #bbf7d0, #16a34a 55%, #14532d)", glow:"#a3e635", unlocked:false },
   { n:4, title:"Future City",     emoji:"🌆", ring:"#c084fc", core:"radial-gradient(circle at 30% 30%, #f0abfc, #9333ea 55%, #3b0764)", glow:"#c084fc", unlocked:false },
   { n:5, title:"Eco Planet",      emoji:"🌍", ring:"#38bdf8", core:"radial-gradient(circle at 30% 30%, #bae6fd, #0284c7 55%, #082f49)", glow:"#38bdf8", unlocked:false },
@@ -3149,12 +3171,12 @@ const UNITS = [
   { n:8, title:"Festival Star",   emoji:"🎆", ring:"#f472b6", core:"radial-gradient(circle at 30% 30%, #fef3c7, #ec4899 40%, #6d28d9)", glow:"#f472b6", unlocked:false },
 ];
 
-function UnitGalaxy({ onEnterUnit1, onBackToLevels }) {
+function UnitGalaxy({ onEnterUnit, onBackToLevels }) {
   const [toast, setToast] = useState(null);
   const timer = useRef(null);
   function tap(u) {
-    if (u.unlocked) { onEnterUnit1(); return; }
-    setToast(`Mission locked! Complete Unit 1: Adventure Camp first! ☄️`);
+    if (u.unlocked) { onEnterUnit(u.n); return; }
+    setToast(`Mission locked! Complete earlier units first! ☄️`);
     clearTimeout(timer.current);
     timer.current = setTimeout(() => setToast(null), 1800);
   }
@@ -3519,6 +3541,8 @@ function useArcadeMusic(enabled) {
 // =================================================================
 export default function AdventureCamp() {
   const [view, setView] = useState("levels"); // levels | galaxy | hub | vocab | grammar | speaking | reading | quiz
+  const [currentUnit, setCurrentUnit] = useState(1);
+  const [cosmicAvatarId, setCosmicAvatarId] = useState("astronaut");
 
 
   const [musicOn, setMusicOn] = useState(() => {
@@ -3566,13 +3590,14 @@ export default function AdventureCamp() {
       if (!session?.user) { setLoading(false); return; }
       setUserId(session.user.id); userIdRef.current = session.user.id;
       const { data } = await supabase.from("profiles")
-        .select("total_coins,streak_days,student_name")
+        .select("total_coins,streak_days,student_name,avatar_id")
         .eq("id", session.user.id).maybeSingle();
       if (cancelled) return;
       if (data) {
         setCoins(typeof data.total_coins === "number" ? data.total_coins : 0);
         setStreak(typeof data.streak_days === "number" ? data.streak_days : 0);
         setName(data.student_name || "");
+        if (data.avatar_id && COSMIC_AVATAR_BY_ID[data.avatar_id]) setCosmicAvatarId(data.avatar_id);
       }
       setLoading(false);
     }
@@ -3622,14 +3647,17 @@ export default function AdventureCamp() {
   // Profile modal state + name persistence
   const [profileOpen, setProfileOpen] = useState(false);
   const [savingName, setSavingName] = useState(false);
-  async function saveName(newName) {
+  async function saveProfile(newName, newAvatarId) {
     const uid = userIdRef.current;
     if (!uid) return;
     setSavingName(true);
-    const { error } = await supabase.from("profiles").update({ student_name: newName }).eq("id", uid);
+    const patch = { student_name: newName };
+    if (newAvatarId && COSMIC_AVATAR_BY_ID[newAvatarId]) patch.avatar_id = newAvatarId;
+    const { error } = await supabase.from("profiles").update(patch).eq("id", uid);
     setSavingName(false);
     if (!error) {
       setName(newName);
+      if (newAvatarId) setCosmicAvatarId(newAvatarId);
       setProfileOpen(false);
     }
   }
@@ -3651,12 +3679,12 @@ export default function AdventureCamp() {
             <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
               <div className="flex min-w-0 items-center gap-2.5">
                 <button
-                  onClick={() => setPickerOpen(true)}
+                  onClick={() => setProfileOpen(true)}
                   className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-2xl transition-transform hover:scale-105 active:scale-95"
                   style={{ boxShadow: "0 0 0 3px #22d3ee, 0 0 18px #a78bfa" }}
-                  aria-label="Change avatar"
+                  aria-label="Open cosmic profile"
                 >
-                  <span>{currentAvatar?.emoji || "🧑‍🚀"}</span>
+                  <span>{COSMIC_AVATAR_BY_ID[cosmicAvatarId]?.emoji || "👨‍🚀"}</span>
                 </button>
                 <button
                   onClick={() => setProfileOpen(true)}
@@ -3664,7 +3692,7 @@ export default function AdventureCamp() {
                   aria-label="Edit profile"
                 >
                   <p className="truncate text-sm font-extrabold text-white">{name || "Space Cadet"} <span className="text-cyan-300">✎</span></p>
-                  <p className="text-[11px] font-bold text-indigo-200">{currentAvatar?.name || "Galactic Explorer"}</p>
+                  <p className="text-[11px] font-bold text-indigo-200">{COSMIC_AVATAR_BY_ID[cosmicAvatarId]?.name || "Astro-Camper"}</p>
                 </button>
               </div>
               <div className="flex shrink-0 items-center gap-2">
@@ -3695,7 +3723,7 @@ export default function AdventureCamp() {
         {/* MAIN */}
         <main className="relative flex-1 overflow-y-auto px-3 pb-6 pt-4">
           {view === "levels" && <StarLeague onEnterLevel5={() => setView("galaxy")} />}
-          {view === "galaxy" && <UnitGalaxy onEnterUnit1={() => setView("hub")} onBackToLevels={() => setView("levels")} />}
+          {view === "galaxy" && <UnitGalaxy onEnterUnit={(n) => { setCurrentUnit(n); setView("hub"); }} onBackToLevels={() => setView("levels")} />}
           {view === "hub" && (
             <>
               <button
@@ -3705,15 +3733,15 @@ export default function AdventureCamp() {
               >
                 ☄️ Fly Back to Units
               </button>
-              <DashboardHub onPick={setView} name={name} />
+              <DashboardHub onPick={setView} name={name} currentUnit={currentUnit} />
             </>
           )}
 
-          {view === "vocab" && <VocabularyQuest onBack={back} addCoins={addCoins} />}
-          {view === "grammar" && <GrammarLab onBack={back} addCoins={addCoins} />}
-          {view === "speaking" && <AISpeakingWorld onBack={back} addCoins={addCoins} />}
-          {view === "reading" && <ReadingAdventure onBack={back} addCoins={addCoins} />}
-          {view === "quiz" && <GrandUnitQuiz onBack={back} addCoins={addCoins} />}
+          {view === "vocab" && (currentUnit === 2 ? <VocabularyQuestU2 onBack={back} addCoins={addCoins} /> : <VocabularyQuest onBack={back} addCoins={addCoins} />)}
+          {view === "grammar" && (currentUnit === 2 ? <RocketFuelMission onBack={back} addCoins={addCoins} /> : <GrammarLab onBack={back} addCoins={addCoins} />)}
+          {view === "speaking" && (currentUnit === 2 ? <AISpeakingWorldU2 onBack={back} addCoins={addCoins} /> : <AISpeakingWorld onBack={back} addCoins={addCoins} />)}
+          {view === "reading" && (currentUnit === 2 ? <ReadingAdventureU2 onBack={back} addCoins={addCoins} /> : <ReadingAdventure onBack={back} addCoins={addCoins} />)}
+          {view === "quiz" && (currentUnit === 2 ? <WordHunterArena onBack={back} addCoins={addCoins} /> : <GrandUnitQuiz onBack={back} addCoins={addCoins} />)}
         </main>
 
 
@@ -3727,9 +3755,10 @@ export default function AdventureCamp() {
           open={profileOpen}
           onClose={() => setProfileOpen(false)}
           name={name}
-          onSave={saveName}
+          cosmicAvatarId={cosmicAvatarId}
+          onSave={saveProfile}
           saving={savingName}
-          avatarEmoji={currentAvatar?.emoji}
+          avatarEmoji={COSMIC_AVATAR_BY_ID[cosmicAvatarId]?.emoji}
           onOpenAvatar={() => { setProfileOpen(false); setPickerOpen(true); }}
           coins={coins}
           streak={streak}
