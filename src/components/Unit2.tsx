@@ -2732,6 +2732,359 @@ export function Planet5ArenaU5({ onBack, addCoins }) {
   );
 }
 
+// =================================================================
+// UNIT 6 · Save Our Planet! — Vocabulary / Grammar / Reading / Arena
+// =================================================================
+export function VocabularyQuestU6({ onBack, addCoins }) {
+  const [tab, setTab] = useState("l1");
+  return (
+    <div className="ac-fade">
+      <BackBar onBack={onBack} color="#34d399" />
+      <div className="mb-3 rounded-3xl p-4 text-center gx-glass" style={{ boxShadow: "0 0 18px #34d39966" }}>
+        <p className="text-[11px] font-extrabold uppercase tracking-widest text-emerald-300">Planet 1 · Vocabulary Orbit</p>
+        <p className="text-xl font-black text-white">🌍 Endangered Wildlife Atlas</p>
+      </div>
+      <div className="mb-3 grid grid-cols-2 gap-2">
+        {[{k:"l1",t:"Lesson 1 · Flashcards"},{k:"l5",t:"Lesson 8 · Speaking"}].map((x) => (
+          <button key={x.k} onClick={() => setTab(x.k)}
+            className={`rounded-full px-3 py-2 text-xs font-black transition ${tab===x.k ? "text-slate-900" : "text-white"}`}
+            style={tab===x.k ? { background: "linear-gradient(135deg,#bef264,#34d399)", boxShadow: "0 0 14px #34d39988" } : { background: "rgba(255,255,255,.08)", boxShadow: "inset 0 0 0 1px rgba(255,255,255,.18)" }}>
+            {x.t}
+          </button>
+        ))}
+      </div>
+      {tab === "l1" ? <DailyActionFlashcards addCoins={addCoins} unit={6} /> : <DailyPhraseSpeaking addCoins={addCoins} unit={6} />}
+    </div>
+  );
+}
+
+export function ReadingAdventureU6({ onBack, addCoins }) {
+  return <ReadingAdventureU3 onBack={onBack} addCoins={addCoins} unit={6} title="🌱 The Green Mission" />;
+}
+
+// ---------- PLANET 2 U6: Eco Goal Balancer ----------
+const ECO_BALANCER_ITEMS = [
+  { sentence: "If we ___ trash, we will protect the wild rivers.", choices: ["recycle","recycled","recycling"], correct: 0 },
+  { sentence: "What ___ happen if the oceans become too warm?",     choices: ["will","does","did"],              correct: 0 },
+  { sentence: "We ___ turn off the computer when we leave the room.", choices: ["should","shouldn't","are"],    correct: 0 },
+  { sentence: "If people ___ more trees, the forests will grow fast.", choices: ["plant","plants","planting"],  correct: 0 },
+];
+export function EcoBalancer({ onBack, addCoins }) {
+  const [idx, setIdx] = useState(0);
+  const [pick, setPick] = useState(null);
+  const [flash, setFlash] = useState(null);
+  const [done, setDone] = useState(false);
+  const awarded = useRef(false);
+  const cur = ECO_BALANCER_ITEMS[idx];
+
+  function choose(i) {
+    if (pick !== null || done) return;
+    setPick(i);
+    const ok = i === cur.correct;
+    setFlash(ok ? "ok" : "bad");
+    setTimeout(() => {
+      setFlash(null); setPick(null);
+      if (!ok) return;
+      if (idx + 1 >= ECO_BALANCER_ITEMS.length) {
+        if (!awarded.current) { awarded.current = true; addCoins?.(15); try { confetti({ particleCount: 200, spread: 110, origin: { y: 0.6 } }); } catch {} }
+        setDone(true);
+      } else setIdx((n) => n + 1);
+    }, 900);
+  }
+  function reset() { setIdx(0); setPick(null); setFlash(null); setDone(false); awarded.current = false; }
+
+  return (
+    <div className="ac-fade">
+      <BackBar onBack={onBack} color="#34d399" />
+      <div className="mb-3 rounded-3xl p-4 text-center gx-glass" style={{ boxShadow: "0 0 18px #34d39966" }}>
+        <p className="text-[11px] font-extrabold uppercase tracking-widest text-emerald-300">Planet 2 · Grammar Black Hole</p>
+        <p className="text-xl font-black text-white">🌱 Eco Goal Balancer</p>
+        <p className="text-[11px] font-bold text-indigo-200">Tap a green crystal to complete the eco rule.</p>
+      </div>
+
+      {!done ? (
+        <>
+          <div className="mb-3 flex items-center justify-between text-xs font-bold text-indigo-200">
+            <span>Goal {idx + 1} / {ECO_BALANCER_ITEMS.length}</span>
+            <button onClick={reset} className="rounded-full bg-white/10 px-3 py-1 font-black text-emerald-200 ring-1 ring-white/20">Reset</button>
+          </div>
+
+          <div className="rounded-3xl gx-glass p-5 text-center" style={{ boxShadow: flash === "ok" ? "0 0 22px #34d399" : flash === "bad" ? "0 0 22px #f43f5e" : "0 0 14px #34d39955" }}>
+            <div className="text-6xl" style={{ filter: "drop-shadow(0 0 12px #34d399cc)" }}>🌍</div>
+            <p className="mt-3 text-base font-black text-white">{cur.sentence}</p>
+          </div>
+
+          <div className="mt-4 grid grid-cols-3 gap-2">
+            {cur.choices.map((c, i) => {
+              const isPick = pick === i;
+              const showRight = pick !== null && i === cur.correct;
+              const showWrong = isPick && i !== cur.correct;
+              return (
+                <button key={i} onClick={() => choose(i)} disabled={pick !== null}
+                  className="relative rounded-2xl px-2 py-4 text-sm font-black text-white transition active:scale-95 disabled:opacity-60"
+                  style={{
+                    background: showRight ? "linear-gradient(135deg,#10b981,#34d399)"
+                              : showWrong ? "linear-gradient(135deg,#f43f5e,#fb7185)"
+                              : "radial-gradient(circle at 30% 30%, #bef264, #15803d 70%)",
+                    boxShadow: isPick ? "0 0 14px #34d399" : "0 0 12px #34d39966, inset 0 0 0 1px #bef26466",
+                    animation: "csnFloat 3s ease-in-out infinite",
+                  }}>
+                  <div className="text-2xl">💚</div>
+                  <div className="mt-1">{c}</div>
+                </button>
+              );
+            })}
+          </div>
+        </>
+      ) : (
+        <div className="rounded-3xl gx-glass p-5 text-center" style={{ boxShadow: "0 0 22px #34d399" }}>
+          <p className="text-2xl font-black text-white">🌳 Forest restored!</p>
+          <p className="mt-1 text-sm font-bold text-indigo-200">All eco goals balanced. +15 coins awarded!</p>
+          <div className="mt-3 flex justify-center gap-2">
+            <button onClick={reset} className="rounded-full px-4 py-2 text-sm font-black text-slate-900"
+              style={{ background: "linear-gradient(135deg,#bef264,#34d399)", boxShadow: "0 0 14px #34d39988" }}>Replay</button>
+            <button onClick={onBack} className="rounded-full bg-white/10 px-4 py-2 text-sm font-black text-white ring-1 ring-white/20">Back</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ---------- PLANET 5 U6 · Mode A: Phonics Rocket -au-/-aw- ----------
+const PHONICS_ITEMS_U6 = [
+  { word: "autumn",    sound: "au" },
+  { word: "sauce",     sound: "au" },
+  { word: "astronaut", sound: "au" },
+  { word: "saw",       sound: "aw" },
+  { word: "draw",      sound: "aw" },
+  { word: "straw",     sound: "aw" },
+];
+function PhonicsRocketU6({ addCoins }) {
+  const [queue, setQueue] = useState(() => shuffle(PHONICS_ITEMS_U6));
+  const [pos, setPos] = useState(0);
+  const [score, setScore] = useState(0);
+  const [flash, setFlash] = useState(null);
+  const [done, setDone] = useState(false);
+  const cur = queue[pos];
+  function pick(sound) {
+    if (flash || done) return;
+    const ok = sound === cur.sound;
+    setFlash({ ok, target: sound });
+    if (ok) { setScore((s) => s + 1); addCoins?.(2); }
+    setTimeout(() => {
+      setFlash(null);
+      if (pos + 1 >= queue.length) {
+        setDone(true);
+        try { confetti({ particleCount: 130, spread: 80, origin: { y: 0.6 } }); } catch {}
+      } else setPos((p) => p + 1);
+    }, 700);
+  }
+  function reset() { setQueue(shuffle(PHONICS_ITEMS_U6)); setPos(0); setScore(0); setDone(false); setFlash(null); }
+  return (
+    <div>
+      <div className="mb-3 flex items-center justify-between text-xs font-bold text-indigo-200">
+        <span>Word {Math.min(pos+1, queue.length)} / {queue.length}</span>
+        <span>Correct: <b className="text-white">{score}</b></span>
+        <button onClick={reset} className="rounded-full bg-white/10 px-3 py-1 font-black text-emerald-200 ring-1 ring-white/20">Reset</button>
+      </div>
+      {!done ? (
+        <>
+          <div className="rounded-3xl gx-glass p-5 text-center" style={{ boxShadow: "0 0 18px #34d39944" }}>
+            <p className="text-[11px] font-extrabold uppercase tracking-widest text-emerald-300">Which spelling suffix does this word use?</p>
+            <p className="mt-2 text-3xl font-black tracking-wide text-white">{cur.word}</p>
+            <button onClick={() => speak(cur.word)} className="mt-2 rounded-full bg-white/10 px-3 py-1 text-xs font-black text-emerald-200 ring-1 ring-white/20">🔊 Hear it</button>
+          </div>
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            {[
+              { id: "au", label: "Suffix -au- (autumn)", grad: "linear-gradient(135deg,#84cc16,#16a34a)", glow: "#84cc16" },
+              { id: "aw", label: "Suffix -aw- (saw)",    grad: "linear-gradient(135deg,#06b6d4,#3b82f6)", glow: "#06b6d4" },
+            ].map((r) => {
+              const showRight = flash && r.id === cur.sound;
+              const showWrong = flash && r.id === flash.target && !flash.ok;
+              return (
+                <button key={r.id} onClick={() => pick(r.id)} disabled={!!flash}
+                  className="relative flex h-40 flex-col items-center justify-end rounded-3xl pb-4 text-white shadow-xl transition active:scale-95"
+                  style={{ background: r.grad, boxShadow: `0 0 18px ${r.glow}88, inset 0 0 0 1px ${r.glow}` }}>
+                  <div className="text-6xl" style={{ filter: `drop-shadow(0 0 10px ${r.glow})` }}>🚀</div>
+                  <div className="mt-1 rounded-full bg-white/20 px-4 py-1 text-sm font-black tracking-wide">{r.label}</div>
+                  {showRight && <div className="absolute inset-0 grid place-items-center rounded-3xl bg-emerald-500/35 text-5xl">✓</div>}
+                  {showWrong && <div className="absolute inset-0 grid place-items-center rounded-3xl bg-rose-500/35 text-5xl">✗</div>}
+                </button>
+              );
+            })}
+          </div>
+          {flash && <p className="mt-3 text-center text-sm font-black" style={{ color: flash.ok ? "#34d399" : "#fda4af" }}>
+            {flash.ok ? `🎉 ${cur.word} → -${cur.sound}-  +2 coins` : `Almost! "${cur.word}" → -${cur.sound}-`}
+          </p>}
+        </>
+      ) : (
+        <div className="rounded-3xl gx-glass p-5 text-center" style={{ boxShadow: "0 0 22px #34d399" }}>
+          <p className="text-2xl font-black text-white">🌠 Phonics Mission Complete!</p>
+          <p className="mt-1 text-sm font-bold text-indigo-200">Score: {score}/{queue.length}</p>
+          <button onClick={reset} className="mt-3 rounded-full px-4 py-2 text-sm font-black text-slate-900"
+            style={{ background: "linear-gradient(135deg,#bef264,#34d399)", boxShadow: "0 0 14px #34d39988" }}>Play Again</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ---------- PLANET 5 U6 · Mode B: Alien Trivia Quest ----------
+const TRIVIA_QUESTIONS_U6 = [
+  { q: "Which animal lives in the icy Arctic?",                       choices: ["polar bear","orangutan","blue whale","snow leopard"], correct: 0 },
+  { q: "If we don't protect the giant pandas, they ___ disappear.",   choices: ["will","do","were","are"],                              correct: 0 },
+  { q: "We ___ turn off the lights to save energy.",                  choices: ["should","shouldn't","didn't","won't"],                 correct: 0 },
+  { q: "Which action helps save trees and forests?",                  choices: ["recycle paper","waste water","throw plastic","drive more"], correct: 0 },
+  { q: "What harms sea turtles the most in the ocean?",               choices: ["plastic","sand","seaweed","coral"],                    correct: 0 },
+  { q: "If people ___ more trees, the air will be cleaner.",          choices: ["plant","plants","planted","planting"],                 correct: 0 },
+  { q: "Which word uses the -aw- suffix sound?",                      choices: ["draw","sauce","autumn","astronaut"],                   correct: 0 },
+  { q: "Which big animal is endangered in the deep ocean?",           choices: ["blue whale","mountain gorilla","black rhino","panda"], correct: 0 },
+];
+function AlienTriviaU6({ addCoins }) {
+  const [pool] = useState(() => shuffle(TRIVIA_QUESTIONS_U6));
+  const [idx, setIdx] = useState(0);
+  const [pick, setPick] = useState(null);
+  const [killed, setKilled] = useState(new Set());
+  const [fiftyLeft, setFiftyLeft] = useState(1);
+  const [shieldLeft, setShieldLeft] = useState(1);
+  const [shieldArmed, setShieldArmed] = useState(false);
+  const [hearts, setHearts] = useState(3);
+  const [done, setDone] = useState(null);
+  const awarded = useRef(false);
+  const q = pool[idx];
+  function choose(i) {
+    if (pick !== null || done) return;
+    setPick(i);
+    const ok = i === q.correct;
+    if (!ok) {
+      if (shieldArmed) { setShieldArmed(false); setTimeout(() => nextQ(true), 1100); return; }
+      setHearts((h) => {
+        const nh = h - 1;
+        if (nh <= 0) setTimeout(() => setDone("lose"), 900);
+        return nh;
+      });
+    }
+    setTimeout(() => nextQ(ok), 1000);
+  }
+  function nextQ(_ok) {
+    if (idx + 1 >= pool.length) {
+      if (!awarded.current && hearts > 0) {
+        awarded.current = true;
+        addCoins?.(30);
+        try { confetti({ particleCount: 220, spread: 110, startVelocity: 60, origin: { y: 0.6 } }); } catch {}
+        setDone("win");
+      }
+      return;
+    }
+    setIdx((n) => n + 1); setPick(null); setKilled(new Set());
+  }
+  function useFifty() {
+    if (fiftyLeft <= 0 || pick !== null) return;
+    const wrongs = q.choices.map((_, i) => i).filter((i) => i !== q.correct);
+    const kill = shuffle(wrongs).slice(0, 2);
+    setKilled(new Set(kill));
+    setFiftyLeft((n) => n - 1);
+  }
+  function useShield() {
+    if (shieldLeft <= 0 || shieldArmed || pick !== null) return;
+    setShieldArmed(true); setShieldLeft((n) => n - 1);
+  }
+  function restart() {
+    setIdx(0); setPick(null); setKilled(new Set()); setFiftyLeft(1); setShieldLeft(1);
+    setShieldArmed(false); setHearts(3); setDone(null); awarded.current = false;
+  }
+
+  if (done === "win") return (
+    <div className="rounded-3xl gx-glass p-6 text-center" style={{ boxShadow: "0 0 28px #34d399" }}>
+      <div className="text-5xl">🎆🌍🛸</div>
+      <p className="mt-2 text-2xl font-black text-white">Wildlife Drone Rescued!</p>
+      <p className="mt-1 text-sm font-bold text-indigo-200">+30 coins secured to your profile. Planet protected!</p>
+      <button onClick={restart} className="mt-4 rounded-full px-4 py-2 text-sm font-black text-slate-900"
+        style={{ background: "linear-gradient(135deg,#bef264,#34d399)", boxShadow: "0 0 14px #34d399" }}>Play Again</button>
+    </div>
+  );
+  if (done === "lose") return (
+    <div className="rounded-3xl gx-glass p-6 text-center" style={{ boxShadow: "0 0 22px #f43f5e88" }}>
+      <div className="text-5xl">💥</div>
+      <p className="mt-2 text-2xl font-black text-white">Mission Failed</p>
+      <p className="mt-1 text-sm font-bold text-rose-200">The eco crisis worsened! Try again, ranger!</p>
+      <button onClick={restart} className="mt-4 rounded-full bg-white/10 px-4 py-2 text-sm font-black text-white ring-1 ring-white/20">Retry</button>
+    </div>
+  );
+
+  return (
+    <div>
+      <div className="mb-3 flex items-center justify-between text-xs font-bold text-indigo-200">
+        <span>Question {idx+1} / {pool.length}</span>
+        <span>{"❤️".repeat(hearts)}{"🖤".repeat(3-hearts)}</span>
+      </div>
+      <div className="rounded-3xl gx-glass p-4" style={{ boxShadow: "0 0 18px #34d39955" }}>
+        <p className="text-[11px] font-extrabold uppercase tracking-widest text-emerald-300">🛸 Alien Trivia Quest</p>
+        <p className="mt-1 text-base font-black text-white">{q.q}</p>
+        <div className="mt-3 grid gap-2">
+          {q.choices.map((c, i) => {
+            const isPick = pick === i;
+            const showRight = pick !== null && i === q.correct;
+            const showWrong = isPick && i !== q.correct;
+            const isKilled = killed.has(i);
+            return (
+              <button key={i} onClick={() => choose(i)} disabled={isKilled || pick !== null}
+                className="rounded-2xl px-3 py-3 text-left text-sm font-black text-white transition active:scale-95 disabled:opacity-30"
+                style={{
+                  background: showRight ? "linear-gradient(135deg,#10b981,#34d399)"
+                          : showWrong ? "linear-gradient(135deg,#f43f5e,#fb7185)"
+                          : "linear-gradient(135deg,#064e3b,#15803d)",
+                  boxShadow: isPick ? "0 0 14px #34d39988" : "inset 0 0 0 1px #34d39955",
+                  textDecoration: isKilled ? "line-through" : "none",
+                }}>
+                <span className="mr-2">{String.fromCharCode(65 + i)}.</span>{c}
+              </button>
+            );
+          })}
+        </div>
+        {shieldArmed && <p className="mt-3 text-center text-xs font-black text-cyan-200">🛡️ Cosmic Shield armed — one wrong answer will be blocked.</p>}
+      </div>
+      <div className="mt-3 grid grid-cols-2 gap-2">
+        <button onClick={useFifty} disabled={fiftyLeft <= 0 || pick !== null}
+          className="rounded-2xl px-3 py-3 text-xs font-black text-white transition active:scale-95 disabled:opacity-40"
+          style={{ background: "linear-gradient(135deg,#84cc16,#16a34a)", boxShadow: "0 0 14px #84cc1688" }}>
+          🔫 Laser Beam 50:50 <span className="ml-1 opacity-80">({fiftyLeft})</span>
+        </button>
+        <button onClick={useShield} disabled={shieldLeft <= 0 || shieldArmed || pick !== null}
+          className="rounded-2xl px-3 py-3 text-xs font-black text-white transition active:scale-95 disabled:opacity-40"
+          style={{ background: "linear-gradient(135deg,#06b6d4,#3b82f6)", boxShadow: "0 0 14px #06b6d488" }}>
+          🛡️ Cosmic Shield <span className="ml-1 opacity-80">({shieldLeft})</span>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export function Planet5ArenaU6({ onBack, addCoins }) {
+  const [mode, setMode] = useState("a");
+  return (
+    <div className="ac-fade">
+      <BackBar onBack={onBack} color="#34d399" />
+      <div className="mb-3 rounded-3xl p-4 text-center gx-glass" style={{ boxShadow: "0 0 18px #34d39966" }}>
+        <p className="text-[11px] font-extrabold uppercase tracking-widest text-emerald-300">Planet 5 · Supernova Quiz Arena</p>
+        <p className="text-xl font-black text-white">🏆 Choose your challenge</p>
+      </div>
+      <div className="mb-3 grid grid-cols-2 gap-2">
+        {[{k:"a",t:"🚀 Phonics Rocket"},{k:"b",t:"🛸 Alien Trivia"}].map((x) => (
+          <button key={x.k} onClick={() => setMode(x.k)}
+            className={`rounded-full px-3 py-2 text-xs font-black transition ${mode===x.k?"text-slate-900":"text-white"}`}
+            style={mode===x.k ? { background: "linear-gradient(135deg,#bef264,#34d399)", boxShadow: "0 0 14px #34d399" } : { background: "rgba(255,255,255,.08)", boxShadow: "inset 0 0 0 1px rgba(255,255,255,.18)" }}>
+            {x.t}
+          </button>
+        ))}
+      </div>
+      {mode === "a" ? <PhonicsRocketU6 addCoins={addCoins} /> : <AlienTriviaU6 addCoins={addCoins} />}
+    </div>
+  );
+}
+
+
 
 // Backward-compat alias (deprecated name)
 export const CosmicSpeakingNebula = AISpeakNebula;
