@@ -1187,6 +1187,26 @@ export const CURRICULUM_DATA = {
           { q: "Some campers go to English class after school.",     a: true  },
         ],
       },
+      games: {
+        grammar: [
+          { question: "What ___ you do after school? I watch a video.", answer: "do",      choices: ["do", "does", "doing"] },
+          { question: "He ___ to English class at 4 o'clock.",          answer: "goes",    choices: ["goes", "go", "going"] },
+          { question: "She ___ wash the dishes after having a snack.",  answer: "doesn't", choices: ["doesn't", "don't", "isn't"] },
+          { question: "What ___ your sister do? She practices the piano.", answer: "does", choices: ["does", "do", "is"] },
+        ],
+        phonics: {
+          categories: ["-ch", "-sh"],
+          words: [
+            { text: "chair",   cat: "-ch" },
+            { text: "teacher", cat: "-ch" },
+            { text: "ostrich", cat: "-ch" },
+            { text: "ship",    cat: "-sh" },
+            { text: "fish",    cat: "-sh" },
+            { text: "brush",   cat: "-sh" },
+          ],
+        },
+      },
+    },
     },
     unit_5: {
       title: "Let's Play!",
