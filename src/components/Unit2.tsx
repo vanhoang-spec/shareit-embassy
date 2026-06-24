@@ -1038,6 +1038,42 @@ export const CURRICULUM_DATA = {
         ],
       },
     },
+    unit_5: {
+      title: "Let's Cook!",
+      icon: "🍳",
+      formToggleLabel: "Plural Form 👥",
+      grammarGameMode: "QUANTUM_SCALE",
+      quizGameMode: "ALIEN_TRIVIA",
+      vocabulary: {
+        lesson_1: [
+          { word: "flour",            vn: "bột mì",                emoji: "🌾" },
+          { word: "butter",           vn: "bơ",                    emoji: "🧈" },
+          { word: "sugar",            vn: "đường",                 emoji: "🍬" },
+          { word: "jelly",            vn: "thạch",                 emoji: "🍮" },
+          { word: "salt and pepper",  vn: "muối và hạt tiêu",      emoji: "🧂" },
+          { word: "honey",            vn: "mật ong",               emoji: "🍯" },
+          { word: "olive",      alt: "olives",       vn: "quả ô-liu",      emoji: "🫒" },
+          { word: "strawberry", alt: "strawberries", vn: "quả dâu tây",    emoji: "🍓" },
+          { word: "mushroom",   alt: "mushrooms",    vn: "cây nấm",        emoji: "🍄" },
+        ],
+        lesson_5: ["cup","teaspoon","tablespoon","knife","bowl","fork","plate","glass"],
+      },
+      ai_speak: [
+        "There is too much sugar in this giant bowl.",
+        "There aren't enough strawberries to make the jelly.",
+        "Could you hand me a tablespoon and a clean knife?",
+        "There are too many olives on that small plate.",
+        "Is there enough flour and butter to bake the cake?",
+      ],
+      reading: {
+        text: "The Galaxy Bakery: Today, Seb and Taylor are in the spaceship kitchen. They want to bake a special strawberry surprise cake for Mom's birthday. There is enough flour and butter, but there isn't enough sugar in the cabinet. Seb looks around and says, 'We have too many mushrooms and olives, but we need more sweet ingredients!' Luckily, Taylor finds a jar of golden honey. They use a measuring cup and a tablespoon to mix everything in a massive bowl. Mom will love it!",
+        questions: [
+          { q: "They are making a birthday cake for Mom.", a: true },
+          { q: "They have too much sugar in the kitchen.", a: false },
+          { q: "They use a cup and a tablespoon to mix the ingredients.", a: true },
+        ],
+      },
+    },
   },
 };
 
