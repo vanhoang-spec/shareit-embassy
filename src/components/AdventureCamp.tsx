@@ -2944,13 +2944,19 @@ function StarField({ count = 40 }) {
   );
 }
 
-function DashboardHub({ onPick, name, currentUnit = 1 }) {
-  const unitTitle = currentUnit === 8 ? "On Vacation!" : currentUnit === 6 ? "Save Our Planet!" : currentUnit === 5 ? "Let's Cook!" : currentUnit === 4 ? "Myths & Legends" : currentUnit === 3 ? "Surprise!" : currentUnit === 2 ? "Gadget Nebula" : "Adventure Camp";
-  const unitEmoji = currentUnit === 8 ? "🛳️" : currentUnit === 6 ? "🌍" : currentUnit === 5 ? "🍳" : currentUnit === 4 ? "🧜‍♀️" : currentUnit === 3 ? "☄️" : currentUnit === 2 ? "🌀" : "🌠";
+function DashboardHub({ onPick, name, currentUnit = 1, selectedLevel = "level_5" }) {
+  const isL3 = selectedLevel === "level_3";
+  const l3Title = currentUnit === 5 ? "Let's Play!" : "Jobs";
+  const l3Emoji = currentUnit === 5 ? "⚽" : "🧑‍🚀";
+  const l5Title = currentUnit === 8 ? "On Vacation!" : currentUnit === 6 ? "Save Our Planet!" : currentUnit === 5 ? "Let's Cook!" : currentUnit === 4 ? "Myths & Legends" : currentUnit === 3 ? "Surprise!" : currentUnit === 2 ? "Gadget Nebula" : "Adventure Camp";
+  const l5Emoji = currentUnit === 8 ? "🛳️" : currentUnit === 6 ? "🌍" : currentUnit === 5 ? "🍳" : currentUnit === 4 ? "🧜‍♀️" : currentUnit === 3 ? "☄️" : currentUnit === 2 ? "🌀" : "🌠";
+  const unitTitle = isL3 ? l3Title : l5Title;
+  const unitEmoji = isL3 ? l3Emoji : l5Emoji;
+  const levelLabel = isL3 ? "Share It! 3" : "Share It! 5";
   return (
     <div className="ac-fade relative">
       <div className="relative mb-4 overflow-hidden rounded-3xl p-4 text-center gx-glass">
-        <p className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-cyan-300 gx-neon-text" style={{ color: "#67e8f9" }}>Exploring: Share It! 5 🚀 Unit {currentUnit} - {unitTitle}</p>
+        <p className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-cyan-300 gx-neon-text" style={{ color: "#67e8f9" }}>Exploring: {levelLabel} 🚀 Unit {currentUnit} - {unitTitle}</p>
         <p className="text-2xl font-black text-white">{unitEmoji} {unitTitle}</p>
 
         <p className="mt-1 text-sm font-bold text-indigo-200">
@@ -3086,21 +3092,21 @@ function ProfileModal({ open, onClose, name, cosmicAvatarId, onSave, saving, ava
 // Tier 1 — Star League (7 Level Space Stations)
 // =================================================================
 const LEVELS = [
-  { n:0, title:"Starter Constellation", glow:"#a5b4fc", core:"radial-gradient(circle at 30% 30%, #e0e7ff, #6366f1 55%, #1e1b4b)", unlocked:false },
-  { n:1, title:"Galaxy Level 1",        glow:"#22d3ee", core:"radial-gradient(circle at 30% 30%, #cffafe, #06b6d4 55%, #083344)", unlocked:false },
-  { n:2, title:"Galaxy Level 2",        glow:"#34d399", core:"radial-gradient(circle at 30% 30%, #d1fae5, #10b981 55%, #064e3b)", unlocked:false },
-  { n:3, title:"Galaxy Level 3",        glow:"#facc15", core:"radial-gradient(circle at 30% 30%, #fef9c3, #eab308 55%, #422006)", unlocked:false },
-  { n:4, title:"Galaxy Level 4",        glow:"#fb923c", core:"radial-gradient(circle at 30% 30%, #ffedd5, #f97316 55%, #7c2d12)", unlocked:false },
-  { n:5, title:"Galaxy Level 5",        glow:"#f472b6", core:"radial-gradient(circle at 30% 30%, #fce7f3, #ec4899 55%, #500724)", unlocked:true  },
-  { n:6, title:"Galaxy Level 6",        glow:"#c084fc", core:"radial-gradient(circle at 30% 30%, #f3e8ff, #9333ea 55%, #3b0764)", unlocked:false },
+  { n:0, title:"Starter Constellation", glow:"#a5b4fc", core:"radial-gradient(circle at 30% 30%, #e0e7ff, #6366f1 55%, #1e1b4b)", unlocked:false, levelKey:null },
+  { n:1, title:"Galaxy Level 1",        glow:"#22d3ee", core:"radial-gradient(circle at 30% 30%, #cffafe, #06b6d4 55%, #083344)", unlocked:false, levelKey:null },
+  { n:2, title:"Galaxy Level 2",        glow:"#34d399", core:"radial-gradient(circle at 30% 30%, #d1fae5, #10b981 55%, #064e3b)", unlocked:false, levelKey:null },
+  { n:3, title:"Galaxy Level 3",        glow:"#facc15", core:"radial-gradient(circle at 30% 30%, #fef9c3, #eab308 55%, #422006)", unlocked:true,  levelKey:"level_3" },
+  { n:4, title:"Galaxy Level 4",        glow:"#fb923c", core:"radial-gradient(circle at 30% 30%, #ffedd5, #f97316 55%, #7c2d12)", unlocked:false, levelKey:null },
+  { n:5, title:"Galaxy Level 5",        glow:"#f472b6", core:"radial-gradient(circle at 30% 30%, #fce7f3, #ec4899 55%, #500724)", unlocked:true,  levelKey:"level_5" },
+  { n:6, title:"Galaxy Level 6",        glow:"#c084fc", core:"radial-gradient(circle at 30% 30%, #f3e8ff, #9333ea 55%, #3b0764)", unlocked:false, levelKey:null },
 ];
 
-function StarLeague({ onEnterLevel5 }) {
+function StarLeague({ onEnterLevel }) {
   const [toast, setToast] = useState(null);
   const timer = useRef(null);
   function tap(l) {
-    if (l.unlocked) { onEnterLevel5(); return; }
-    setToast("Galaxy Locked! Explore Level 5 first! 🚀");
+    if (l.unlocked && l.levelKey) { onEnterLevel(l.levelKey); return; }
+    setToast("Galaxy Locked! Explore unlocked stations first! 🚀");
     clearTimeout(timer.current);
     timer.current = setTimeout(() => setToast(null), 1800);
   }
@@ -3177,9 +3183,16 @@ const UNITS = [
   { n:8, title:"On Vacation!",   emoji:"🛳️", ring:"#22d3ee", core:"radial-gradient(circle at 30% 30%, #67e8f9, #0891b2 55%, #0e1741)", glow:"#22d3ee", unlocked:true  },
 ];
 
-function UnitGalaxy({ onEnterUnit, onBackToLevels }) {
+const LEVEL_UNLOCK_MAP = {
+  level_5: new Set([1, 2, 3, 4, 5, 6, 8]),
+  level_3: new Set([4, 5]),
+};
+
+function UnitGalaxy({ onEnterUnit, onBackToLevels, selectedLevel = "level_5" }) {
   const [toast, setToast] = useState(null);
   const timer = useRef(null);
+  const unlockedSet = LEVEL_UNLOCK_MAP[selectedLevel] || LEVEL_UNLOCK_MAP.level_5;
+  const units = UNITS.map((u) => ({ ...u, unlocked: unlockedSet.has(u.n) }));
   function tap(u) {
     if (u.unlocked) { onEnterUnit(u.n); return; }
     setToast(`Mission locked! Complete earlier units first! ☄️`);
@@ -3187,6 +3200,7 @@ function UnitGalaxy({ onEnterUnit, onBackToLevels }) {
     timer.current = setTimeout(() => setToast(null), 1800);
   }
   useEffect(() => () => clearTimeout(timer.current), []);
+  const levelLabel = selectedLevel === "level_3" ? "Galaxy Level 3" : "Galaxy Level 5";
   return (
     <div className="ac-fade">
       <button
@@ -3198,11 +3212,12 @@ function UnitGalaxy({ onEnterUnit, onBackToLevels }) {
       </button>
       <div className="px-1 pb-4 pt-1 text-center">
         <h1 className="text-2xl font-black text-white gx-neon-text" style={{ color:"#a5f3fc" }}>🌌 The Solar Matrix</h1>
-        <p className="mt-1 text-xs font-bold text-indigo-200">Galaxy Level 5 · Tap a glowing world to begin</p>
+        <p className="mt-1 text-xs font-bold text-indigo-200">{levelLabel} · Tap a glowing world to begin</p>
       </div>
 
+
       <div className="grid grid-cols-2 gap-4 px-1">
-        {UNITS.map((u) => (
+        {units.map((u) => (
           <button
             key={u.n}
             onClick={() => tap(u)}
@@ -3548,6 +3563,7 @@ function useArcadeMusic(enabled) {
 export default function AdventureCamp() {
   const [view, setView] = useState("levels"); // levels | galaxy | hub | vocab | grammar | speaking | reading | quiz
   const [currentUnit, setCurrentUnit] = useState(1);
+  const [selectedLevel, setSelectedLevel] = useState("level_5");
   const [cosmicAvatarId, setCosmicAvatarId] = useState("astronaut");
 
 
@@ -3728,8 +3744,8 @@ export default function AdventureCamp() {
 
         {/* MAIN */}
         <main className="relative flex-1 overflow-y-auto px-3 pb-6 pt-4">
-          {view === "levels" && <StarLeague onEnterLevel5={() => setView("galaxy")} />}
-          {view === "galaxy" && <UnitGalaxy onEnterUnit={(n) => { setCurrentUnit(n); setView("hub"); }} onBackToLevels={() => setView("levels")} />}
+          {view === "levels" && <StarLeague onEnterLevel={(lvl) => { setSelectedLevel(lvl); setView("galaxy"); }} />}
+          {view === "galaxy" && <UnitGalaxy selectedLevel={selectedLevel} onEnterUnit={(n) => { setCurrentUnit(n); setView("hub"); }} onBackToLevels={() => setView("levels")} />}
           {view === "hub" && (
             <>
               <button
@@ -3739,7 +3755,7 @@ export default function AdventureCamp() {
               >
                 ☄️ Fly Back to Units
               </button>
-              <DashboardHub onPick={setView} name={name} currentUnit={currentUnit} />
+              <DashboardHub onPick={setView} name={name} currentUnit={currentUnit} selectedLevel={selectedLevel} />
             </>
           )}
 
