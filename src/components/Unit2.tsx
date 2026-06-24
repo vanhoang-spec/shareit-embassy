@@ -1109,8 +1109,44 @@ export const CURRICULUM_DATA = {
         ],
       },
     },
+    unit_8: {
+      title: "On Vacation!",
+      icon: "🛳️",
+      formToggleLabel: "Past Form ⏳",
+      grammarGameMode: "NEBULA_GATEWAY",
+      quizGameMode: "ALIEN_TRIVIA",
+      vocabulary: {
+        lesson_1: [
+          { word: "go on a cruise",      alt: "went on a cruise",     vn: "đi du thuyền",            emoji: "🛳️" },
+          { word: "visit a theme park",  alt: "visited a theme park", vn: "thăm công viên giải trí", emoji: "🎢" },
+          { word: "see a show",          alt: "saw a show",           vn: "xem biểu diễn",           emoji: "🎭" },
+          { word: "go to the beach",     alt: "went to the beach",    vn: "đi bãi biển",             emoji: "🏖️" },
+          { word: "stay in a hotel",     alt: "stayed in a hotel",    vn: "ở khách sạn",             emoji: "🏨" },
+          { word: "visit a museum",      alt: "visited a museum",     vn: "thăm bảo tàng",           emoji: "🏛️" },
+          { word: "go sightseeing",      alt: "went sightseeing",     vn: "đi ngắm cảnh",            emoji: "🏙️" },
+          { word: "buy souvenirs",       alt: "bought souvenirs",     vn: "mua quà lưu niệm",        emoji: "🎁" },
+        ],
+        lesson_5: ["pack a suitcase","book a flight","buy a ticket","check in","board the plane","explore the city"],
+      },
+      ai_speak: [
+        "Have you ever stayed in a luxury hotel near the beach?",
+        "We have already bought beautiful souvenirs for our family.",
+        "She hasn't visited the space theme park yet.",
+        "They went sightseeing and saw an incredible light show last night.",
+        "He is going to pack his big suitcase for the cruise tomorrow.",
+      ],
+      reading: {
+        text: "The Galactic Vacation: Summer vacation has finally arrived! This year, Leo's family is planning an incredible trip across the solar system. First, they booked a flight on a hyper-drive starship. Yesterday, they checked in at the spaceport terminal and boarded the plane. They are going to stay in a floating hotel near the cosmic beach. Leo wants to visit a famous space museum and buy alien souvenirs for his best friends back home. It will be an unforgettable adventure!",
+        questions: [
+          { q: "Leo's family is going on a vacation across the solar system.", a: true },
+          { q: "They forgot to book a flight and stayed home.",                a: false },
+          { q: "Leo wants to buy souvenirs for his friends.",                  a: true },
+        ],
+      },
+    },
   },
 };
+
 
 function getUnitData(unit) {
   return CURRICULUM_DATA.level_5[`unit_${unit}`] || CURRICULUM_DATA.level_5.unit_1;
@@ -3086,8 +3122,361 @@ export function Planet5ArenaU6({ onBack, addCoins }) {
 
 
 
+// =================================================================
+// UNIT 8 · On Vacation! — Vocabulary / Grammar / Reading / Arena
+// =================================================================
+export function VocabularyQuestU8({ onBack, addCoins }) {
+  const [tab, setTab] = useState("l1");
+  return (
+    <div className="ac-fade">
+      <BackBar onBack={onBack} color="#22d3ee" />
+      <div className="mb-3 rounded-3xl p-4 text-center gx-glass" style={{ boxShadow: "0 0 18px #22d3ee66" }}>
+        <p className="text-[11px] font-extrabold uppercase tracking-widest text-cyan-300">Planet 1 · Vocabulary Orbit</p>
+        <p className="text-xl font-black text-white">🛳️ Galactic Travel Atlas</p>
+      </div>
+      <div className="mb-3 grid grid-cols-2 gap-2">
+        {[{k:"l1",t:"Lesson 1 · Flashcards"},{k:"l5",t:"Lesson 8 · Speaking"}].map((x) => (
+          <button key={x.k} onClick={() => setTab(x.k)}
+            className={`rounded-full px-3 py-2 text-xs font-black transition ${tab===x.k ? "text-slate-900" : "text-white"}`}
+            style={tab===x.k ? { background: "linear-gradient(135deg,#67e8f9,#3b82f6)", boxShadow: "0 0 14px #22d3ee88" } : { background: "rgba(255,255,255,.08)", boxShadow: "inset 0 0 0 1px rgba(255,255,255,.18)" }}>
+            {x.t}
+          </button>
+        ))}
+      </div>
+      {tab === "l1" ? <DailyActionFlashcards addCoins={addCoins} unit={8} /> : <DailyPhraseSpeaking addCoins={addCoins} unit={8} />}
+    </div>
+  );
+}
+
+export function ReadingAdventureU8({ onBack, addCoins }) {
+  return <ReadingAdventureU3 onBack={onBack} addCoins={addCoins} unit={8} title="🛳️ The Galactic Vacation" />;
+}
+
+// ---------- PLANET 2 U8: Nebula Perfect Gateway ----------
+const NEBULA_GATEWAY_ITEMS = [
+  { sentence: "Have you ___ gone on a luxury cruise ship?",                 choices: ["ever","yet","already"],   correct: 0 },
+  { sentence: "I have ___ stayed in a five-star hotel. I love it!",         choices: ["already","yet","ever"],   correct: 0 },
+  { sentence: "We haven't visited the history museum ___.",                 choices: ["yet","already","never"],  correct: 0 },
+  { sentence: "She has ___ seen a Broadway show before. This is her first time!", choices: ["never","yet","already"], correct: 0 },
+];
+export function NebulaGateway({ onBack, addCoins }) {
+  const [idx, setIdx] = useState(0);
+  const [pick, setPick] = useState(null);
+  const [flash, setFlash] = useState(null);
+  const [done, setDone] = useState(false);
+  const awarded = useRef(false);
+  const cur = NEBULA_GATEWAY_ITEMS[idx];
+
+  function choose(i) {
+    if (pick !== null || done) return;
+    setPick(i);
+    const ok = i === cur.correct;
+    setFlash(ok ? "ok" : "bad");
+    setTimeout(() => {
+      setFlash(null); setPick(null);
+      if (!ok) return;
+      if (idx + 1 >= NEBULA_GATEWAY_ITEMS.length) {
+        if (!awarded.current) { awarded.current = true; addCoins?.(15); try { confetti({ particleCount: 200, spread: 110, origin: { y: 0.6 } }); } catch {} }
+        setDone(true);
+      } else setIdx((n) => n + 1);
+    }, 900);
+  }
+  function reset() { setIdx(0); setPick(null); setFlash(null); setDone(false); awarded.current = false; }
+
+  return (
+    <div className="ac-fade">
+      <BackBar onBack={onBack} color="#22d3ee" />
+      <div className="mb-3 rounded-3xl p-4 text-center gx-glass" style={{ boxShadow: "0 0 18px #22d3ee66" }}>
+        <p className="text-[11px] font-extrabold uppercase tracking-widest text-cyan-300">Planet 2 · Grammar Black Hole</p>
+        <p className="text-xl font-black text-white">🌌 Nebula Perfect Gateway</p>
+        <p className="text-[11px] font-bold text-indigo-200">Tap a fuel crystal to open the hyper-drive gateway.</p>
+      </div>
+
+      {!done ? (
+        <>
+          <div className="mb-3 flex items-center justify-between text-xs font-bold text-indigo-200">
+            <span>Gate {idx + 1} / {NEBULA_GATEWAY_ITEMS.length}</span>
+            <button onClick={reset} className="rounded-full bg-white/10 px-3 py-1 font-black text-cyan-200 ring-1 ring-white/20">Reset</button>
+          </div>
+
+          <div className="rounded-3xl gx-glass p-5 text-center" style={{ boxShadow: flash === "ok" ? "0 0 22px #22d3ee" : flash === "bad" ? "0 0 22px #f43f5e" : "0 0 14px #22d3ee55" }}>
+            <div className="text-6xl" style={{ filter: "drop-shadow(0 0 12px #22d3eecc)" }}>🌠</div>
+            <p className="mt-3 text-base font-black text-white">{cur.sentence}</p>
+          </div>
+
+          <div className="mt-4 grid grid-cols-3 gap-2">
+            {cur.choices.map((c, i) => {
+              const isPick = pick === i;
+              const showRight = pick !== null && i === cur.correct;
+              const showWrong = isPick && i !== cur.correct;
+              return (
+                <button key={i} onClick={() => choose(i)} disabled={pick !== null}
+                  className="relative rounded-2xl px-2 py-4 text-sm font-black text-white transition active:scale-95 disabled:opacity-60"
+                  style={{
+                    background: showRight ? "linear-gradient(135deg,#10b981,#34d399)"
+                              : showWrong ? "linear-gradient(135deg,#f43f5e,#fb7185)"
+                              : "radial-gradient(circle at 30% 30%, #67e8f9, #1e3a8a 70%)",
+                    boxShadow: isPick ? "0 0 14px #22d3ee" : "0 0 12px #22d3ee66, inset 0 0 0 1px #67e8f966",
+                    animation: "csnFloat 3s ease-in-out infinite",
+                  }}>
+                  <div className="text-2xl">💎</div>
+                  <div className="mt-1">{c}</div>
+                </button>
+              );
+            })}
+          </div>
+        </>
+      ) : (
+        <div className="rounded-3xl gx-glass p-5 text-center" style={{ boxShadow: "0 0 22px #22d3ee" }}>
+          <p className="text-2xl font-black text-white">🌌 Gateway opened!</p>
+          <p className="mt-1 text-sm font-bold text-indigo-200">Hyper-drive engaged. +15 coins awarded!</p>
+          <div className="mt-3 flex justify-center gap-2">
+            <button onClick={reset} className="rounded-full px-4 py-2 text-sm font-black text-slate-900"
+              style={{ background: "linear-gradient(135deg,#67e8f9,#3b82f6)", boxShadow: "0 0 14px #22d3ee88" }}>Replay</button>
+            <button onClick={onBack} className="rounded-full bg-white/10 px-4 py-2 text-sm font-black text-white ring-1 ring-white/20">Back</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ---------- PLANET 5 U8 · Mode A: Phonics Rocket silent k-/w- ----------
+const PHONICS_ITEMS_U8 = [
+  { word: "knee",  sound: "k" },
+  { word: "knife", sound: "k" },
+  { word: "knit",  sound: "k" },
+  { word: "write", sound: "w" },
+  { word: "wrong", sound: "w" },
+  { word: "wrap",  sound: "w" },
+];
+function PhonicsRocketU8({ addCoins }) {
+  const [queue, setQueue] = useState(() => shuffle(PHONICS_ITEMS_U8));
+  const [pos, setPos] = useState(0);
+  const [score, setScore] = useState(0);
+  const [flash, setFlash] = useState(null);
+  const [done, setDone] = useState(false);
+  const cur = queue[pos];
+  function pick(sound) {
+    if (flash || done) return;
+    const ok = sound === cur.sound;
+    setFlash({ ok, target: sound });
+    if (ok) { setScore((s) => s + 1); addCoins?.(2); }
+    setTimeout(() => {
+      setFlash(null);
+      if (pos + 1 >= queue.length) {
+        setDone(true);
+        try { confetti({ particleCount: 130, spread: 80, origin: { y: 0.6 } }); } catch {}
+      } else setPos((p) => p + 1);
+    }, 700);
+  }
+  function reset() { setQueue(shuffle(PHONICS_ITEMS_U8)); setPos(0); setScore(0); setDone(false); setFlash(null); }
+  return (
+    <div>
+      <div className="mb-3 flex items-center justify-between text-xs font-bold text-indigo-200">
+        <span>Word {Math.min(pos+1, queue.length)} / {queue.length}</span>
+        <span>Correct: <b className="text-white">{score}</b></span>
+        <button onClick={reset} className="rounded-full bg-white/10 px-3 py-1 font-black text-cyan-200 ring-1 ring-white/20">Reset</button>
+      </div>
+      {!done ? (
+        <>
+          <div className="rounded-3xl gx-glass p-5 text-center" style={{ boxShadow: "0 0 18px #22d3ee44" }}>
+            <p className="text-[11px] font-extrabold uppercase tracking-widest text-cyan-300">Which silent letter starts this word?</p>
+            <p className="mt-2 text-3xl font-black tracking-wide text-white">{cur.word}</p>
+            <button onClick={() => speak(cur.word)} className="mt-2 rounded-full bg-white/10 px-3 py-1 text-xs font-black text-cyan-200 ring-1 ring-white/20">🔊 Hear it</button>
+          </div>
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            {[
+              { id: "k", label: "Silent k- (knee)",  grad: "linear-gradient(135deg,#67e8f9,#0891b2)", glow: "#22d3ee" },
+              { id: "w", label: "Silent w- (write)", grad: "linear-gradient(135deg,#a78bfa,#6d28d9)", glow: "#a78bfa" },
+            ].map((r) => {
+              const showRight = flash && r.id === cur.sound;
+              const showWrong = flash && r.id === flash.target && !flash.ok;
+              return (
+                <button key={r.id} onClick={() => pick(r.id)} disabled={!!flash}
+                  className="relative flex h-40 flex-col items-center justify-end rounded-3xl pb-4 text-white shadow-xl transition active:scale-95"
+                  style={{ background: r.grad, boxShadow: `0 0 18px ${r.glow}88, inset 0 0 0 1px ${r.glow}` }}>
+                  <div className="text-6xl" style={{ filter: `drop-shadow(0 0 10px ${r.glow})` }}>🚀</div>
+                  <div className="mt-1 rounded-full bg-white/20 px-4 py-1 text-sm font-black tracking-wide">{r.label}</div>
+                  {showRight && <div className="absolute inset-0 grid place-items-center rounded-3xl bg-emerald-500/35 text-5xl">✓</div>}
+                  {showWrong && <div className="absolute inset-0 grid place-items-center rounded-3xl bg-rose-500/35 text-5xl">✗</div>}
+                </button>
+              );
+            })}
+          </div>
+          {flash && <p className="mt-3 text-center text-sm font-black" style={{ color: flash.ok ? "#34d399" : "#fda4af" }}>
+            {flash.ok ? `🎉 ${cur.word} → silent ${cur.sound}-  +2 coins` : `Almost! "${cur.word}" → silent ${cur.sound}-`}
+          </p>}
+        </>
+      ) : (
+        <div className="rounded-3xl gx-glass p-5 text-center" style={{ boxShadow: "0 0 22px #22d3ee" }}>
+          <p className="text-2xl font-black text-white">🌠 Phonics Mission Complete!</p>
+          <p className="mt-1 text-sm font-bold text-indigo-200">Score: {score}/{queue.length}</p>
+          <button onClick={reset} className="mt-3 rounded-full px-4 py-2 text-sm font-black text-slate-900"
+            style={{ background: "linear-gradient(135deg,#67e8f9,#3b82f6)", boxShadow: "0 0 14px #22d3ee88" }}>Play Again</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ---------- PLANET 5 U8 · Mode B: Alien Trivia Quest ----------
+const TRIVIA_QUESTIONS_U8 = [
+  { q: "Which activity means traveling on a big ship?",          choices: ["go on a cruise","visit a museum","see a show","check in"],     correct: 0 },
+  { q: "Have you ___ stayed in a luxury hotel?",                 choices: ["ever","yet","already","never"],                                  correct: 0 },
+  { q: "We have ___ bought souvenirs for our family.",           choices: ["already","yet","ever","since"],                                  correct: 0 },
+  { q: "She hasn't visited the theme park ___.",                 choices: ["yet","already","ever","never"],                                  correct: 0 },
+  { q: "Which action do you do BEFORE you board the plane?",     choices: ["check in","explore the city","see a show","buy souvenirs"],     correct: 0 },
+  { q: "Which word starts with a silent k-?",                    choices: ["knee","write","wrap","theme"],                                   correct: 0 },
+  { q: "Past form of 'buy souvenirs' is ___.",                   choices: ["bought souvenirs","buyed souvenirs","buys souvenirs","buying"], correct: 0 },
+  { q: "Which place do you visit to learn history?",             choices: ["a museum","the beach","a theme park","a hotel"],                 correct: 0 },
+];
+function AlienTriviaU8({ addCoins }) {
+  const [pool] = useState(() => shuffle(TRIVIA_QUESTIONS_U8));
+  const [idx, setIdx] = useState(0);
+  const [pick, setPick] = useState(null);
+  const [killed, setKilled] = useState(new Set());
+  const [fiftyLeft, setFiftyLeft] = useState(1);
+  const [shieldLeft, setShieldLeft] = useState(1);
+  const [shieldArmed, setShieldArmed] = useState(false);
+  const [hearts, setHearts] = useState(3);
+  const [done, setDone] = useState(null);
+  const awarded = useRef(false);
+  const q = pool[idx];
+  function choose(i) {
+    if (pick !== null || done) return;
+    setPick(i);
+    const ok = i === q.correct;
+    if (!ok) {
+      if (shieldArmed) { setShieldArmed(false); setTimeout(() => nextQ(true), 1100); return; }
+      setHearts((h) => {
+        const nh = h - 1;
+        if (nh <= 0) setTimeout(() => setDone("lose"), 900);
+        return nh;
+      });
+    }
+    setTimeout(() => nextQ(ok), 1000);
+  }
+  function nextQ(_ok) {
+    if (idx + 1 >= pool.length) {
+      if (!awarded.current && hearts > 0) {
+        awarded.current = true;
+        addCoins?.(30);
+        try { confetti({ particleCount: 220, spread: 110, startVelocity: 60, origin: { y: 0.6 } }); } catch {}
+        setDone("win");
+      }
+      return;
+    }
+    setIdx((n) => n + 1); setPick(null); setKilled(new Set());
+  }
+  function useFifty() {
+    if (fiftyLeft <= 0 || pick !== null) return;
+    const wrongs = q.choices.map((_, i) => i).filter((i) => i !== q.correct);
+    const kill = shuffle(wrongs).slice(0, 2);
+    setKilled(new Set(kill));
+    setFiftyLeft((n) => n - 1);
+  }
+  function useShield() {
+    if (shieldLeft <= 0 || shieldArmed || pick !== null) return;
+    setShieldArmed(true); setShieldLeft((n) => n - 1);
+  }
+  function restart() {
+    setIdx(0); setPick(null); setKilled(new Set()); setFiftyLeft(1); setShieldLeft(1);
+    setShieldArmed(false); setHearts(3); setDone(null); awarded.current = false;
+  }
+
+  if (done === "win") return (
+    <div className="rounded-3xl gx-glass p-6 text-center" style={{ boxShadow: "0 0 28px #22d3ee" }}>
+      <div className="text-5xl">🎆🛳️🛸</div>
+      <p className="mt-2 text-2xl font-black text-white">Reward Chamber Unlocked!</p>
+      <p className="mt-1 text-sm font-bold text-indigo-200">+30 coins secured to your profile. Bon voyage!</p>
+      <button onClick={restart} className="mt-4 rounded-full px-4 py-2 text-sm font-black text-slate-900"
+        style={{ background: "linear-gradient(135deg,#67e8f9,#3b82f6)", boxShadow: "0 0 14px #22d3ee" }}>Play Again</button>
+    </div>
+  );
+  if (done === "lose") return (
+    <div className="rounded-3xl gx-glass p-6 text-center" style={{ boxShadow: "0 0 22px #f43f5e88" }}>
+      <div className="text-5xl">💥</div>
+      <p className="mt-2 text-2xl font-black text-white">Mission Failed</p>
+      <p className="mt-1 text-sm font-bold text-rose-200">The starship lost course! Try again, traveler!</p>
+      <button onClick={restart} className="mt-4 rounded-full bg-white/10 px-4 py-2 text-sm font-black text-white ring-1 ring-white/20">Retry</button>
+    </div>
+  );
+
+  return (
+    <div>
+      <div className="mb-3 flex items-center justify-between text-xs font-bold text-indigo-200">
+        <span>Question {idx+1} / {pool.length}</span>
+        <span>{"❤️".repeat(hearts)}{"🖤".repeat(3-hearts)}</span>
+      </div>
+      <div className="rounded-3xl gx-glass p-4" style={{ boxShadow: "0 0 18px #22d3ee55" }}>
+        <p className="text-[11px] font-extrabold uppercase tracking-widest text-cyan-300">🛸 Alien Trivia Quest</p>
+        <p className="mt-1 text-base font-black text-white">{q.q}</p>
+        <div className="mt-3 grid gap-2">
+          {q.choices.map((c, i) => {
+            const isPick = pick === i;
+            const showRight = pick !== null && i === q.correct;
+            const showWrong = isPick && i !== q.correct;
+            const isKilled = killed.has(i);
+            return (
+              <button key={i} onClick={() => choose(i)} disabled={isKilled || pick !== null}
+                className="rounded-2xl px-3 py-3 text-left text-sm font-black text-white transition active:scale-95 disabled:opacity-30"
+                style={{
+                  background: showRight ? "linear-gradient(135deg,#10b981,#34d399)"
+                          : showWrong ? "linear-gradient(135deg,#f43f5e,#fb7185)"
+                          : "linear-gradient(135deg,#0e7490,#1e3a8a)",
+                  boxShadow: isPick ? "0 0 14px #22d3ee88" : "inset 0 0 0 1px #22d3ee55",
+                  textDecoration: isKilled ? "line-through" : "none",
+                }}>
+                <span className="mr-2">{String.fromCharCode(65 + i)}.</span>{c}
+              </button>
+            );
+          })}
+        </div>
+        {shieldArmed && <p className="mt-3 text-center text-xs font-black text-cyan-200">🛡️ Cosmic Shield armed — one wrong answer will be blocked.</p>}
+      </div>
+      <div className="mt-3 grid grid-cols-2 gap-2">
+        <button onClick={useFifty} disabled={fiftyLeft <= 0 || pick !== null}
+          className="rounded-2xl px-3 py-3 text-xs font-black text-white transition active:scale-95 disabled:opacity-40"
+          style={{ background: "linear-gradient(135deg,#67e8f9,#0891b2)", boxShadow: "0 0 14px #22d3ee88" }}>
+          🔫 Laser Beam 50:50 <span className="ml-1 opacity-80">({fiftyLeft})</span>
+        </button>
+        <button onClick={useShield} disabled={shieldLeft <= 0 || shieldArmed || pick !== null}
+          className="rounded-2xl px-3 py-3 text-xs font-black text-white transition active:scale-95 disabled:opacity-40"
+          style={{ background: "linear-gradient(135deg,#a78bfa,#6d28d9)", boxShadow: "0 0 14px #a78bfa88" }}>
+          🛡️ Cosmic Shield <span className="ml-1 opacity-80">({shieldLeft})</span>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export function Planet5ArenaU8({ onBack, addCoins }) {
+  const [mode, setMode] = useState("a");
+  return (
+    <div className="ac-fade">
+      <BackBar onBack={onBack} color="#22d3ee" />
+      <div className="mb-3 rounded-3xl p-4 text-center gx-glass" style={{ boxShadow: "0 0 18px #22d3ee66" }}>
+        <p className="text-[11px] font-extrabold uppercase tracking-widest text-cyan-300">Planet 5 · Supernova Quiz Arena</p>
+        <p className="text-xl font-black text-white">🏆 Choose your challenge</p>
+      </div>
+      <div className="mb-3 grid grid-cols-2 gap-2">
+        {[{k:"a",t:"🚀 Phonics Rocket"},{k:"b",t:"🛸 Alien Trivia"}].map((x) => (
+          <button key={x.k} onClick={() => setMode(x.k)}
+            className={`rounded-full px-3 py-2 text-xs font-black transition ${mode===x.k?"text-slate-900":"text-white"}`}
+            style={mode===x.k ? { background: "linear-gradient(135deg,#67e8f9,#3b82f6)", boxShadow: "0 0 14px #22d3ee" } : { background: "rgba(255,255,255,.08)", boxShadow: "inset 0 0 0 1px rgba(255,255,255,.18)" }}>
+            {x.t}
+          </button>
+        ))}
+      </div>
+      {mode === "a" ? <PhonicsRocketU8 addCoins={addCoins} /> : <AlienTriviaU8 addCoins={addCoins} />}
+    </div>
+  );
+}
+
 // Backward-compat alias (deprecated name)
 export const CosmicSpeakingNebula = AISpeakNebula;
+
 
 
 
