@@ -1402,8 +1402,8 @@ function DailyActionFlashcards({ addCoins, unit = 3 }) {
   );
 }
 
-function DailyPhraseSpeaking({ addCoins }) {
-  const phrases = CURRICULUM_DATA.level_5.unit_3.vocabulary.lesson_5.map((p) => ({ text: p, emoji: "🎙️" }));
+function DailyPhraseSpeaking({ addCoins, unit = 3 }) {
+  const phrases = getUnitData(unit).vocabulary.lesson_5.map((p) => ({ text: p, emoji: "🎙️" }));
   const [idx, setIdx] = useState(0);
   const [phase, setPhase] = useState("idle");
   const [transcript, setTranscript] = useState("");
