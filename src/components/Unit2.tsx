@@ -1038,6 +1038,42 @@ export const CURRICULUM_DATA = {
         ],
       },
     },
+    unit_5: {
+      title: "Let's Cook!",
+      icon: "🍳",
+      formToggleLabel: "Plural Form 👥",
+      grammarGameMode: "QUANTUM_SCALE",
+      quizGameMode: "ALIEN_TRIVIA",
+      vocabulary: {
+        lesson_1: [
+          { word: "flour",            vn: "bột mì",                emoji: "🌾" },
+          { word: "butter",           vn: "bơ",                    emoji: "🧈" },
+          { word: "sugar",            vn: "đường",                 emoji: "🍬" },
+          { word: "jelly",            vn: "thạch",                 emoji: "🍮" },
+          { word: "salt and pepper",  vn: "muối và hạt tiêu",      emoji: "🧂" },
+          { word: "honey",            vn: "mật ong",               emoji: "🍯" },
+          { word: "olive",      alt: "olives",       vn: "quả ô-liu",      emoji: "🫒" },
+          { word: "strawberry", alt: "strawberries", vn: "quả dâu tây",    emoji: "🍓" },
+          { word: "mushroom",   alt: "mushrooms",    vn: "cây nấm",        emoji: "🍄" },
+        ],
+        lesson_5: ["cup","teaspoon","tablespoon","knife","bowl","fork","plate","glass"],
+      },
+      ai_speak: [
+        "There is too much sugar in this giant bowl.",
+        "There aren't enough strawberries to make the jelly.",
+        "Could you hand me a tablespoon and a clean knife?",
+        "There are too many olives on that small plate.",
+        "Is there enough flour and butter to bake the cake?",
+      ],
+      reading: {
+        text: "The Galaxy Bakery: Today, Seb and Taylor are in the spaceship kitchen. They want to bake a special strawberry surprise cake for Mom's birthday. There is enough flour and butter, but there isn't enough sugar in the cabinet. Seb looks around and says, 'We have too many mushrooms and olives, but we need more sweet ingredients!' Luckily, Taylor finds a jar of golden honey. They use a measuring cup and a tablespoon to mix everything in a massive bowl. Mom will love it!",
+        questions: [
+          { q: "They are making a birthday cake for Mom.", a: true },
+          { q: "They have too much sugar in the kitchen.", a: false },
+          { q: "They use a cup and a tablespoon to mix the ingredients.", a: true },
+        ],
+      },
+    },
   },
 };
 
@@ -2306,7 +2342,364 @@ export function Planet5ArenaU4({ onBack, addCoins }) {
 }
 
 
+// =================================================================
+// 🍳 UNIT 5 — Let's Cook! — Planet wiring (reuses frozen UI shells)
+// =================================================================
+
+// ---------- PLANET 1 U5: Cooking vocabulary ----------
+export function VocabularyQuestU5({ onBack, addCoins }) {
+  const [tab, setTab] = useState("l1");
+  return (
+    <div className="ac-fade">
+      <BackBar onBack={onBack} color="#fb923c" />
+      <div className="mb-3 rounded-3xl p-4 text-center gx-glass" style={{ boxShadow: "0 0 18px #fb923c66" }}>
+        <p className="text-[11px] font-extrabold uppercase tracking-widest text-amber-300">Planet 1 · Vocabulary Orbit</p>
+        <p className="text-xl font-black text-white">🍳 Cosmic Kitchen Pantry</p>
+      </div>
+      <div className="mb-3 grid grid-cols-2 gap-2">
+        {[{k:"l1",t:"Lesson 1 · Flashcards"},{k:"l5",t:"Lesson 8 · Speaking"}].map((x) => (
+          <button key={x.k} onClick={() => setTab(x.k)}
+            className={`rounded-full px-3 py-2 text-xs font-black transition ${tab===x.k ? "text-slate-900" : "text-white"}`}
+            style={tab===x.k ? { background: "linear-gradient(135deg,#fde047,#fb923c)", boxShadow: "0 0 14px #fb923c88" } : { background: "rgba(255,255,255,.08)", boxShadow: "inset 0 0 0 1px rgba(255,255,255,.18)" }}>
+            {x.t}
+          </button>
+        ))}
+      </div>
+      {tab === "l1" ? <DailyActionFlashcards addCoins={addCoins} unit={5} /> : <DailyPhraseSpeaking addCoins={addCoins} unit={5} />}
+    </div>
+  );
+}
+
+// ---------- PLANET 4 U5: Galaxy Bakery reading ----------
+export function ReadingAdventureU5({ onBack, addCoins }) {
+  return <ReadingAdventureU3 onBack={onBack} addCoins={addCoins} unit={5} title="🍰 The Galaxy Bakery" />;
+}
+
+// ---------- PLANET 2 U5: Quantum Ingredient Scale ----------
+const QUANTUM_SCALE_ITEMS = [
+  { sentence: "There is ___ salt in the soup. It is too salty!", choices: ["too much","too many","a few"], correct: 0 },
+  { sentence: "There are ___ cupcakes for ten kids. Two children have nothing!", choices: ["not enough","too many","too much"], correct: 0 },
+  { sentence: "We have ___ apples to bake three complete pies.", choices: ["enough","much","little"], correct: 0 },
+  { sentence: "There are ___ mushrooms on my pizza. I cannot see the cheese!", choices: ["too many","too much","an"], correct: 0 },
+];
+export function QuantumScale({ onBack, addCoins }) {
+  const [idx, setIdx] = useState(0);
+  const [pick, setPick] = useState(null);
+  const [flash, setFlash] = useState(null);
+  const [done, setDone] = useState(false);
+  const awarded = useRef(false);
+  const cur = QUANTUM_SCALE_ITEMS[idx];
+
+  function choose(i) {
+    if (pick !== null || done) return;
+    setPick(i);
+    const ok = i === cur.correct;
+    setFlash(ok ? "ok" : "bad");
+    setTimeout(() => {
+      setFlash(null); setPick(null);
+      if (!ok) return;
+      if (idx + 1 >= QUANTUM_SCALE_ITEMS.length) {
+        if (!awarded.current) { awarded.current = true; addCoins?.(15); try { confetti({ particleCount: 180, spread: 100, origin: { y: 0.6 } }); } catch {} }
+        setDone(true);
+      } else setIdx((n) => n + 1);
+    }, 900);
+  }
+  function reset() { setIdx(0); setPick(null); setFlash(null); setDone(false); awarded.current = false; }
+
+  return (
+    <div className="ac-fade">
+      <BackBar onBack={onBack} color="#fb923c" />
+      <div className="mb-3 rounded-3xl p-4 text-center gx-glass" style={{ boxShadow: "0 0 18px #fb923c66" }}>
+        <p className="text-[11px] font-extrabold uppercase tracking-widest text-amber-300">Planet 2 · Grammar Black Hole</p>
+        <p className="text-xl font-black text-white">⚖️ Quantum Ingredient Scale</p>
+        <p className="text-[11px] font-bold text-indigo-200">Tap an energy crystal to balance the cooking pot.</p>
+      </div>
+
+      {!done ? (
+        <>
+          <div className="mb-3 flex items-center justify-between text-xs font-bold text-indigo-200">
+            <span>Recipe {idx + 1} / {QUANTUM_SCALE_ITEMS.length}</span>
+            <button onClick={reset} className="rounded-full bg-white/10 px-3 py-1 font-black text-amber-200 ring-1 ring-white/20">Reset</button>
+          </div>
+
+          <div className="rounded-3xl gx-glass p-5 text-center" style={{ boxShadow: flash === "ok" ? "0 0 22px #34d399" : flash === "bad" ? "0 0 22px #f43f5e" : "0 0 14px #fb923c55" }}>
+            <div className="text-6xl" style={{ filter: "drop-shadow(0 0 12px #fb923ccc)" }}>🍲</div>
+            <p className="mt-3 text-base font-black text-white">{cur.sentence}</p>
+          </div>
+
+          <div className="mt-4 grid grid-cols-3 gap-2">
+            {cur.choices.map((c, i) => {
+              const isPick = pick === i;
+              const showRight = pick !== null && i === cur.correct;
+              const showWrong = isPick && i !== cur.correct;
+              return (
+                <button key={i} onClick={() => choose(i)} disabled={pick !== null}
+                  className="relative rounded-2xl px-2 py-4 text-sm font-black text-white transition active:scale-95 disabled:opacity-60"
+                  style={{
+                    background: showRight ? "linear-gradient(135deg,#10b981,#34d399)"
+                              : showWrong ? "linear-gradient(135deg,#f43f5e,#fb7185)"
+                              : "radial-gradient(circle at 30% 30%, #fde047, #ea580c 70%)",
+                    boxShadow: isPick ? "0 0 14px #fb923c" : "0 0 12px #fb923c66, inset 0 0 0 1px #fde04766",
+                    animation: "csnFloat 3s ease-in-out infinite",
+                  }}>
+                  <div className="text-2xl">💎</div>
+                  <div className="mt-1">{c}</div>
+                </button>
+              );
+            })}
+          </div>
+        </>
+      ) : (
+        <div className="rounded-3xl gx-glass p-5 text-center" style={{ boxShadow: "0 0 22px #34d399" }}>
+          <p className="text-2xl font-black text-white">⚖️ Recipe perfectly balanced!</p>
+          <p className="mt-1 text-sm font-bold text-indigo-200">Master space recipe launched. +15 coins awarded!</p>
+          <div className="mt-3 flex justify-center gap-2">
+            <button onClick={reset} className="rounded-full px-4 py-2 text-sm font-black text-slate-900"
+              style={{ background: "linear-gradient(135deg,#fde047,#fb923c)", boxShadow: "0 0 14px #fb923c88" }}>Replay</button>
+            <button onClick={onBack} className="rounded-full bg-white/10 px-4 py-2 text-sm font-black text-white ring-1 ring-white/20">Back</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ---------- PLANET 5 U5 · Mode A: Phonics Rocket -oo- sounds ----------
+const PHONICS_ITEMS_U5 = [
+  { word: "cook",  sound: "short" },
+  { word: "spoon", sound: "long" },
+  { word: "foot",  sound: "short" },
+  { word: "food",  sound: "long" },
+  { word: "wood",  sound: "short" },
+  { word: "moon",  sound: "long" },
+];
+function PhonicsRocketU5({ addCoins }) {
+  const [queue, setQueue] = useState(() => shuffle(PHONICS_ITEMS_U5));
+  const [pos, setPos] = useState(0);
+  const [score, setScore] = useState(0);
+  const [flash, setFlash] = useState(null);
+  const [done, setDone] = useState(false);
+  const cur = queue[pos];
+  function pick(sound) {
+    if (flash || done) return;
+    const ok = sound === cur.sound;
+    setFlash({ ok, target: sound });
+    if (ok) { setScore((s) => s + 1); addCoins?.(2); }
+    setTimeout(() => {
+      setFlash(null);
+      if (pos + 1 >= queue.length) {
+        setDone(true);
+        try { confetti({ particleCount: 130, spread: 80, origin: { y: 0.6 } }); } catch {}
+      } else setPos((p) => p + 1);
+    }, 700);
+  }
+  function reset() { setQueue(shuffle(PHONICS_ITEMS_U5)); setPos(0); setScore(0); setDone(false); setFlash(null); }
+  return (
+    <div>
+      <div className="mb-3 flex items-center justify-between text-xs font-bold text-indigo-200">
+        <span>Word {Math.min(pos+1, queue.length)} / {queue.length}</span>
+        <span>Correct: <b className="text-white">{score}</b></span>
+        <button onClick={reset} className="rounded-full bg-white/10 px-3 py-1 font-black text-amber-200 ring-1 ring-white/20">Reset</button>
+      </div>
+      {!done ? (
+        <>
+          <div className="rounded-3xl gx-glass p-5 text-center" style={{ boxShadow: "0 0 18px #fb923c44" }}>
+            <p className="text-[11px] font-extrabold uppercase tracking-widest text-amber-300">Which "-oo-" sound does this word make?</p>
+            <p className="mt-2 text-3xl font-black tracking-wide text-white">{cur.word}</p>
+            <button onClick={() => speak(cur.word)} className="mt-2 rounded-full bg-white/10 px-3 py-1 text-xs font-black text-amber-200 ring-1 ring-white/20">🔊 Hear it</button>
+          </div>
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            {[
+              { id: "short", label: "Short -oo- (cook)", grad: "linear-gradient(135deg,#f59e0b,#ef4444)", glow: "#f59e0b" },
+              { id: "long",  label: "Long -oo- (spoon)", grad: "linear-gradient(135deg,#06b6d4,#3b82f6)", glow: "#06b6d4" },
+            ].map((r) => {
+              const showRight = flash && r.id === cur.sound;
+              const showWrong = flash && r.id === flash.target && !flash.ok;
+              return (
+                <button key={r.id} onClick={() => pick(r.id)} disabled={!!flash}
+                  className="relative flex h-40 flex-col items-center justify-end rounded-3xl pb-4 text-white shadow-xl transition active:scale-95"
+                  style={{ background: r.grad, boxShadow: `0 0 18px ${r.glow}88, inset 0 0 0 1px ${r.glow}` }}>
+                  <div className="text-6xl" style={{ filter: `drop-shadow(0 0 10px ${r.glow})` }}>🚀</div>
+                  <div className="mt-1 rounded-full bg-white/20 px-4 py-1 text-sm font-black tracking-wide">{r.label}</div>
+                  {showRight && <div className="absolute inset-0 grid place-items-center rounded-3xl bg-emerald-500/35 text-5xl">✓</div>}
+                  {showWrong && <div className="absolute inset-0 grid place-items-center rounded-3xl bg-rose-500/35 text-5xl">✗</div>}
+                </button>
+              );
+            })}
+          </div>
+          {flash && <p className="mt-3 text-center text-sm font-black" style={{ color: flash.ok ? "#34d399" : "#fda4af" }}>
+            {flash.ok ? `🎉 ${cur.word} → ${cur.sound} -oo-  +2 coins` : `Almost! "${cur.word}" → ${cur.sound} -oo-`}
+          </p>}
+        </>
+      ) : (
+        <div className="rounded-3xl gx-glass p-5 text-center" style={{ boxShadow: "0 0 22px #fb923c" }}>
+          <p className="text-2xl font-black text-white">🌠 Phonics Mission Complete!</p>
+          <p className="mt-1 text-sm font-bold text-indigo-200">Score: {score}/{queue.length}</p>
+          <button onClick={reset} className="mt-3 rounded-full px-4 py-2 text-sm font-black text-slate-900"
+            style={{ background: "linear-gradient(135deg,#fde047,#fb923c)", boxShadow: "0 0 14px #fb923c88" }}>Play Again</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ---------- PLANET 5 U5 · Mode B: Alien Trivia Quest ----------
+const TRIVIA_QUESTIONS_U5 = [
+  { q: "Which ingredient makes things sweet?", choices: ["sugar","salt","pepper","flour"], correct: 0 },
+  { q: "Which kitchen tool do you use to cut food?", choices: ["knife","plate","glass","bowl"], correct: 0 },
+  { q: "There ___ too much salt in the soup.", choices: ["is","are","am","be"], correct: 0 },
+  { q: "We don't have ___ strawberries to make the jelly.", choices: ["enough","much","many","a"], correct: 0 },
+  { q: "Which tool is used to drink water?", choices: ["glass","fork","spoon","knife"], correct: 0 },
+  { q: "There are ___ olives on the pizza! I can't see the cheese!", choices: ["too many","too much","a little","much"], correct: 0 },
+  { q: "Which ingredient comes from bees?", choices: ["honey","butter","flour","jelly"], correct: 0 },
+  { q: "Which word has the LONG -oo- sound?", choices: ["spoon","cook","foot","wood"], correct: 0 },
+];
+function AlienTriviaU5({ addCoins }) {
+  const [pool] = useState(() => shuffle(TRIVIA_QUESTIONS_U5));
+  const [idx, setIdx] = useState(0);
+  const [pick, setPick] = useState(null);
+  const [killed, setKilled] = useState(new Set());
+  const [fiftyLeft, setFiftyLeft] = useState(1);
+  const [shieldLeft, setShieldLeft] = useState(1);
+  const [shieldArmed, setShieldArmed] = useState(false);
+  const [hearts, setHearts] = useState(3);
+  const [done, setDone] = useState(null);
+  const awarded = useRef(false);
+  const q = pool[idx];
+  function choose(i) {
+    if (pick !== null || done) return;
+    setPick(i);
+    const ok = i === q.correct;
+    if (!ok) {
+      if (shieldArmed) { setShieldArmed(false); setTimeout(() => nextQ(true), 1100); return; }
+      setHearts((h) => {
+        const nh = h - 1;
+        if (nh <= 0) setTimeout(() => setDone("lose"), 900);
+        return nh;
+      });
+    }
+    setTimeout(() => nextQ(ok), 1000);
+  }
+  function nextQ(_ok) {
+    if (idx + 1 >= pool.length) {
+      if (!awarded.current && hearts > 0) {
+        awarded.current = true;
+        addCoins?.(30);
+        try { confetti({ particleCount: 220, spread: 110, startVelocity: 60, origin: { y: 0.6 } }); } catch {}
+        setDone("win");
+      }
+      return;
+    }
+    setIdx((n) => n + 1); setPick(null); setKilled(new Set());
+  }
+  function useFifty() {
+    if (fiftyLeft <= 0 || pick !== null) return;
+    const wrongs = q.choices.map((_, i) => i).filter((i) => i !== q.correct);
+    const kill = shuffle(wrongs).slice(0, 2);
+    setKilled(new Set(kill));
+    setFiftyLeft((n) => n - 1);
+  }
+  function useShield() {
+    if (shieldLeft <= 0 || shieldArmed || pick !== null) return;
+    setShieldArmed(true); setShieldLeft((n) => n - 1);
+  }
+  function restart() {
+    setIdx(0); setPick(null); setKilled(new Set()); setFiftyLeft(1); setShieldLeft(1);
+    setShieldArmed(false); setHearts(3); setDone(null); awarded.current = false;
+  }
+
+  if (done === "win") return (
+    <div className="rounded-3xl gx-glass p-6 text-center" style={{ boxShadow: "0 0 28px #fb923c" }}>
+      <div className="text-5xl">🎆🍰🛸</div>
+      <p className="mt-2 text-2xl font-black text-white">Space Recipe Mastered!</p>
+      <p className="mt-1 text-sm font-bold text-indigo-200">+30 coins secured to your profile. Victory!</p>
+      <button onClick={restart} className="mt-4 rounded-full px-4 py-2 text-sm font-black text-slate-900"
+        style={{ background: "linear-gradient(135deg,#fde047,#fb923c)", boxShadow: "0 0 14px #fb923c" }}>Play Again</button>
+    </div>
+  );
+  if (done === "lose") return (
+    <div className="rounded-3xl gx-glass p-6 text-center" style={{ boxShadow: "0 0 22px #f43f5e88" }}>
+      <div className="text-5xl">💥</div>
+      <p className="mt-2 text-2xl font-black text-white">Mission Failed</p>
+      <p className="mt-1 text-sm font-bold text-rose-200">The cosmic chefs out-cooked you! Try again, cadet!</p>
+      <button onClick={restart} className="mt-4 rounded-full bg-white/10 px-4 py-2 text-sm font-black text-white ring-1 ring-white/20">Retry</button>
+    </div>
+  );
+
+  return (
+    <div>
+      <div className="mb-3 flex items-center justify-between text-xs font-bold text-indigo-200">
+        <span>Question {idx+1} / {pool.length}</span>
+        <span>{"❤️".repeat(hearts)}{"🖤".repeat(3-hearts)}</span>
+      </div>
+      <div className="rounded-3xl gx-glass p-4" style={{ boxShadow: "0 0 18px #fb923c55" }}>
+        <p className="text-[11px] font-extrabold uppercase tracking-widest text-amber-300">🛸 Alien Trivia Quest</p>
+        <p className="mt-1 text-base font-black text-white">{q.q}</p>
+        <div className="mt-3 grid gap-2">
+          {q.choices.map((c, i) => {
+            const isPick = pick === i;
+            const showRight = pick !== null && i === q.correct;
+            const showWrong = isPick && i !== q.correct;
+            const isKilled = killed.has(i);
+            return (
+              <button key={i} onClick={() => choose(i)} disabled={isKilled || pick !== null}
+                className="rounded-2xl px-3 py-3 text-left text-sm font-black text-white transition active:scale-95 disabled:opacity-30"
+                style={{
+                  background: showRight ? "linear-gradient(135deg,#10b981,#34d399)"
+                          : showWrong ? "linear-gradient(135deg,#f43f5e,#fb7185)"
+                          : "linear-gradient(135deg,#1e1b4b,#7c2d12)",
+                  boxShadow: isPick ? "0 0 14px #fb923c88" : "inset 0 0 0 1px #fb923c55",
+                  textDecoration: isKilled ? "line-through" : "none",
+                }}>
+                <span className="mr-2">{String.fromCharCode(65 + i)}.</span>{c}
+              </button>
+            );
+          })}
+        </div>
+        {shieldArmed && <p className="mt-3 text-center text-xs font-black text-cyan-200">🛡️ Cosmic Shield armed — one wrong answer will be blocked.</p>}
+      </div>
+      <div className="mt-3 grid grid-cols-2 gap-2">
+        <button onClick={useFifty} disabled={fiftyLeft <= 0 || pick !== null}
+          className="rounded-2xl px-3 py-3 text-xs font-black text-white transition active:scale-95 disabled:opacity-40"
+          style={{ background: "linear-gradient(135deg,#f59e0b,#ef4444)", boxShadow: "0 0 14px #f59e0b88" }}>
+          🔫 Laser Beam 50:50 <span className="ml-1 opacity-80">({fiftyLeft})</span>
+        </button>
+        <button onClick={useShield} disabled={shieldLeft <= 0 || shieldArmed || pick !== null}
+          className="rounded-2xl px-3 py-3 text-xs font-black text-white transition active:scale-95 disabled:opacity-40"
+          style={{ background: "linear-gradient(135deg,#06b6d4,#3b82f6)", boxShadow: "0 0 14px #06b6d488" }}>
+          🛡️ Cosmic Shield <span className="ml-1 opacity-80">({shieldLeft})</span>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export function Planet5ArenaU5({ onBack, addCoins }) {
+  const [mode, setMode] = useState("a");
+  return (
+    <div className="ac-fade">
+      <BackBar onBack={onBack} color="#fb923c" />
+      <div className="mb-3 rounded-3xl p-4 text-center gx-glass" style={{ boxShadow: "0 0 18px #fb923c66" }}>
+        <p className="text-[11px] font-extrabold uppercase tracking-widest text-amber-300">Planet 5 · Supernova Quiz Arena</p>
+        <p className="text-xl font-black text-white">🏆 Choose your challenge</p>
+      </div>
+      <div className="mb-3 grid grid-cols-2 gap-2">
+        {[{k:"a",t:"🚀 Phonics Rocket"},{k:"b",t:"🛸 Alien Trivia"}].map((x) => (
+          <button key={x.k} onClick={() => setMode(x.k)}
+            className={`rounded-full px-3 py-2 text-xs font-black transition ${mode===x.k?"text-slate-900":"text-white"}`}
+            style={mode===x.k ? { background: "linear-gradient(135deg,#fde047,#fb923c)", boxShadow: "0 0 14px #fb923c" } : { background: "rgba(255,255,255,.08)", boxShadow: "inset 0 0 0 1px rgba(255,255,255,.18)" }}>
+            {x.t}
+          </button>
+        ))}
+      </div>
+      {mode === "a" ? <PhonicsRocketU5 addCoins={addCoins} /> : <AlienTriviaU5 addCoins={addCoins} />}
+    </div>
+  );
+}
+
+
 // Backward-compat alias (deprecated name)
 export const CosmicSpeakingNebula = AISpeakNebula;
+
 
 
