@@ -962,11 +962,43 @@ export const CURRICULUM_DATA = {
         ],
       },
     },
+    unit_3: {
+      title: "Surprise!",
+      icon: "☄️",
+      grammarGameMode: "NEBULA_BRIDGE",
+      quizGameMode: "SPACE_DEFENSE_TRIVIA",
+      vocabulary: {
+        lesson_1: [
+          { word: "buy groceries",     past: "bought groceries",     emoji: "🛒" },
+          { word: "walk the dog",      past: "walked the dog",       emoji: "🦮" },
+          { word: "study for a test",  past: "studied for a test",   emoji: "📝" },
+          { word: "take out the trash", past: "took out the trash",  emoji: "🗑️" },
+          { word: "buy a present",     past: "bought a present",     emoji: "🎁" },
+          { word: "play chess",        past: "played chess",         emoji: "♟️" },
+          { word: "read the newspaper", past: "read the newspaper",  emoji: "📰" },
+          { word: "watch the news",    past: "watched the news",     emoji: "📺" },
+        ],
+        lesson_5: ["go online","listen to the radio","read a magazine","download an app","look at the screen","read a blog post"],
+      },
+      ai_speak: [
+        "A man was walking his dog when it ran into the street.",
+        "What were you doing when the bell rang this morning?",
+        "Dad and Seb were buying groceries when the accident happened.",
+      ],
+      reading: {
+        text: "The History of News: Long ago, there were no radios, televisions, or smartphones. People got their daily updates from a town crier in the busy town square. The crier would ring a heavy bell and shout important announcements to everyone around the world. Later, printing presses were invented, and people started reading the newspaper to discover what was happening.",
+        questions: [
+          { q: "People used smartphones to read news long ago.", a: false },
+          { q: "A town crier would ring a bell in the town square.", a: true },
+          { q: "The story discusses the history of how people get news.", a: true },
+        ],
+      },
+    },
   },
 };
 
 function getUnitData(unit) {
-  return unit === 2 ? CURRICULUM_DATA.level_5.unit_2 : CURRICULUM_DATA.level_5.unit_1;
+  return CURRICULUM_DATA.level_5[`unit_${unit}`] || CURRICULUM_DATA.level_5.unit_1;
 }
 
 function normalizeWord(w) {
