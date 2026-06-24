@@ -1248,15 +1248,36 @@ export const CURRICULUM_DATA = {
           { q: "The children are riding bikes and inline skating.",    a: true  },
         ],
       },
+      games: {
+        grammar: [
+          { question: "What ___ you doing right now? I'm playing soccer.", answer: "are",    choices: ["are", "is", "am"] },
+          { question: "Look! Tim is ___ his new red bike.",                answer: "riding", choices: ["riding", "ride", "rides"] },
+          { question: "They are ___ swimming in the deep pool.",           answer: "going",  choices: ["going", "go", "goes"] },
+          { question: "Is she dancing in the room? No, she ___.",          answer: "isn't",  choices: ["isn't", "aren't", "doesn't"] },
+        ],
+        phonics: {
+          categories: ["-ai-", "-ay-"],
+          words: [
+            { text: "rain",  cat: "-ai-" },
+            { text: "train", cat: "-ai-" },
+            { text: "paint", cat: "-ai-" },
+            { text: "play",  cat: "-ay-" },
+            { text: "day",   cat: "-ay-" },
+            { text: "gray",  cat: "-ay-" },
+          ],
+        },
+      },
     },
   },
 };
 
 
 
-function getUnitData(unit) {
-  return CURRICULUM_DATA.level_5[`unit_${unit}`] || CURRICULUM_DATA.level_5.unit_1;
+function getUnitData(unit, level = "level_5") {
+  const lvl = CURRICULUM_DATA[level] || CURRICULUM_DATA.level_5;
+  return lvl[`unit_${unit}`] || CURRICULUM_DATA.level_5[`unit_${unit}`] || CURRICULUM_DATA.level_5.unit_1;
 }
+
 
 function normalizeWord(w) {
   return (w || "").toLowerCase().replace(/[^a-z0-9']/g, "");
