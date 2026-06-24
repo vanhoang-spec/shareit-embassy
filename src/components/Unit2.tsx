@@ -1235,3 +1235,8 @@ export function AISpeakNebula({ onBack, addCoins, unit = 1 }) {
     </div>
   );
 }
+
+
+// Backward-compat alias (deprecated name)
+export const CosmicSpeakingNebula = AISpeakNebula;
+
