@@ -1307,8 +1307,8 @@ export function AISpeakNebula({ onBack, addCoins, unit = 1 }) {
 // =================================================================
 
 // ---------- PLANET 1 U3: Daily Action flashcards + Lesson 5 speaking ----------
-function DailyActionFlashcards({ addCoins }) {
-  const items = CURRICULUM_DATA.level_5.unit_3.vocabulary.lesson_1;
+function DailyActionFlashcards({ addCoins, unit = 3 }) {
+  const items = getUnitData(unit).vocabulary.lesson_1;
   const [mastered, setMastered] = useState(() => new Set());
   const [tense, setTense] = useState({}); // id -> 'past'
   const [meaning, setMeaning] = useState({}); // id -> true
