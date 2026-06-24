@@ -3153,12 +3153,12 @@ const UNITS = [
   { n:8, title:"Festival Star",   emoji:"🎆", ring:"#f472b6", core:"radial-gradient(circle at 30% 30%, #fef3c7, #ec4899 40%, #6d28d9)", glow:"#f472b6", unlocked:false },
 ];
 
-function UnitGalaxy({ onEnterUnit1, onBackToLevels }) {
+function UnitGalaxy({ onEnterUnit, onBackToLevels }) {
   const [toast, setToast] = useState(null);
   const timer = useRef(null);
   function tap(u) {
-    if (u.unlocked) { onEnterUnit1(); return; }
-    setToast(`Mission locked! Complete Unit 1: Adventure Camp first! ☄️`);
+    if (u.unlocked) { onEnterUnit(u.n); return; }
+    setToast(`Mission locked! Complete earlier units first! ☄️`);
     clearTimeout(timer.current);
     timer.current = setTimeout(() => setToast(null), 1800);
   }
