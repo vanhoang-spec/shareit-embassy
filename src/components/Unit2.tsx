@@ -1328,12 +1328,25 @@ function DailyActionFlashcards({ addCoins }) {
                 </div>
                 <div className="px-3 pb-3 pt-3">
                   <p key={phrase} className="ac-fade min-h-12 text-center text-base font-extrabold leading-tight text-white">{phrase}</p>
+                  <div className="mt-1 min-h-7 text-center">
+                    {meaning[i] ? (
+                      <p className="ac-fade rounded-xl bg-white/15 px-2 py-1 text-sm font-bold text-amber-100 ring-1 ring-amber-300/40" style={{ boxShadow: "0 0 10px #fbbf2455" }}>{v.vn}</p>
+                    ) : <span className="text-sm text-white/30">• • •</span>}
+                  </div>
                   <div className="mt-2 grid grid-cols-2 gap-1.5">
-                    <button onClick={() => speak(phrase)} className="flex items-center justify-center gap-1 rounded-2xl bg-cyan-500/20 py-2 text-cyan-200 transition active:scale-95 ring-1 ring-cyan-400/30">
-                      <Volume2 size={14}/><span className="text-[11px] font-bold">Listen</span>
+                    <button onClick={() => toggleMeaning(i)} className="flex items-center justify-center gap-1 rounded-2xl bg-white/10 py-2 text-white transition active:scale-95 ring-1 ring-white/20">
+                      <span className="text-[11px] font-bold">{meaning[i] ? "👁️ Hide" : "👁️ Nghĩa từ"}</span>
                     </button>
                     <button onClick={() => toggle(i)} className={`flex items-center justify-center gap-1 rounded-2xl py-2 transition active:scale-95 ${showPast ? "bg-purple-500 text-white" : "bg-amber-400/30 text-amber-100 ring-1 ring-amber-300/40"}`}>
-                      <span className="text-[11px] font-bold">Form ⚡</span>
+                      <span className="text-[11px] font-bold">Past Form ⏳</span>
+                    </button>
+                  </div>
+                  <div className="mt-1.5 grid grid-cols-2 gap-1.5">
+                    <button onClick={() => speak(phrase)} className="flex items-center justify-center gap-1 rounded-2xl bg-cyan-500/20 py-2 text-cyan-200 transition active:scale-95 ring-1 ring-cyan-400/30">
+                      <Volume2 size={14}/><span className="text-[11px] font-bold">🔊 Listen</span>
+                    </button>
+                    <button onClick={() => speakSlow(phrase)} className="flex items-center justify-center gap-1 rounded-2xl bg-amber-500/20 py-2 text-amber-100 transition active:scale-95 ring-1 ring-amber-300/40">
+                      <Volume2 size={14}/><span className="text-[11px] font-bold">🐌 Slow</span>
                     </button>
                   </div>
                   <button onClick={() => master(i)} className="mt-2 w-full rounded-2xl py-2 text-xs font-extrabold text-white transition active:scale-95"
