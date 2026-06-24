@@ -3557,6 +3557,7 @@ function useArcadeMusic(enabled) {
 export default function AdventureCamp() {
   const [view, setView] = useState("levels"); // levels | galaxy | hub | vocab | grammar | speaking | reading | quiz
   const [currentUnit, setCurrentUnit] = useState(1);
+  const [selectedLevel, setSelectedLevel] = useState("level_5");
   const [cosmicAvatarId, setCosmicAvatarId] = useState("astronaut");
 
 
