@@ -1074,6 +1074,41 @@ export const CURRICULUM_DATA = {
         ],
       },
     },
+    unit_6: {
+      title: "Save Our Planet!",
+      icon: "🌍",
+      formToggleLabel: "Plural Form 👥",
+      grammarGameMode: "ECO_BALANCER",
+      quizGameMode: "ALIEN_TRIVIA",
+      vocabulary: {
+        lesson_1: [
+          { word: "giant panda",      alt: "giant pandas",      vn: "gấu trúc lớn", emoji: "🐼" },
+          { word: "black rhino",      alt: "black rhinos",      vn: "tê giác đen",  emoji: "🦏" },
+          { word: "blue whale",       alt: "blue whales",       vn: "cá voi xanh",  emoji: "🐋" },
+          { word: "mountain gorilla", alt: "mountain gorillas", vn: "khỉ đột núi",  emoji: "🦍" },
+          { word: "snow leopard",     alt: "snow leopards",     vn: "báo tuyết",    emoji: "🐆" },
+          { word: "sea turtle",       alt: "sea turtles",       vn: "rùa biển",     emoji: "🐢" },
+          { word: "polar bear",       alt: "polar bears",       vn: "gấu bắc cực",  emoji: "🐻‍❄️" },
+          { word: "orangutan",        alt: "orangutans",        vn: "đười ươi",     emoji: "🦧" },
+        ],
+        lesson_5: ["recycle trash","plant trees","save water","turn off lights","clean up parks","reuse plastic bags"],
+      },
+      ai_speak: [
+        "If we don't protect the giant pandas, they will disappear.",
+        "We should turn off the lights to save energy every day.",
+        "If people plant more green trees, the air will be cleaner.",
+        "Sea turtles are endangered because there is too much plastic in the ocean.",
+        "What will happen if we recycle all our plastic bottles?",
+      ],
+      reading: {
+        text: "The Green Mission: Our planet is home to many incredible creatures like the giant panda and the blue whale. However, pollution and climate change are putting their ecosystems in danger. If we don't take action now, these beautiful animals might disappear forever. Luckily, children around the world are helping. By recycling paper, planting green trees, and saving clean water, every small explorer can make a massive difference to protect Mother Earth.",
+        questions: [
+          { q: "Pollution can put animal ecosystems in danger.", a: true },
+          { q: "Only adults can help protect the planet.", a: false },
+          { q: "The story advises us to recycle paper and plant trees.", a: true },
+        ],
+      },
+    },
   },
 };
 
