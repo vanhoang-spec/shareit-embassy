@@ -2153,8 +2153,8 @@ export function VocabularyQuestU4({ onBack, addCoins, level = "level_5" }) {
 }
 
 // ---------- PLANET 4 U4: Atlantis reading ----------
-export function ReadingAdventureU4({ onBack, addCoins }) {
-  return <ReadingAdventureU3 onBack={onBack} addCoins={addCoins} unit={4} title="🏛️ The Legend of Atlantis" />;
+export function ReadingAdventureU4({ onBack, addCoins, level = "level_5" }) {
+  return <ReadingAdventureU3 onBack={onBack} addCoins={addCoins} unit={4} level={level} title="🏛️ The Legend of Atlantis" />;
 }
 
 // ---------- PLANET 2 U4: Orbital Sentence Alignment ----------
