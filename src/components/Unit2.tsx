@@ -1208,8 +1208,8 @@ function normalizeWord(w) {
 }
 
 // Locked framework component — UI/audio engine NEVER changes; only data swaps via `unit`.
-export function AISpeakNebula({ onBack, addCoins, unit = 1 }) {
-  const sentences = getUnitData(unit).ai_speak;
+export function AISpeakNebula({ onBack, addCoins, unit = 1, level = "level_5" }) {
+  const sentences = getUnitData(unit, level).ai_speak;
 
   const [idx, setIdx] = useState(0);
   const [recording, setRecording] = useState(false);
