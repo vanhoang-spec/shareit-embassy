@@ -3679,12 +3679,12 @@ export default function AdventureCamp() {
             <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
               <div className="flex min-w-0 items-center gap-2.5">
                 <button
-                  onClick={() => setPickerOpen(true)}
+                  onClick={() => setProfileOpen(true)}
                   className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-2xl transition-transform hover:scale-105 active:scale-95"
                   style={{ boxShadow: "0 0 0 3px #22d3ee, 0 0 18px #a78bfa" }}
-                  aria-label="Change avatar"
+                  aria-label="Open cosmic profile"
                 >
-                  <span>{currentAvatar?.emoji || "🧑‍🚀"}</span>
+                  <span>{COSMIC_AVATAR_BY_ID[cosmicAvatarId]?.emoji || "👨‍🚀"}</span>
                 </button>
                 <button
                   onClick={() => setProfileOpen(true)}
@@ -3692,7 +3692,7 @@ export default function AdventureCamp() {
                   aria-label="Edit profile"
                 >
                   <p className="truncate text-sm font-extrabold text-white">{name || "Space Cadet"} <span className="text-cyan-300">✎</span></p>
-                  <p className="text-[11px] font-bold text-indigo-200">{currentAvatar?.name || "Galactic Explorer"}</p>
+                  <p className="text-[11px] font-bold text-indigo-200">{COSMIC_AVATAR_BY_ID[cosmicAvatarId]?.name || "Astro-Camper"}</p>
                 </button>
               </div>
               <div className="flex shrink-0 items-center gap-2">
