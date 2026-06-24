@@ -1109,8 +1109,44 @@ export const CURRICULUM_DATA = {
         ],
       },
     },
+    unit_8: {
+      title: "On Vacation!",
+      icon: "🛳️",
+      formToggleLabel: "Past Form ⏳",
+      grammarGameMode: "NEBULA_GATEWAY",
+      quizGameMode: "ALIEN_TRIVIA",
+      vocabulary: {
+        lesson_1: [
+          { word: "go on a cruise",      alt: "went on a cruise",     vn: "đi du thuyền",            emoji: "🛳️" },
+          { word: "visit a theme park",  alt: "visited a theme park", vn: "thăm công viên giải trí", emoji: "🎢" },
+          { word: "see a show",          alt: "saw a show",           vn: "xem biểu diễn",           emoji: "🎭" },
+          { word: "go to the beach",     alt: "went to the beach",    vn: "đi bãi biển",             emoji: "🏖️" },
+          { word: "stay in a hotel",     alt: "stayed in a hotel",    vn: "ở khách sạn",             emoji: "🏨" },
+          { word: "visit a museum",      alt: "visited a museum",     vn: "thăm bảo tàng",           emoji: "🏛️" },
+          { word: "go sightseeing",      alt: "went sightseeing",     vn: "đi ngắm cảnh",            emoji: "🏙️" },
+          { word: "buy souvenirs",       alt: "bought souvenirs",     vn: "mua quà lưu niệm",        emoji: "🎁" },
+        ],
+        lesson_5: ["pack a suitcase","book a flight","buy a ticket","check in","board the plane","explore the city"],
+      },
+      ai_speak: [
+        "Have you ever stayed in a luxury hotel near the beach?",
+        "We have already bought beautiful souvenirs for our family.",
+        "She hasn't visited the space theme park yet.",
+        "They went sightseeing and saw an incredible light show last night.",
+        "He is going to pack his big suitcase for the cruise tomorrow.",
+      ],
+      reading: {
+        text: "The Galactic Vacation: Summer vacation has finally arrived! This year, Leo's family is planning an incredible trip across the solar system. First, they booked a flight on a hyper-drive starship. Yesterday, they checked in at the spaceport terminal and boarded the plane. They are going to stay in a floating hotel near the cosmic beach. Leo wants to visit a famous space museum and buy alien souvenirs for his best friends back home. It will be an unforgettable adventure!",
+        questions: [
+          { q: "Leo's family is going on a vacation across the solar system.", a: true },
+          { q: "They forgot to book a flight and stayed home.",                a: false },
+          { q: "Leo wants to buy souvenirs for his friends.",                  a: true },
+        ],
+      },
+    },
   },
 };
+
 
 function getUnitData(unit) {
   return CURRICULUM_DATA.level_5[`unit_${unit}`] || CURRICULUM_DATA.level_5.unit_1;
