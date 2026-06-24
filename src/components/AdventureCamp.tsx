@@ -3086,21 +3086,21 @@ function ProfileModal({ open, onClose, name, cosmicAvatarId, onSave, saving, ava
 // Tier 1 — Star League (7 Level Space Stations)
 // =================================================================
 const LEVELS = [
-  { n:0, title:"Starter Constellation", glow:"#a5b4fc", core:"radial-gradient(circle at 30% 30%, #e0e7ff, #6366f1 55%, #1e1b4b)", unlocked:false },
-  { n:1, title:"Galaxy Level 1",        glow:"#22d3ee", core:"radial-gradient(circle at 30% 30%, #cffafe, #06b6d4 55%, #083344)", unlocked:false },
-  { n:2, title:"Galaxy Level 2",        glow:"#34d399", core:"radial-gradient(circle at 30% 30%, #d1fae5, #10b981 55%, #064e3b)", unlocked:false },
-  { n:3, title:"Galaxy Level 3",        glow:"#facc15", core:"radial-gradient(circle at 30% 30%, #fef9c3, #eab308 55%, #422006)", unlocked:false },
-  { n:4, title:"Galaxy Level 4",        glow:"#fb923c", core:"radial-gradient(circle at 30% 30%, #ffedd5, #f97316 55%, #7c2d12)", unlocked:false },
-  { n:5, title:"Galaxy Level 5",        glow:"#f472b6", core:"radial-gradient(circle at 30% 30%, #fce7f3, #ec4899 55%, #500724)", unlocked:true  },
-  { n:6, title:"Galaxy Level 6",        glow:"#c084fc", core:"radial-gradient(circle at 30% 30%, #f3e8ff, #9333ea 55%, #3b0764)", unlocked:false },
+  { n:0, title:"Starter Constellation", glow:"#a5b4fc", core:"radial-gradient(circle at 30% 30%, #e0e7ff, #6366f1 55%, #1e1b4b)", unlocked:false, levelKey:null },
+  { n:1, title:"Galaxy Level 1",        glow:"#22d3ee", core:"radial-gradient(circle at 30% 30%, #cffafe, #06b6d4 55%, #083344)", unlocked:false, levelKey:null },
+  { n:2, title:"Galaxy Level 2",        glow:"#34d399", core:"radial-gradient(circle at 30% 30%, #d1fae5, #10b981 55%, #064e3b)", unlocked:false, levelKey:null },
+  { n:3, title:"Galaxy Level 3",        glow:"#facc15", core:"radial-gradient(circle at 30% 30%, #fef9c3, #eab308 55%, #422006)", unlocked:true,  levelKey:"level_3" },
+  { n:4, title:"Galaxy Level 4",        glow:"#fb923c", core:"radial-gradient(circle at 30% 30%, #ffedd5, #f97316 55%, #7c2d12)", unlocked:false, levelKey:null },
+  { n:5, title:"Galaxy Level 5",        glow:"#f472b6", core:"radial-gradient(circle at 30% 30%, #fce7f3, #ec4899 55%, #500724)", unlocked:true,  levelKey:"level_5" },
+  { n:6, title:"Galaxy Level 6",        glow:"#c084fc", core:"radial-gradient(circle at 30% 30%, #f3e8ff, #9333ea 55%, #3b0764)", unlocked:false, levelKey:null },
 ];
 
-function StarLeague({ onEnterLevel5 }) {
+function StarLeague({ onEnterLevel }) {
   const [toast, setToast] = useState(null);
   const timer = useRef(null);
   function tap(l) {
-    if (l.unlocked) { onEnterLevel5(); return; }
-    setToast("Galaxy Locked! Explore Level 5 first! 🚀");
+    if (l.unlocked && l.levelKey) { onEnterLevel(l.levelKey); return; }
+    setToast("Galaxy Locked! Explore unlocked stations first! 🚀");
     clearTimeout(timer.current);
     timer.current = setTimeout(() => setToast(null), 1800);
   }
