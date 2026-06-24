@@ -1477,8 +1477,8 @@ export function AISpeakNebula({ onBack, addCoins, unit = 1, level = "level_5" })
 // =================================================================
 
 // ---------- PLANET 1 U3: Daily Action flashcards + Lesson 5 speaking ----------
-function DailyActionFlashcards({ addCoins, unit = 3 }) {
-  const unitData = getUnitData(unit);
+function DailyActionFlashcards({ addCoins, unit = 3, level = "level_5" }) {
+  const unitData = getUnitData(unit, level);
   const items = unitData.vocabulary.lesson_1;
   const formToggleLabel = unitData.formToggleLabel || "Alt Form";
   const [mastered, setMastered] = useState(() => new Set());
