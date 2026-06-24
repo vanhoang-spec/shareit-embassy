@@ -3211,7 +3211,7 @@ function UnitGalaxy({ onEnterUnit, onBackToLevels, selectedLevel = "level_5" }) 
 
 
       <div className="grid grid-cols-2 gap-4 px-1">
-        {UNITS.map((u) => (
+        {units.map((u) => (
           <button
             key={u.n}
             onClick={() => tap(u)}
