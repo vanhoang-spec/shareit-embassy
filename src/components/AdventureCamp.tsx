@@ -31,6 +31,7 @@ import {
   VocabularyQuestU2, RocketFuelMission, AISpeakingWorldU2, ReadingAdventureU2, Planet5ArenaU2,
   VocabularyQuestU3, NebulaBridge, ReadingAdventureU3, Planet5ArenaU3,
   VocabularyQuestU4, OrbitalAlignment, ReadingAdventureU4, Planet5ArenaU4,
+  VocabularyQuestU5, QuantumScale, ReadingAdventureU5, Planet5ArenaU5,
   CosmicSpeakingNebula,
 } from "./Unit2";
 
