@@ -3002,35 +3002,51 @@ function DashboardHub({ onPick, name, currentUnit = 1 }) {
 // =================================================================
 // Camper Profile — edit student_name (synced to Lovable Cloud)
 // =================================================================
-function ProfileModal({ open, onClose, name, onSave, saving, avatarEmoji, onOpenAvatar, coins, streak }) {
+function ProfileModal({ open, onClose, name, cosmicAvatarId, onSave, saving, avatarEmoji, onOpenAvatar, coins, streak }) {
   const [val, setVal] = useState(name || "");
-  useEffect(() => { if (open) setVal(name || ""); }, [open, name]);
+  const [picked, setPicked] = useState(cosmicAvatarId || "astronaut");
+  useEffect(() => { if (open) { setVal(name || ""); setPicked(cosmicAvatarId || "astronaut"); } }, [open, name, cosmicAvatarId]);
   if (!open) return null;
   const trimmed = val.trim();
-  const canSave = trimmed.length >= 1 && trimmed.length <= 40 && trimmed !== (name || "");
+  const dirty = (trimmed && trimmed !== (name || "")) || picked !== (cosmicAvatarId || "astronaut");
+  const canSave = trimmed.length >= 1 && trimmed.length <= 40 && dirty;
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center p-4" style={{ background: "rgba(3,3,30,.7)", backdropFilter: "blur(6px)" }}>
       <div className="relative w-full max-w-sm overflow-hidden rounded-3xl p-5 text-white shadow-2xl ring-1 ring-white/20 gx-glass ac-fade" style={{ background: "linear-gradient(160deg,#1e1b4b,#312e81 60%,#4c1d95)" }}>
         <StarField count={20} />
         <div className="relative">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-extrabold uppercase tracking-widest text-cyan-300 gx-neon-text" style={{color:"#67e8f9"}}>Camper Profile</p>
+            <p className="text-xs font-extrabold uppercase tracking-widest text-cyan-300 gx-neon-text" style={{color:"#67e8f9"}}>Cosmic Profile Center</p>
             <button onClick={onClose} className="rounded-full bg-white/10 p-1 ring-1 ring-white/20 hover:bg-white/20" aria-label="Close"><X size={16} /></button>
           </div>
-          <div className="mt-3 flex items-center gap-3">
-            <button onClick={onOpenAvatar} className="relative flex h-16 w-16 items-center justify-center rounded-full bg-white/10 text-3xl ring-2 ring-cyan-300/70 hover:scale-105 transition" style={{ boxShadow: "0 0 18px #22d3ee88" }}>
-              <span>{avatarEmoji || "🧑‍🚀"}</span>
-              <span className="absolute -bottom-1 -right-1 rounded-full bg-cyan-400 px-1.5 py-0.5 text-[9px] font-black text-slate-900">EDIT</span>
-            </button>
-            <div className="flex-1">
-              <p className="text-[11px] font-bold text-indigo-200">Captain Name</p>
-              <input
-                value={val}
-                onChange={(e) => setVal(e.target.value)}
-                maxLength={40}
-                placeholder="Your name"
-                className="mt-1 w-full rounded-xl bg-white/10 px-3 py-2 text-base font-extrabold text-white placeholder-white/40 outline-none ring-1 ring-white/20 focus:ring-cyan-300"
-              />
+          <div className="mt-3">
+            <p className="text-[11px] font-bold text-indigo-200">Captain Name</p>
+            <input
+              value={val}
+              onChange={(e) => setVal(e.target.value)}
+              maxLength={40}
+              placeholder="Your name"
+              className="mt-1 w-full rounded-xl bg-white/10 px-3 py-2 text-base font-extrabold text-white placeholder-white/40 outline-none ring-1 ring-white/20 focus:ring-cyan-300"
+            />
+          </div>
+          <div className="mt-4">
+            <p className="text-[11px] font-bold text-indigo-200">Choose Your Cosmic Avatar 🛰️</p>
+            <div className="mt-2 grid grid-cols-5 gap-2">
+              {COSMIC_AVATARS.map((a) => {
+                const sel = picked === a.id;
+                return (
+                  <button key={a.id} onClick={() => setPicked(a.id)}
+                    className="flex flex-col items-center rounded-2xl p-2 text-white transition active:scale-95"
+                    style={{
+                      background: sel ? "linear-gradient(135deg,#22d3ee33,#a78bfa33)" : "rgba(255,255,255,.06)",
+                      boxShadow: sel ? "0 0 14px #22d3ee, inset 0 0 0 2px #67e8f9" : "inset 0 0 0 1px rgba(255,255,255,.15)",
+                    }}
+                    aria-label={a.name}>
+                    <span className="text-2xl leading-none">{a.emoji}</span>
+                    <span className="mt-1 text-[8px] font-black uppercase tracking-wide text-indigo-100">{a.name.split(" ")[0]}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
           <div className="mt-4 grid grid-cols-2 gap-2 text-center">
@@ -3047,11 +3063,11 @@ function ProfileModal({ open, onClose, name, onSave, saving, avatarEmoji, onOpen
             <button onClick={onClose} className="flex-1 rounded-full bg-white/10 px-4 py-2 text-sm font-extrabold text-white ring-1 ring-white/20 hover:bg-white/20">Cancel</button>
             <button
               disabled={!canSave || saving}
-              onClick={() => onSave(trimmed)}
+              onClick={() => onSave(trimmed, picked)}
               className="flex-1 rounded-full px-4 py-2 text-sm font-black text-slate-900 shadow-lg transition disabled:cursor-not-allowed disabled:opacity-50"
               style={{ background: "linear-gradient(135deg,#67e8f9,#a78bfa)", boxShadow: "0 0 18px #a78bfa88" }}
             >
-              {saving ? <span className="inline-flex items-center gap-1"><Loader2 size={14} className="animate-spin"/>Saving…</span> : "Save 🚀"}
+              {saving ? <span className="inline-flex items-center gap-1"><Loader2 size={14} className="animate-spin"/>Saving…</span> : "Save My Profile 📝"}
             </button>
           </div>
         </div>
