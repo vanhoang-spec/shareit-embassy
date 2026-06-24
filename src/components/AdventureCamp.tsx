@@ -26,6 +26,10 @@ import {
   Loader2,
   ArrowRight,
 } from "lucide-react";
+import {
+  COSMIC_AVATARS, COSMIC_AVATAR_BY_ID,
+  VocabularyQuestU2, RocketFuelMission, AISpeakingWorldU2, ReadingAdventureU2, WordHunterArena,
+} from "./Unit2";
 
 // ----- Brand kit (from Embassy Language logo) -----
 const BRAND = { navy: "#004088", navyDark: "#00264f", red: "#E81820", redDark: "#c8141b", gold: "#F5B301" };
