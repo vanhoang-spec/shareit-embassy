@@ -1691,7 +1691,7 @@ export function ReadingAdventureU3({ onBack, addCoins, unit = 3, title = "📰 T
       <BackBar onBack={onBack} color="#22d3ee" />
       <div className="mb-3 rounded-3xl p-4 text-center gx-glass" style={{ boxShadow: "0 0 18px #22d3ee66" }}>
         <p className="text-[11px] font-extrabold uppercase tracking-widest text-cyan-300">Planet 4 · Reading Comet</p>
-        <p className="text-xl font-black text-white">📰 The History of News</p>
+        <p className="text-xl font-black text-white">{title}</p>
       </div>
       <div className="rounded-3xl gx-glass p-4 text-sm leading-relaxed text-indigo-100 whitespace-pre-line">
         {data.text}
