@@ -1279,7 +1279,16 @@ function DailyActionFlashcards({ addCoins }) {
   const items = CURRICULUM_DATA.level_5.unit_3.vocabulary.lesson_1;
   const [mastered, setMastered] = useState(() => new Set());
   const [tense, setTense] = useState({}); // id -> 'past'
+  const [meaning, setMeaning] = useState({}); // id -> true
   function toggle(i) { setTense((p) => ({ ...p, [i]: p[i] === "past" ? "base" : "past" })); }
+  function toggleMeaning(i) { setMeaning((p) => ({ ...p, [i]: !p[i] })); }
+  function speakSlow(text) {
+    try {
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = "en-US"; u.rate = 0.5;
+      window.speechSynthesis?.cancel(); window.speechSynthesis?.speak(u);
+    } catch {}
+  }
   function master(i) {
     if (mastered.has(i)) return;
     setMastered((p) => {
