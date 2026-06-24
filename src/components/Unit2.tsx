@@ -1207,7 +1207,6 @@ export const CURRICULUM_DATA = {
         },
       },
     },
-    },
     unit_5: {
       title: "Let's Play!",
       icon: "⚽",
