@@ -3740,7 +3740,7 @@ export default function AdventureCamp() {
 
           {view === "vocab" && (currentUnit === 2 ? <VocabularyQuestU2 onBack={back} addCoins={addCoins} /> : <VocabularyQuest onBack={back} addCoins={addCoins} />)}
           {view === "grammar" && (currentUnit === 2 ? <RocketFuelMission onBack={back} addCoins={addCoins} /> : <GrammarLab onBack={back} addCoins={addCoins} />)}
-          {view === "speaking" && (currentUnit === 2 ? <AISpeakingWorldU2 onBack={back} addCoins={addCoins} /> : <AISpeakingWorld onBack={back} addCoins={addCoins} />)}
+          {view === "speaking" && <CosmicSpeakingNebula onBack={back} addCoins={addCoins} unit={currentUnit} />}
           {view === "reading" && (currentUnit === 2 ? <ReadingAdventureU2 onBack={back} addCoins={addCoins} /> : <ReadingAdventure onBack={back} addCoins={addCoins} />)}
           {view === "quiz" && (currentUnit === 2 ? <Planet5ArenaU2 onBack={back} addCoins={addCoins} /> : <GrandUnitQuiz onBack={back} addCoins={addCoins} />)}
         </main>
