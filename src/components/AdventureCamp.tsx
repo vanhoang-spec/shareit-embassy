@@ -28,7 +28,7 @@ import {
 } from "lucide-react";
 import {
   COSMIC_AVATARS, COSMIC_AVATAR_BY_ID,
-  VocabularyQuestU2, RocketFuelMission, AISpeakingWorldU2, ReadingAdventureU2, WordHunterArena,
+  VocabularyQuestU2, RocketFuelMission, AISpeakingWorldU2, ReadingAdventureU2, Planet5ArenaU2,
 } from "./Unit2";
 
 // ----- Brand kit (from Embassy Language logo) -----
@@ -3741,7 +3741,7 @@ export default function AdventureCamp() {
           {view === "grammar" && (currentUnit === 2 ? <RocketFuelMission onBack={back} addCoins={addCoins} /> : <GrammarLab onBack={back} addCoins={addCoins} />)}
           {view === "speaking" && (currentUnit === 2 ? <AISpeakingWorldU2 onBack={back} addCoins={addCoins} /> : <AISpeakingWorld onBack={back} addCoins={addCoins} />)}
           {view === "reading" && (currentUnit === 2 ? <ReadingAdventureU2 onBack={back} addCoins={addCoins} /> : <ReadingAdventure onBack={back} addCoins={addCoins} />)}
-          {view === "quiz" && (currentUnit === 2 ? <WordHunterArena onBack={back} addCoins={addCoins} /> : <GrandUnitQuiz onBack={back} addCoins={addCoins} />)}
+          {view === "quiz" && (currentUnit === 2 ? <Planet5ArenaU2 onBack={back} addCoins={addCoins} /> : <GrandUnitQuiz onBack={back} addCoins={addCoins} />)}
         </main>
 
 

@@ -57,183 +57,287 @@ function shuffle(arr) {
 }
 
 // =================================================================
-// PLANET 1 — Vocabulary Orbit (Unit 2): Quantum Memory + Tech Mic
+// PLANET 1 — Vocabulary Orbit (Unit 2): Flashcards + AI Speak
+// Strictly same format as Unit 1 (flip cards w/ meaning + form toggle,
+// audio, mastered hides; mic challenge w/ 5-stars + +10 coins).
 // =================================================================
 const GADGETS = [
-  { word: "smartwatch", emoji: "⌚" },
-  { word: "laptop",     emoji: "💻" },
-  { word: "smartphone", emoji: "📱" },
-  { word: "tablet",     emoji: "📟" },
-  { word: "digital camera", emoji: "📷" },
-  { word: "e-reader",   emoji: "📖" },
-  { word: "headphones", emoji: "🎧" },
-  { word: "portable speaker", emoji: "🔊" },
+  { id: 1, base: "smartwatch",       form: "smartwatches",       vi: "đồng hồ thông minh", emoji: "⌚", theme: "emerald" },
+  { id: 2, base: "laptop",           form: "laptops",            vi: "máy tính xách tay",  emoji: "💻", theme: "sky" },
+  { id: 3, base: "smartphone",       form: "smartphones",        vi: "điện thoại thông minh", emoji: "📱", theme: "violet" },
+  { id: 4, base: "tablet",           form: "tablets",            vi: "máy tính bảng",      emoji: "📟", theme: "amber" },
+  { id: 5, base: "digital camera",   form: "digital cameras",    vi: "máy ảnh kỹ thuật số", emoji: "📷", theme: "rose" },
+  { id: 6, base: "e-reader",         form: "e-readers",          vi: "máy đọc sách",       emoji: "📖", theme: "orange" },
+  { id: 7, base: "headphones",       form: "a pair of headphones", vi: "tai nghe",         emoji: "🎧", theme: "teal" },
+  { id: 8, base: "portable speaker", form: "portable speakers",  vi: "loa di động",        emoji: "🔊", theme: "cyan" },
 ];
-const TECH_ACTIONS = [
-  "upload a photo", "text a friend", "stream a video", "download a song",
-  "charge a phone", "log in", "print a document", "search the internet",
-];
+const GADGET_THEMES = {
+  emerald: "linear-gradient(135deg,#10b981,#34d399)",
+  sky:     "linear-gradient(135deg,#0ea5e9,#38bdf8)",
+  violet:  "linear-gradient(135deg,#8b5cf6,#a78bfa)",
+  amber:   "linear-gradient(135deg,#f59e0b,#fbbf24)",
+  rose:    "linear-gradient(135deg,#f43f5e,#fb7185)",
+  orange:  "linear-gradient(135deg,#f97316,#fb923c)",
+  teal:    "linear-gradient(135deg,#14b8a6,#2dd4bf)",
+  cyan:    "linear-gradient(135deg,#06b6d4,#22d3ee)",
+};
 
-function QuantumMemoryMatch({ addCoins, onWin }) {
-  const [deck, setDeck] = useState(() => buildDeck());
-  const [flipped, setFlipped] = useState([]);
-  const [matched, setMatched] = useState(new Set());
-  const [moves, setMoves] = useState(0);
-  const [busy, setBusy] = useState(false);
-  const wonRef = useRef(false);
-
-  function buildDeck() {
-    const cards = [];
-    GADGETS.forEach((g, i) => {
-      cards.push({ key: `w${i}`, pairId: i, label: g.word, kind: "word" });
-      cards.push({ key: `e${i}`, pairId: i, label: g.emoji, kind: "emoji" });
-    });
-    return shuffle(cards);
-  }
-  function reset() {
-    setDeck(buildDeck()); setFlipped([]); setMatched(new Set()); setMoves(0); wonRef.current = false;
-  }
-  function tap(idx) {
-    if (busy) return;
-    if (flipped.includes(idx)) return;
-    if (matched.has(deck[idx].pairId)) return;
-    const next = [...flipped, idx];
-    setFlipped(next);
-    if (next.length === 2) {
-      setMoves((m) => m + 1);
-      const [a, b] = next;
-      if (deck[a].pairId === deck[b].pairId) {
-        setBusy(true);
-        setTimeout(() => {
-          const ns = new Set(matched); ns.add(deck[a].pairId); setMatched(ns); setFlipped([]); setBusy(false);
-          if (ns.size === GADGETS.length && !wonRef.current) {
-            wonRef.current = true;
-            addCoins?.(10);
-            try { confetti({ particleCount: 90, spread: 70, origin: { y: 0.6 } }); } catch {}
-            onWin?.();
-          }
-        }, 450);
-      } else {
-        setBusy(true);
-        setTimeout(() => { setFlipped([]); setBusy(false); }, 850);
-      }
-    }
-  }
-  const done = matched.size === GADGETS.length;
+function GadgetFlashcard({ data, mastered, onMaster, onNotSure }) {
+  const [showMeaning, setShowMeaning] = useState(false);
+  const [isPlural, setIsPlural] = useState(false);
+  const phrase = isPlural ? data.form : data.base;
+  const header = isPlural ? "linear-gradient(135deg,#f97316,#8b5cf6)" : GADGET_THEMES[data.theme];
   return (
-    <div>
-      <div className="mb-3 flex items-center justify-between text-xs font-bold text-indigo-200">
-        <span>Pairs: <b className="text-white">{matched.size}</b>/{GADGETS.length}</span>
-        <span>Moves: <b className="text-white">{moves}</b></span>
-        <button onClick={reset} className="rounded-full bg-white/10 px-3 py-1 font-black text-cyan-200 ring-1 ring-white/20 hover:bg-white/20">Reset</button>
-      </div>
-      <div className="grid grid-cols-4 gap-2">
-        {deck.map((c, i) => {
-          const isMatched = matched.has(c.pairId);
-          const isFlipped = isMatched || flipped.includes(i);
-          return (
-            <button
-              key={c.key}
-              onClick={() => tap(i)}
-              className="relative aspect-square rounded-2xl transition-transform active:scale-95"
-              style={{ perspective: "600px" }}
-              aria-label="Memory card"
-            >
-              <div className="relative h-full w-full" style={{
-                transformStyle: "preserve-3d",
-                transition: "transform .5s",
-                transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)",
-              }}>
-                {/* back */}
-                <div className="absolute inset-0 flex items-center justify-center rounded-2xl text-2xl text-white shadow"
-                  style={{ background: "linear-gradient(135deg,#1e1b4b,#4c1d95)", boxShadow: "0 0 12px #a78bfa66, inset 0 0 0 1px #a78bfa55", backfaceVisibility: "hidden" }}>
-                  ✦
-                </div>
-                {/* front */}
-                <div className="absolute inset-0 flex items-center justify-center rounded-2xl p-1 text-center text-white"
-                  style={{
-                    background: isMatched ? "linear-gradient(135deg,#06b6d4,#22d3ee)" : "linear-gradient(135deg,#0ea5e9,#6366f1)",
-                    boxShadow: isMatched ? "0 0 18px #22d3ee, inset 0 0 0 2px #67e8f9" : "0 0 10px #6366f188",
-                    backfaceVisibility: "hidden",
-                    transform: "rotateY(180deg)",
-                    animation: isMatched ? "ac-pop .35s ease-out" : undefined,
-                  }}>
-                  <span className={c.kind === "emoji" ? "text-3xl" : "text-[11px] font-black leading-tight"}>{c.label}</span>
-                </div>
-              </div>
-            </button>
-          );
-        })}
-      </div>
-      {done && (
-        <div className="mt-4 rounded-2xl gx-glass p-3 text-center text-sm font-black text-white"
-          style={{ boxShadow: "0 0 18px #22d3ee, inset 0 0 0 1px #22d3ee55" }}>
-          🎉 Board cleared! +10 coins
+    <div className={`relative overflow-hidden rounded-3xl bg-white shadow-lg transition-all duration-500 ${mastered ? "ring-4 ring-emerald-400 shadow-emerald-200" : "ring-1 ring-slate-100"}`}>
+      {mastered && (
+        <div className="absolute right-2 top-2 z-30 flex h-9 w-9 items-center justify-center rounded-full bg-emerald-500 text-white shadow-md ac-pop">
+          <Check size={20} strokeWidth={3} />
         </div>
       )}
+      <div className="flex items-center justify-center py-4 transition-all duration-500" style={{ background: header }}>
+        <div className="grid h-16 w-28 place-items-center rounded-2xl bg-white text-4xl shadow-inner">{data.emoji}</div>
+        {isPlural && (
+          <span className="absolute right-3 top-3 rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-extrabold text-purple-700 shadow">PLURAL ⚡</span>
+        )}
+      </div>
+      <div className="px-3 pb-3 pt-3">
+        <p key={phrase} className={`ac-fade min-h-12 text-center text-lg font-extrabold leading-tight ${isPlural ? "text-purple-700" : "text-slate-800"}`}>{phrase}</p>
+        <div className="mt-1 min-h-7 text-center">
+          {showMeaning ? (
+            <p className="ac-fade rounded-xl bg-slate-100 px-2 py-1 text-sm font-bold text-slate-700">{data.vi}</p>
+          ) : <span className="text-sm text-slate-300">• • •</span>}
+        </div>
+        <div className="mt-2 grid grid-cols-2 gap-1.5">
+          <button onClick={() => setShowMeaning((v) => !v)}
+            className="flex items-center justify-center gap-1 rounded-2xl bg-slate-100 py-2 text-slate-600 transition active:scale-95 hover:bg-slate-200">
+            <span className="text-[11px] font-bold">{showMeaning ? "Hide" : "Meaning"}</span>
+          </button>
+          <button onClick={() => setIsPlural((v) => !v)}
+            className={`flex items-center justify-center gap-1 rounded-2xl py-2 transition active:scale-95 ${isPlural ? "bg-purple-500 text-white" : "bg-orange-100 text-orange-600 hover:bg-orange-200"}`}>
+            <span className="text-[11px] font-bold">Form ⚡</span>
+          </button>
+        </div>
+        <div className="mt-1.5 grid grid-cols-2 gap-1.5">
+          <button onClick={() => speak(phrase)}
+            className="flex items-center justify-center gap-1 rounded-2xl bg-cyan-100 py-2 text-cyan-700 transition active:scale-95 hover:bg-cyan-200">
+            <Volume2 size={14} /><span className="text-[11px] font-bold">Listen</span>
+          </button>
+          <button onClick={() => { const u = new SpeechSynthesisUtterance(phrase); u.lang="en-US"; u.rate=0.55; window.speechSynthesis?.cancel(); window.speechSynthesis?.speak(u); }}
+            className="flex items-center justify-center gap-1 rounded-2xl bg-amber-100 py-2 text-amber-700 transition active:scale-95 hover:bg-amber-200">
+            <Volume2 size={14} /><span className="text-[11px] font-bold">Slow</span>
+          </button>
+        </div>
+        <button onClick={() => mastered ? onNotSure(data.id) : onMaster(data.id)}
+          className={`mt-2 w-full rounded-2xl py-2 text-xs font-extrabold text-white transition active:scale-95 ${mastered ? "bg-slate-400" : "bg-gradient-to-r from-emerald-500 to-cyan-500"}`}>
+          {mastered ? "Not sure" : "Mastered 🎉"}
+        </button>
+      </div>
     </div>
   );
 }
 
-function TechActionMic({ addCoins }) {
-  const [idx, setIdx] = useState(0);
-  const [listening, setListening] = useState(false);
-  const [result, setResult] = useState(null); // 'ok'|'no'
-  const [heard, setHeard] = useState("");
-  const phrase = TECH_ACTIONS[idx];
-  const awarded = useRef(new Set());
-
-  function start() {
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SR) { setResult("no"); setHeard("(Speech not supported in this browser)"); return; }
-    const rec = new SR();
-    rec.lang = "en-US"; rec.interimResults = false; rec.maxAlternatives = 3;
-    rec.onresult = (e) => {
-      const txt = Array.from(e.results[0]).map((r) => r.transcript.toLowerCase()).join(" | ");
-      setHeard(txt);
-      const norm = (s) => s.toLowerCase().replace(/[^a-z ]/g, "").replace(/\s+/g, " ").trim();
-      const target = norm(phrase);
-      const ok = txt.split(" | ").some((alt) => norm(alt).includes(target));
-      setResult(ok ? "ok" : "no");
-      if (ok && !awarded.current.has(idx)) { awarded.current.add(idx); addCoins?.(2); }
-    };
-    rec.onerror = () => { setResult("no"); };
-    rec.onend = () => setListening(false);
-    setHeard(""); setResult(null); setListening(true);
-    try { rec.start(); } catch { setListening(false); }
+function GadgetFlashcardGrid({ addCoins }) {
+  const [mastered, setMastered] = useState(() => new Set());
+  const [hiding, setHiding] = useState(() => new Set());
+  function master(id) {
+    if (mastered.has(id)) return;
+    setHiding((p) => new Set(p).add(id));
+    setMastered((prev) => {
+      const n = new Set(prev); n.add(id); addCoins?.(2);
+      if (n.size === GADGETS.length) setTimeout(() => { try { confetti({ particleCount: 180, spread: 90, origin: { y: 0.6 } }); } catch {} }, 350);
+      return n;
+    });
+    setTimeout(() => setHiding((p) => { const n = new Set(p); n.delete(id); return n; }), 400);
   }
-  function next() { setResult(null); setHeard(""); setIdx((i) => (i + 1) % TECH_ACTIONS.length); }
-
+  function unMaster(id) { setMastered((p) => { const n = new Set(p); n.delete(id); return n; }); }
   return (
-    <div className="rounded-3xl p-4 gx-glass" style={{ boxShadow: "0 0 18px #22d3ee44, inset 0 0 0 1px #22d3ee55" }}>
-      <p className="text-[11px] font-extrabold uppercase tracking-widest text-cyan-300">Lesson 5 · Tech Actions</p>
-      <p className="mt-1 text-xs font-bold text-indigo-200">Press the mic and say the full phrase.</p>
-      <div className="mt-3 rounded-2xl bg-white/5 p-4 text-center ring-1 ring-white/10">
-        <p className="text-xl font-black text-white">"{phrase}"</p>
+    <>
+      <div className="mb-3 rounded-3xl bg-white p-3 shadow ring-1 ring-slate-100">
+        <div className="flex items-center justify-between">
+          <p className="text-sm font-extrabold text-slate-800">Vocabulary progress</p>
+          <span className="rounded-full bg-indigo-600 px-2.5 py-0.5 text-xs font-extrabold text-white">{mastered.size}/{GADGETS.length} mastered</span>
+        </div>
+        <div className="mt-2 h-3 w-full overflow-hidden rounded-full bg-slate-100">
+          <div className="h-full rounded-full transition-all duration-500" style={{ width: `${(mastered.size/GADGETS.length)*100}%`, background: "linear-gradient(90deg,#06b6d4,#8b5cf6)" }} />
+        </div>
       </div>
-      <div className="mt-3 flex items-center justify-center gap-3">
-        <button onClick={start} disabled={listening}
-          className="flex items-center gap-2 rounded-full px-4 py-2 text-sm font-black text-white shadow-lg disabled:opacity-60"
-          style={{ background: "linear-gradient(135deg,#ec4899,#8b5cf6)", boxShadow: "0 0 18px #ec489966" }}>
-          <Mic size={16} /> {listening ? "Listening…" : "Speak"}
-        </button>
-        <button onClick={() => speak(phrase)}
-          className="flex items-center gap-2 rounded-full bg-white/10 px-3 py-2 text-sm font-black text-cyan-200 ring-1 ring-white/20 hover:bg-white/20">
-          <Volume2 size={14}/> Play My Voice 🎧
-        </button>
-      </div>
-      {heard && (
-        <p className="mt-3 text-center text-xs text-indigo-200">Heard: <span className="font-bold text-white">{heard}</span></p>
-      )}
-      {result && (
-        <div className={`mt-3 rounded-xl p-2 text-center text-sm font-extrabold ${result === "ok" ? "text-emerald-200" : "text-rose-200"}`}
-          style={{ background: result === "ok" ? "rgba(16,185,129,.15)" : "rgba(244,63,94,.15)", boxShadow: result === "ok" ? "0 0 14px #10b98166" : "0 0 14px #f43f5e66" }}>
-          {result === "ok" ? "🌟 Great pronunciation! +2 coins" : "Try again — speak clearly."}
+      {mastered.size === GADGETS.length ? (
+        <div className="ac-fade rounded-3xl bg-white p-8 text-center shadow ring-1 ring-slate-100">
+          <div className="text-6xl">🎉🛰️</div>
+          <p className="mt-3 text-lg font-extrabold text-indigo-700">All gadgets mastered!</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 gap-3">
+          {GADGETS.filter((v) => !mastered.has(v.id) || hiding.has(v.id)).map((v) => (
+            <div key={v.id}
+              className={hiding.has(v.id) ? "pointer-events-none scale-90 opacity-0" : ""}
+              style={hiding.has(v.id) ? { transition: "opacity 400ms ease, transform 400ms ease" } : undefined}>
+              <GadgetFlashcard data={v} mastered={mastered.has(v.id)} onMaster={master} onNotSure={unMaster} />
+            </div>
+          ))}
         </div>
       )}
-      <div className="mt-4 flex items-center justify-between text-xs text-indigo-200">
-        <span>{idx + 1} / {TECH_ACTIONS.length}</span>
-        <button onClick={next} className="rounded-full bg-white/10 px-3 py-1 font-black text-white ring-1 ring-white/20 hover:bg-white/20">Next ▶</button>
+    </>
+  );
+}
+
+// ===== Lesson 5: Tech Actions speaking with 5-star scoring (+10 coins) =====
+const TECH_ACTIONS = [
+  { text: "upload a photo",       emoji: "📤" },
+  { text: "text a friend",        emoji: "💬" },
+  { text: "stream a video",       emoji: "📺" },
+  { text: "download a song",      emoji: "⬇️" },
+  { text: "charge a phone",       emoji: "🔋" },
+  { text: "log in",               emoji: "🔐" },
+  { text: "print a document",     emoji: "🖨️" },
+  { text: "search the internet",  emoji: "🌐" },
+];
+
+function scoreSaid(target, said) {
+  const norm = (s) => s.toLowerCase().replace(/[^a-z\s]/g, "").replace(/\s+/g, " ").trim();
+  const t = norm(target).split(" ").filter(Boolean);
+  const s = norm(said).split(" ").filter(Boolean);
+  const matchedTarget = t.map((w) => s.includes(w));
+  const hits = matchedTarget.filter(Boolean).length;
+  const pct = t.length ? Math.round((hits / t.length) * 100) : 0;
+  return { pct, matchedTarget };
+}
+
+function TechPhraseSpeaking({ addCoins }) {
+  const [idx, setIdx] = useState(0);
+  const [phase, setPhase] = useState("idle");
+  const [transcript, setTranscript] = useState("");
+  const [audioUrl, setAudioUrl] = useState(null);
+  const [result, setResult] = useState(null);
+  const recRef = useRef(null);
+  const mrRef = useRef(null);
+  const streamRef = useRef(null);
+  const chunksRef = useRef([]);
+  const finalRef = useRef("");
+  const playRef = useRef(null);
+  const ph = TECH_ACTIONS[idx];
+
+  useEffect(() => () => {
+    try { recRef.current?.stop(); } catch {}
+    try { mrRef.current?.state !== "inactive" && mrRef.current?.stop(); } catch {}
+    streamRef.current?.getTracks().forEach((t) => t.stop());
+    if (audioUrl) URL.revokeObjectURL(audioUrl);
+  }, []);
+
+  async function startRec() {
+    setTranscript(""); setResult(null); finalRef.current = "";
+    if (audioUrl) { URL.revokeObjectURL(audioUrl); setAudioUrl(null); }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      streamRef.current = stream;
+      const mime = ["audio/webm", "audio/mp4"].find((t) => MediaRecorder.isTypeSupported(t)) || "";
+      const rec = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream);
+      chunksRef.current = [];
+      rec.ondataavailable = (e) => { if (e.data?.size) chunksRef.current.push(e.data); };
+      rec.onstop = () => {
+        const blob = new Blob(chunksRef.current, { type: rec.mimeType || "audio/webm" });
+        if (blob.size > 0) setAudioUrl(URL.createObjectURL(blob));
+        stream.getTracks().forEach((t) => t.stop());
+      };
+      rec.start();
+      mrRef.current = rec;
+    } catch { alert("Please allow microphone access 🎤"); return; }
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SR) {
+      const r = new SR(); r.lang = "en-US"; r.continuous = true; r.interimResults = true;
+      r.onresult = (ev) => {
+        let interim = "";
+        for (let i = ev.resultIndex; i < ev.results.length; i++) {
+          const res = ev.results[i];
+          if (res.isFinal) finalRef.current += " " + res[0].transcript;
+          else interim += res[0].transcript;
+        }
+        setTranscript((finalRef.current + " " + interim).trim());
+      };
+      try { r.start(); recRef.current = r; } catch {}
+    }
+    setPhase("recording");
+  }
+  function stopRec() {
+    try { recRef.current?.stop(); } catch {}
+    try { mrRef.current?.stop(); } catch {}
+    setTimeout(() => {
+      const said = (finalRef.current || transcript || "").trim();
+      const { pct, matchedTarget } = scoreSaid(ph.text, said);
+      let stars = 1;
+      if (pct > 85) stars = 5; else if (pct >= 50) stars = 3;
+      setResult({ pct, stars, matchedTarget, said });
+      if (stars === 5) { addCoins?.(10); try { confetti({ particleCount: 140, spread: 90, origin: { y: 0.6 } }); } catch {} }
+      setPhase("scored");
+    }, 350);
+  }
+  function next() { if (audioUrl) URL.revokeObjectURL(audioUrl); setAudioUrl(null); setResult(null); setTranscript(""); finalRef.current=""; setPhase("idle"); setIdx((i) => (i + 1) % TECH_ACTIONS.length); }
+  function retry() { if (audioUrl) URL.revokeObjectURL(audioUrl); setAudioUrl(null); setResult(null); setTranscript(""); finalRef.current=""; setPhase("idle"); }
+  function playMyVoice() { if (!audioUrl) return; if (!playRef.current) playRef.current = new Audio(audioUrl); else playRef.current.src = audioUrl; playRef.current.currentTime = 0; playRef.current.play().catch(()=>{}); }
+
+  const targetWords = ph.text.split(/\s+/);
+  return (
+    <div className="ac-fade">
+      <div className="mb-3 flex items-center justify-center gap-1.5">
+        {TECH_ACTIONS.map((_, i) => (
+          <span key={i} className="h-2.5 rounded-full transition-all" style={{ width: i===idx?24:8, backgroundColor: i===idx?"#a78bfa":"#cbd5e1" }} />
+        ))}
+      </div>
+      <div className="rounded-3xl bg-white p-6 shadow-xl ring-1 ring-slate-100">
+        <div className="flex flex-col items-center">
+          <div className="grid h-24 w-24 place-items-center rounded-3xl bg-slate-50 text-6xl shadow-inner">{ph.emoji}</div>
+          <p className="mt-4 text-center text-xs font-extrabold uppercase tracking-wide text-slate-400">Say the action</p>
+          <p className="mt-1 text-center text-2xl font-black text-indigo-700">"{ph.text}"</p>
+          <button onClick={() => speak(ph.text)} className="mt-3 flex items-center gap-1.5 rounded-full bg-indigo-700 px-4 py-1.5 text-sm font-extrabold text-white shadow active:scale-95">
+            <Volume2 size={16} /> Hear it
+          </button>
+        </div>
+        <div className="mt-6 flex flex-col items-center">
+          {phase === "idle" && (
+            <>
+              <button onClick={startRec} className="grid h-16 w-16 place-items-center rounded-full text-white shadow-xl animate-bounce active:scale-95"
+                style={{ background: "linear-gradient(135deg,#ec4899,#8b5cf6)" }} aria-label="Record">
+                <Mic size={28} />
+              </button>
+              <p className="mt-2 text-sm font-extrabold text-indigo-700">Tap & say the phrase!</p>
+            </>
+          )}
+          {phase === "recording" && (
+            <>
+              <div className="flex h-20 items-center gap-1.5 rounded-3xl bg-pink-50 px-6 ring-2 ring-pink-200">
+                {[0,1,2,3,4,5,6].map((b) => (
+                  <span key={b} className="w-1.5 rounded-full" style={{ height: 10 + ((b*7+idx*3)%30), backgroundColor: "#ec4899", animation: `gr-eq .9s ${b*0.08}s ease-in-out infinite alternate` }} />
+                ))}
+              </div>
+              <button onClick={stopRec} className="mt-4 rounded-full bg-slate-900 px-5 py-2 text-sm font-extrabold text-white shadow active:scale-95">⏹ Stop</button>
+              {transcript && <p className="mt-3 text-center text-sm italic text-slate-500">"{transcript}"</p>}
+            </>
+          )}
+          {phase === "scored" && result && (
+            <div className="w-full">
+              <div className="flex justify-center gap-1 text-3xl">
+                {[1,2,3,4,5].map((s) => <span key={s} style={{ color: s <= result.stars ? "#F5B301" : "#e2e8f0" }}>★</span>)}
+              </div>
+              <p className="mt-2 text-center text-lg font-black" style={{ color: result.stars === 5 ? "#16a34a" : result.stars === 3 ? "#004088" : "#E81820" }}>
+                {result.stars === 5 ? "Perfect! +10 coins 🎉" : result.stars === 3 ? "Good try! Listen and repeat 👂" : "Try again! 💪"}
+              </p>
+              <div className="mt-3 rounded-2xl bg-slate-50 p-3 text-center">
+                <p className="mb-1 text-[11px] font-extrabold uppercase text-slate-400">Target</p>
+                <p className="text-lg font-black">
+                  {targetWords.map((w, i) => <span key={i} style={{ color: result.matchedTarget[i] ? "#16a34a" : "#E81820" }}>{w} </span>)}
+                </p>
+                <p className="mt-2 text-[11px] font-extrabold uppercase text-slate-400">You said</p>
+                <p className="text-sm italic text-slate-600">"{result.said || "—"}"</p>
+                <p className="mt-2 text-xs font-bold text-slate-500">Match: {result.pct}%</p>
+              </div>
+              <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+                {audioUrl && <button onClick={playMyVoice} className="rounded-full bg-white px-4 py-2 text-sm font-extrabold text-indigo-700 shadow ring-1 ring-slate-200">🎧 Play My Voice</button>}
+                <button onClick={retry} className="rounded-full bg-pink-500 px-4 py-2 text-sm font-extrabold text-white shadow">Retry</button>
+                <button onClick={next} className="rounded-full bg-indigo-700 px-4 py-2 text-sm font-extrabold text-white shadow">Next phrase →</button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -246,10 +350,10 @@ export function VocabularyQuestU2({ onBack, addCoins }) {
       <BackBar onBack={onBack} />
       <div className="mb-3 rounded-3xl p-4 text-center gx-glass" style={{ boxShadow: "0 0 18px #f59e0b44" }}>
         <p className="text-[11px] font-extrabold uppercase tracking-widest text-amber-300">Planet 1 · Vocabulary Orbit</p>
-        <p className="text-xl font-black text-white">🪐 Gadget Galaxy</p>
+        <p className="text-xl font-black text-white">📚 Gadget Galaxy</p>
       </div>
       <div className="mb-3 grid grid-cols-2 gap-2">
-        {[{k:"l1",t:"Lesson 1 · Gadgets"},{k:"l5",t:"Lesson 5 · Actions"}].map((x) => (
+        {[{k:"l1",t:"Lesson 1 · Flashcards"},{k:"l5",t:"Lesson 5 · Speaking"}].map((x) => (
           <button key={x.k} onClick={() => setTab(x.k)}
             className={`rounded-full px-3 py-2 text-xs font-black transition ${tab===x.k ? "text-slate-900" : "text-white"}`}
             style={tab===x.k ? { background: "linear-gradient(135deg,#67e8f9,#a78bfa)", boxShadow: "0 0 14px #a78bfa88" } : { background: "rgba(255,255,255,.08)", boxShadow: "inset 0 0 0 1px rgba(255,255,255,.18)" }}>
@@ -257,7 +361,7 @@ export function VocabularyQuestU2({ onBack, addCoins }) {
           </button>
         ))}
       </div>
-      {tab === "l1" ? <QuantumMemoryMatch addCoins={addCoins} /> : <TechActionMic addCoins={addCoins} />}
+      {tab === "l1" ? <GadgetFlashcardGrid addCoins={addCoins} /> : <TechPhraseSpeaking addCoins={addCoins} />}
     </div>
   );
 }
@@ -554,210 +658,237 @@ export function ReadingAdventureU2({ onBack, addCoins }) {
 }
 
 // =================================================================
-// PLANET 5 — Cosmic Word Hunter (oi/oy phonics)
+// PLANET 5 — Supernova Quiz Arena (Unit 2)
+// Mode A: Phonics Rocket (oi / oy) · Mode B: Alien Trivia Quest
 // =================================================================
-const HUNTER_WORDS = ["COIN", "SOIL", "POINT", "BOY", "TOY", "JOY"];
-const GRID_SIZE = 10;
-function buildGrid() {
-  // Try multiple times to place all words; fall back to random fill.
-  for (let attempt = 0; attempt < 50; attempt++) {
-    const grid = Array.from({ length: GRID_SIZE }, () => Array(GRID_SIZE).fill(null));
-    const placed = [];
-    const dirs = [
-      [0, 1], [1, 0], [1, 1], [-1, 1],
-    ];
-    let ok = true;
-    for (const w of HUNTER_WORDS) {
-      let done = false;
-      for (let tries = 0; tries < 80 && !done; tries++) {
-        const [dr, dc] = dirs[Math.floor(Math.random() * dirs.length)];
-        const r0 = Math.floor(Math.random() * GRID_SIZE);
-        const c0 = Math.floor(Math.random() * GRID_SIZE);
-        const r1 = r0 + dr * (w.length - 1);
-        const c1 = c0 + dc * (w.length - 1);
-        if (r1 < 0 || r1 >= GRID_SIZE || c1 < 0 || c1 >= GRID_SIZE) continue;
-        let fits = true;
-        const cells = [];
-        for (let i = 0; i < w.length; i++) {
-          const r = r0 + dr * i, c = c0 + dc * i;
-          if (grid[r][c] && grid[r][c] !== w[i]) { fits = false; break; }
-          cells.push([r, c]);
-        }
-        if (!fits) continue;
-        cells.forEach(([r, c], i) => { grid[r][c] = w[i]; });
-        placed.push({ word: w, cells });
-        done = true;
-      }
-      if (!done) { ok = false; break; }
-    }
-    if (!ok) continue;
-    // fill blanks
-    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    for (let r = 0; r < GRID_SIZE; r++) for (let c = 0; c < GRID_SIZE; c++) {
-      if (!grid[r][c]) grid[r][c] = letters[Math.floor(Math.random() * 26)];
-    }
-    return { grid, placed };
+const PHONICS_ITEMS = [
+  { puzzle: "c _ _ n",  word: "coin",  sound: "oi" },
+  { puzzle: "s _ _ l",  word: "soil",  sound: "oi" },
+  { puzzle: "p _ _ nt", word: "point", sound: "oi" },
+  { puzzle: "b _ _",    word: "boy",   sound: "oy" },
+  { puzzle: "t _ _",    word: "toy",   sound: "oy" },
+  { puzzle: "j _ _",    word: "joy",   sound: "oy" },
+];
+function PhonicsRocket({ addCoins }) {
+  const [queue, setQueue] = useState(() => shuffle(PHONICS_ITEMS));
+  const [pos, setPos] = useState(0);
+  const [score, setScore] = useState(0);
+  const [flash, setFlash] = useState(null); // {ok, target}
+  const [done, setDone] = useState(false);
+  const cur = queue[pos];
+  function pick(sound) {
+    if (flash || done) return;
+    const ok = sound === cur.sound;
+    setFlash({ ok, target: sound });
+    if (ok) { setScore((s) => s + 1); addCoins?.(2); }
+    setTimeout(() => {
+      setFlash(null);
+      if (pos + 1 >= queue.length) {
+        setDone(true);
+        try { confetti({ particleCount: 130, spread: 80, origin: { y: 0.6 } }); } catch {}
+      } else setPos((p) => p + 1);
+    }, 700);
   }
-  // fallback (shouldn't happen)
-  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  const grid = Array.from({ length: GRID_SIZE }, () => Array.from({ length: GRID_SIZE }, () => letters[Math.floor(Math.random() * 26)]));
-  return { grid, placed: [] };
-}
-function lineCells(a, b) {
-  const dr = Math.sign(b[0] - a[0]), dc = Math.sign(b[1] - a[1]);
-  const len = Math.max(Math.abs(b[0] - a[0]), Math.abs(b[1] - a[1])) + 1;
-  // must be straight (horizontal, vertical, or 45° diag)
-  if (a[0] !== b[0] && a[1] !== b[1] && Math.abs(b[0] - a[0]) !== Math.abs(b[1] - a[1])) return null;
-  const cells = [];
-  for (let i = 0; i < len; i++) cells.push([a[0] + dr * i, a[1] + dc * i]);
-  return cells;
-}
-function playChime() {
-  try {
-    const AC = window.AudioContext || window.webkitAudioContext;
-    if (!AC) return;
-    const ctx = new AC();
-    const notes = [880, 1175, 1568];
-    notes.forEach((f, i) => {
-      const o = ctx.createOscillator(); const g = ctx.createGain();
-      o.type = "triangle"; o.frequency.value = f;
-      const t = ctx.currentTime + i * 0.08;
-      g.gain.setValueAtTime(0.0001, t);
-      g.gain.exponentialRampToValueAtTime(0.25, t + 0.01);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.25);
-      o.connect(g).connect(ctx.destination); o.start(t); o.stop(t + 0.3);
-    });
-    setTimeout(() => { try { ctx.close(); } catch {} }, 700);
-  } catch {}
-}
-
-export function WordHunterArena({ onBack, addCoins }) {
-  const [{ grid, placed }, setBoard] = useState(() => buildGrid());
-  const [start, setStart] = useState(null);
-  const [hover, setHover] = useState(null);
-  const [foundWords, setFoundWords] = useState(new Set());
-  const [foundCells, setFoundCells] = useState(() => new Set()); // "r,c"
-  const [popup, setPopup] = useState(null);
-  const awarded = useRef(false);
-
-  function cellKey(r, c) { return `${r},${c}`; }
-  function tap(r, c) {
-    if (!start) { setStart([r, c]); setHover([r, c]); return; }
-    const cells = lineCells(start, [r, c]);
-    if (!cells) { setStart([r, c]); setHover([r, c]); return; }
-    const word = cells.map(([rr, cc]) => grid[rr][cc]).join("");
-    const reversed = word.split("").reverse().join("");
-    const match = HUNTER_WORDS.find((w) => (w === word || w === reversed) && !foundWords.has(w));
-    if (match) {
-      const ns = new Set(foundWords); ns.add(match); setFoundWords(ns);
-      const nfc = new Set(foundCells); cells.forEach(([rr, cc]) => nfc.add(cellKey(rr, cc))); setFoundCells(nfc);
-      playChime();
-      setPopup({ word: match, sound: match.includes("OY") ? "/oy/" : "/oi/" });
-      setTimeout(() => setPopup(null), 1400);
-      if (ns.size === HUNTER_WORDS.length && !awarded.current) {
-        awarded.current = true; addCoins?.(30);
-        try { confetti({ particleCount: 200, spread: 100, startVelocity: 60, origin: { y: 0.6 } }); } catch {}
-      }
-    }
-    setStart(null); setHover(null);
-  }
-  function reset() {
-    setBoard(buildGrid()); setStart(null); setHover(null);
-    setFoundWords(new Set()); setFoundCells(new Set()); awarded.current = false;
-  }
-  const previewCells = useMemo(() => {
-    if (!start || !hover) return null;
-    return lineCells(start, hover);
-  }, [start, hover]);
-  const previewSet = new Set((previewCells || []).map(([r, c]) => cellKey(r, c)));
-  const allFound = foundWords.size === HUNTER_WORDS.length;
-
+  function reset() { setQueue(shuffle(PHONICS_ITEMS)); setPos(0); setScore(0); setDone(false); setFlash(null); }
   return (
-    <div className="ac-fade">
-      <BackBar onBack={onBack} color="#34d399" />
-      <div className="mb-3 rounded-3xl p-4 text-center gx-glass" style={{ boxShadow: "0 0 18px #34d39966" }}>
-        <p className="text-[11px] font-extrabold uppercase tracking-widest text-emerald-300">Planet 5 · Supernova Quiz Arena</p>
-        <p className="text-xl font-black text-white">🔭 Cosmic Word Hunter</p>
-        <p className="text-[11px] font-bold text-indigo-200">Find the hidden <b>oi</b> / <b>oy</b> phonics words.</p>
+    <div>
+      <div className="mb-3 flex items-center justify-between text-xs font-bold text-indigo-200">
+        <span>Word {Math.min(pos+1, queue.length)} / {queue.length}</span>
+        <span>Correct: <b className="text-white">{score}</b></span>
+        <button onClick={reset} className="rounded-full bg-white/10 px-3 py-1 font-black text-cyan-200 ring-1 ring-white/20">Reset</button>
       </div>
-
-      <div className="rounded-3xl gx-glass p-3">
-        <div className="grid gap-[3px]" style={{ gridTemplateColumns: `repeat(${GRID_SIZE}, minmax(0, 1fr))` }}>
-          {grid.map((row, r) =>
-            row.map((ch, c) => {
-              const k = cellKey(r, c);
-              const isStart = start && start[0] === r && start[1] === c;
-              const isPreview = previewSet.has(k);
-              const isFound = foundCells.has(k);
+      {!done ? (
+        <>
+          <div className="rounded-3xl gx-glass p-5 text-center" style={{ boxShadow: "0 0 18px #22d3ee44" }}>
+            <p className="text-[11px] font-extrabold uppercase tracking-widest text-cyan-300">Fill the missing phonics</p>
+            <p className="mt-2 text-4xl font-black tracking-widest text-white">{cur.puzzle}</p>
+            <p className="mt-1 text-xs font-bold text-indigo-200">Tap the rocket that matches the missing sound.</p>
+          </div>
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            {[
+              { id: "oi", grad: "linear-gradient(135deg,#06b6d4,#22d3ee)", glow: "#22d3ee" },
+              { id: "oy", grad: "linear-gradient(135deg,#a78bfa,#ec4899)", glow: "#ec4899" },
+            ].map((r) => {
+              const showRight = flash && r.id === cur.sound;
+              const showWrong = flash && r.id === flash.target && !flash.ok;
               return (
-                <button
-                  key={k}
-                  onClick={() => tap(r, c)}
-                  onMouseEnter={() => start && setHover([r, c])}
-                  className="aspect-square select-none rounded-md text-[11px] font-black sm:text-xs"
-                  style={{
-                    color: isFound ? "#0f172a" : "#e2e8f0",
-                    background: isFound
-                      ? "linear-gradient(135deg,#fde047,#facc15)"
-                      : isStart
-                        ? "linear-gradient(135deg,#67e8f9,#22d3ee)"
-                        : isPreview
-                          ? "rgba(167,139,250,.45)"
-                          : "rgba(255,255,255,.06)",
-                    boxShadow: isFound
-                      ? "0 0 10px #fde047, inset 0 0 0 1px #ca8a04"
-                      : isStart
-                        ? "0 0 10px #22d3ee, inset 0 0 0 1px #67e8f9"
-                        : "inset 0 0 0 1px rgba(255,255,255,.10)",
-                  }}
-                >
-                  {ch}
+                <button key={r.id} onClick={() => pick(r.id)} disabled={!!flash}
+                  className="relative flex h-40 flex-col items-center justify-end rounded-3xl pb-4 text-white shadow-xl transition active:scale-95"
+                  style={{ background: r.grad, boxShadow: `0 0 18px ${r.glow}88, inset 0 0 0 1px ${r.glow}` }}>
+                  <div className="text-6xl" style={{ filter: `drop-shadow(0 0 10px ${r.glow})` }}>🚀</div>
+                  <div className="mt-1 rounded-full bg-white/20 px-4 py-1 text-lg font-black tracking-widest">-{r.id}-</div>
+                  {showRight && <div className="absolute inset-0 grid place-items-center rounded-3xl bg-emerald-500/35 text-5xl">✓</div>}
+                  {showWrong && <div className="absolute inset-0 grid place-items-center rounded-3xl bg-rose-500/35 text-5xl">✗</div>}
                 </button>
               );
-            })
-          )}
+            })}
+          </div>
+          {flash && <p className="mt-3 text-center text-sm font-black" style={{ color: flash.ok ? "#34d399" : "#fda4af" }}>
+            {flash.ok ? `🎉 ${cur.word} → /${cur.sound}/  +2 coins` : `Almost! It's "${cur.word}" → /${cur.sound}/`}
+          </p>}
+        </>
+      ) : (
+        <div className="rounded-3xl gx-glass p-5 text-center" style={{ boxShadow: "0 0 22px #22d3ee" }}>
+          <p className="text-2xl font-black text-white">🌠 Phonics Mission Complete!</p>
+          <p className="mt-1 text-sm font-bold text-indigo-200">Score: {score}/{queue.length}</p>
+          <button onClick={reset} className="mt-3 rounded-full px-4 py-2 text-sm font-black text-slate-900"
+            style={{ background: "linear-gradient(135deg,#67e8f9,#a78bfa)", boxShadow: "0 0 14px #a78bfa88" }}>Play Again</button>
         </div>
-        <p className="mt-2 text-center text-[10px] text-indigo-300">Tap a start letter, then the end letter of the word.</p>
-      </div>
+      )}
+    </div>
+  );
+}
 
-      <div className="mt-3 rounded-3xl gx-glass p-3">
-        <p className="text-[11px] font-extrabold uppercase tracking-widest text-emerald-300">Hunt list</p>
-        <div className="mt-2 flex flex-wrap gap-2">
-          {HUNTER_WORDS.map((w) => {
-            const f = foundWords.has(w);
+// ===== Mode B: Alien Trivia Quest with lifelines =====
+const TRIVIA_QUESTIONS = [
+  { q: "Which gadget lets you read books on a screen?", choices: ["e-reader", "smartwatch", "portable speaker", "digital camera"], correct: 0 },
+  { q: "What do you call a small computer you can hold?", choices: ["tablet", "headphones", "printer", "campfire"], correct: 0 },
+  { q: "She ___ a song when the Wi-Fi stopped.", choices: ["was downloading", "downloaded", "downloads", "is downloading"], correct: 0 },
+  { q: "They ___ playing video games at 8 p.m.", choices: ["were", "was", "did", "are"], correct: 0 },
+  { q: "Which device plays music out loud?", choices: ["portable speaker", "e-reader", "tablet", "laptop"], correct: 0 },
+  { q: "What ___ you doing when I called?", choices: ["were", "was", "did", "are"], correct: 0 },
+  { q: "Pick the correct past continuous: ", choices: ["I was texting a friend.", "I am text a friend.", "I text a friend.", "I texted a friend yesterday."], correct: 0 },
+  { q: "Which word has the /oy/ sound?", choices: ["joy", "soil", "coin", "point"], correct: 0 },
+];
+function AlienTrivia({ addCoins }) {
+  const [pool] = useState(() => shuffle(TRIVIA_QUESTIONS));
+  const [idx, setIdx] = useState(0);
+  const [pick, setPick] = useState(null);
+  const [killed, setKilled] = useState(new Set()); // indexes killed by 50:50
+  const [fiftyLeft, setFiftyLeft] = useState(1);
+  const [shieldLeft, setShieldLeft] = useState(1);
+  const [shieldArmed, setShieldArmed] = useState(false);
+  const [hearts, setHearts] = useState(3);
+  const [done, setDone] = useState(null); // 'win' | 'lose'
+  const awarded = useRef(false);
+  const q = pool[idx];
+  function choose(i) {
+    if (pick !== null || done) return;
+    setPick(i);
+    const ok = i === q.correct;
+    if (!ok) {
+      if (shieldArmed) { setShieldArmed(false); setTimeout(() => nextQ(true), 1100); return; }
+      setHearts((h) => {
+        const nh = h - 1;
+        if (nh <= 0) setTimeout(() => setDone("lose"), 900);
+        return nh;
+      });
+    }
+    setTimeout(() => nextQ(ok), 1000);
+  }
+  function nextQ(ok) {
+    if (idx + 1 >= pool.length) {
+      if (!awarded.current && hearts > 0) {
+        awarded.current = true;
+        addCoins?.(30);
+        try { confetti({ particleCount: 220, spread: 110, startVelocity: 60, origin: { y: 0.6 } }); } catch {}
+        setDone("win");
+      }
+      return;
+    }
+    setIdx((n) => n + 1); setPick(null); setKilled(new Set());
+  }
+  function useFifty() {
+    if (fiftyLeft <= 0 || pick !== null) return;
+    const wrongs = q.choices.map((_, i) => i).filter((i) => i !== q.correct);
+    const kill = shuffle(wrongs).slice(0, 2);
+    setKilled(new Set(kill));
+    setFiftyLeft((n) => n - 1);
+  }
+  function useShield() {
+    if (shieldLeft <= 0 || shieldArmed || pick !== null) return;
+    setShieldArmed(true); setShieldLeft((n) => n - 1);
+  }
+  function restart() {
+    setIdx(0); setPick(null); setKilled(new Set()); setFiftyLeft(1); setShieldLeft(1);
+    setShieldArmed(false); setHearts(3); setDone(null); awarded.current = false;
+  }
+
+  if (done === "win") return (
+    <div className="rounded-3xl gx-glass p-6 text-center" style={{ boxShadow: "0 0 28px #facc15" }}>
+      <div className="text-5xl">🛸✨👨‍🚀</div>
+      <p className="mt-2 text-2xl font-black text-white">Astronaut Rescued!</p>
+      <p className="mt-1 text-sm font-bold text-indigo-200">+30 coins secured. Mission victory!</p>
+      <button onClick={restart} className="mt-4 rounded-full px-4 py-2 text-sm font-black text-slate-900"
+        style={{ background: "linear-gradient(135deg,#fde047,#facc15)", boxShadow: "0 0 14px #facc15" }}>Play Again</button>
+    </div>
+  );
+  if (done === "lose") return (
+    <div className="rounded-3xl gx-glass p-6 text-center" style={{ boxShadow: "0 0 22px #f43f5e88" }}>
+      <div className="text-5xl">💥</div>
+      <p className="mt-2 text-2xl font-black text-white">Mission Failed</p>
+      <p className="mt-1 text-sm font-bold text-rose-200">The alien fleet won this round. Try again, cadet!</p>
+      <button onClick={restart} className="mt-4 rounded-full bg-white/10 px-4 py-2 text-sm font-black text-white ring-1 ring-white/20">Retry</button>
+    </div>
+  );
+
+  return (
+    <div>
+      <div className="mb-3 flex items-center justify-between text-xs font-bold text-indigo-200">
+        <span>Question {idx+1} / {pool.length}</span>
+        <span>{"❤️".repeat(hearts)}{"🖤".repeat(3-hearts)}</span>
+      </div>
+      <div className="rounded-3xl gx-glass p-4" style={{ boxShadow: "0 0 18px #a78bfa55" }}>
+        <p className="text-[11px] font-extrabold uppercase tracking-widest text-cyan-300">🛸 Alien Trivia Quest</p>
+        <p className="mt-1 text-base font-black text-white">{q.q}</p>
+        <div className="mt-3 grid gap-2">
+          {q.choices.map((c, i) => {
+            const isPick = pick === i;
+            const showRight = pick !== null && i === q.correct;
+            const showWrong = isPick && i !== q.correct;
+            const isKilled = killed.has(i);
             return (
-              <span key={w} className="rounded-full px-3 py-1 text-xs font-black"
+              <button key={i} onClick={() => choose(i)} disabled={isKilled || pick !== null}
+                className="rounded-2xl px-3 py-3 text-left text-sm font-black text-white transition active:scale-95 disabled:opacity-30"
                 style={{
-                  background: f ? "linear-gradient(135deg,#fde047,#facc15)" : "rgba(255,255,255,.08)",
-                  color: f ? "#0f172a" : "#fff",
-                  boxShadow: f ? "0 0 12px #facc15" : "inset 0 0 0 1px rgba(255,255,255,.18)",
-                  textDecoration: f ? "line-through" : "none",
+                  background: showRight ? "linear-gradient(135deg,#10b981,#34d399)"
+                          : showWrong ? "linear-gradient(135deg,#f43f5e,#fb7185)"
+                          : "linear-gradient(135deg,#1e1b4b,#4c1d95)",
+                  boxShadow: isPick ? "0 0 14px #22d3ee88" : "inset 0 0 0 1px #a78bfa55",
+                  textDecoration: isKilled ? "line-through" : "none",
                 }}>
-                {w.toLowerCase()}
-              </span>
+                <span className="mr-2">{String.fromCharCode(65 + i)}.</span>{c}
+              </button>
             );
           })}
         </div>
-        <div className="mt-3 flex items-center justify-between">
-          <button onClick={reset} className="rounded-full bg-white/10 px-3 py-1 text-xs font-black text-white ring-1 ring-white/20">New Grid</button>
-          <span className="text-xs text-indigo-200">Found {foundWords.size}/{HUNTER_WORDS.length}</span>
-        </div>
-        {allFound && (
-          <div className="mt-3 rounded-2xl p-3 text-center text-sm font-black text-slate-900"
-            style={{ background: "linear-gradient(135deg,#fde047,#facc15)", boxShadow: "0 0 22px #facc15" }}>
-            🏅 Master Word Hunter! +30 coins
-          </div>
-        )}
+        {shieldArmed && <p className="mt-3 text-center text-xs font-black text-cyan-200">🛡️ Cosmic Shield armed — one wrong answer will be blocked.</p>}
       </div>
+      <div className="mt-3 grid grid-cols-2 gap-2">
+        <button onClick={useFifty} disabled={fiftyLeft <= 0 || pick !== null}
+          className="rounded-2xl px-3 py-3 text-xs font-black text-white transition active:scale-95 disabled:opacity-40"
+          style={{ background: "linear-gradient(135deg,#f59e0b,#ef4444)", boxShadow: "0 0 14px #f59e0b88" }}>
+          🔫 Laser Beam 50:50 <span className="ml-1 opacity-80">({fiftyLeft})</span>
+        </button>
+        <button onClick={useShield} disabled={shieldLeft <= 0 || shieldArmed || pick !== null}
+          className="rounded-2xl px-3 py-3 text-xs font-black text-white transition active:scale-95 disabled:opacity-40"
+          style={{ background: "linear-gradient(135deg,#06b6d4,#3b82f6)", boxShadow: "0 0 14px #06b6d488" }}>
+          🛡️ Cosmic Shield <span className="ml-1 opacity-80">({shieldLeft})</span>
+        </button>
+      </div>
+    </div>
+  );
+}
 
-      {popup && (
-        <div className="pointer-events-none fixed inset-x-0 top-24 z-50 flex justify-center px-6">
-          <div className="ac-fade rounded-full px-5 py-2 text-sm font-black text-slate-900 shadow-2xl"
-            style={{ background: "linear-gradient(135deg,#fde047,#facc15)", boxShadow: "0 0 20px #facc15" }}>
-            ✨ {popup.word.toLowerCase()} — <span className="font-extrabold">{popup.sound}</span>
-          </div>
-        </div>
-      )}
+export function Planet5ArenaU2({ onBack, addCoins }) {
+  const [mode, setMode] = useState("a"); // 'a' | 'b'
+  return (
+    <div className="ac-fade">
+      <BackBar onBack={onBack} color="#facc15" />
+      <div className="mb-3 rounded-3xl p-4 text-center gx-glass" style={{ boxShadow: "0 0 18px #facc1566" }}>
+        <p className="text-[11px] font-extrabold uppercase tracking-widest text-amber-300">Planet 5 · Supernova Quiz Arena</p>
+        <p className="text-xl font-black text-white">🏆 Choose your challenge</p>
+      </div>
+      <div className="mb-3 grid grid-cols-2 gap-2">
+        {[{k:"a",t:"🚀 Phonics Rocket"},{k:"b",t:"🛸 Alien Trivia"}].map((x) => (
+          <button key={x.k} onClick={() => setMode(x.k)}
+            className={`rounded-full px-3 py-2 text-xs font-black transition ${mode===x.k?"text-slate-900":"text-white"}`}
+            style={mode===x.k ? { background: "linear-gradient(135deg,#fde047,#facc15)", boxShadow: "0 0 14px #facc15" } : { background: "rgba(255,255,255,.08)", boxShadow: "inset 0 0 0 1px rgba(255,255,255,.18)" }}>
+            {x.t}
+          </button>
+        ))}
+      </div>
+      {mode === "a" ? <PhonicsRocket addCoins={addCoins} /> : <AlienTrivia addCoins={addCoins} />}
     </div>
   );
 }
