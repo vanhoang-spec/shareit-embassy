@@ -1833,8 +1833,9 @@ export function CosmicBalloonPop({ onBack, addCoins, unit = 1, level = "level_5"
   const rounds = useMemo(() => {
     const items = (ud.vocabulary?.lesson_1 || []).filter((c) => c.alt && c.alt !== c.word);
     return items.map((it, ri) => {
-      const others = items.filter((_, k) => k !== ri).map((o) => o.alt);
-      const distract = shuffle([...new Set(others)]).slice(0, 3);
+      const otherAlts = shuffle(items.filter((_, k) => k !== ri).map((o) => o.alt));
+      // The unchanged base form is the key trap: the child must APPLY the change, not match the topic.
+      const distract = [...new Set([it.word, ...otherAlts.filter((o) => o !== it.alt && o !== it.word)])].slice(0, 3);
       const options = shuffle([it.alt, ...distract]);
       return { prompt: it.word, answer: it.alt, emoji: it.emoji, options };
     });
