@@ -1169,7 +1169,7 @@ const TRIVIA_QUESTIONS = [
   },
   { q: "Which word has the /oy/ sound?", choices: ["joy", "soil", "coin", "point"], correct: 0 },
 ];
-function AlienTrivia({ addCoins }) {
+function AlienTriviaU2({ addCoins }) {
   const [pool] = useState(() => shuffle(TRIVIA_QUESTIONS));
   const [idx, setIdx] = useState(0);
   const [pick, setPick] = useState(null);
@@ -1369,7 +1369,7 @@ export function Planet5ArenaU2({ onBack, addCoins }) {
           </button>
         ))}
       </div>
-      {mode === "a" ? <PhonicsRocket addCoins={addCoins} /> : <AlienTrivia addCoins={addCoins} />}
+      {mode === "a" ? <PhonicsRocket addCoins={addCoins} /> : <AlienTriviaU2 addCoins={addCoins} />}
     </div>
   );
 }
