@@ -2168,6 +2168,31 @@ export function Planet5ArenaU3({ onBack, addCoins }) {
 // =================================================================
 
 // ---------- PLANET 1 U4: reuses flashcard + speaking shells with unit=4 ----------
+// ---------- PLANET 1: One data-driven Vocabulary screen for ALL units/levels ----------
+export function VocabularyQuestData({ onBack, addCoins, unit = 1, level = "level_5" }) {
+  const [tab, setTab] = useState("l1");
+  const ud = getUnitData(unit, level);
+  return (
+    <div className="ac-fade">
+      <BackBar onBack={onBack} color="#a78bfa" />
+      <div className="mb-3 rounded-3xl p-4 text-center gx-glass" style={{ boxShadow: "0 0 18px #a78bfa66" }}>
+        <p className="text-[11px] font-extrabold uppercase tracking-widest text-violet-300">Planet 1 · Vocabulary Orbit</p>
+        <p className="text-xl font-black text-white">{ud.icon} {ud.title}</p>
+      </div>
+      <div className="mb-3 grid grid-cols-2 gap-2">
+        {[{k:"l1",t:"Lesson 1 · Flashcards"},{k:"l5",t:"Lesson 5 · Speaking"}].map((x) => (
+          <button key={x.k} onClick={() => setTab(x.k)}
+            className={`rounded-full px-3 py-2 text-xs font-black transition ${tab===x.k ? "text-slate-900" : "text-white"}`}
+            style={tab===x.k ? { background: "linear-gradient(135deg,#a78bfa,#ec4899)", boxShadow: "0 0 14px #a78bfa88" } : { background: "rgba(255,255,255,.08)", boxShadow: "inset 0 0 0 1px rgba(255,255,255,.18)" }}>
+            {x.t}
+          </button>
+        ))}
+      </div>
+      {tab === "l1" ? <DailyActionFlashcards addCoins={addCoins} unit={unit} level={level} /> : <DailyPhraseSpeaking addCoins={addCoins} unit={unit} level={level} />}
+    </div>
+  );
+}
+
 export function VocabularyQuestU4({ onBack, addCoins, level = "level_5" }) {
   const [tab, setTab] = useState("l1");
   const ud = getUnitData(4, level);
