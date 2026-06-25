@@ -27,6 +27,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import {
+  CURRICULUM_DATA,
   COSMIC_AVATARS, COSMIC_AVATAR_BY_ID,
   VocabularyQuestU2, RocketFuelMission, AISpeakingWorldU2, ReadingAdventureU2, Planet5ArenaU2,
   VocabularyQuestU3, NebulaBridge, ReadingAdventureU3, Planet5ArenaU3,
