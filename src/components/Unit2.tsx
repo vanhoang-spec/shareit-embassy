@@ -1827,6 +1827,98 @@ export function Planet5ArenaU3({ onBack, addCoins }) {
 // =================================================================
 
 // ---------- PLANET 1 U4: reuses flashcard + speaking shells with unit=4 ----------
+// ---------- PLANET 2: Data-driven grammar game — Cosmic Balloon Pop ----------
+export function CosmicBalloonPop({ onBack, addCoins, unit = 1, level = "level_5" }) {
+  const ud = getUnitData(unit, level);
+  const rounds = useMemo(() => {
+    const items = (ud.vocabulary?.lesson_1 || []).filter((c) => c.alt && c.alt !== c.word);
+    return items.map((it, ri) => {
+      const others = items.filter((_, k) => k !== ri).map((o) => o.alt);
+      const distract = shuffle([...new Set(others)]).slice(0, 3);
+      const options = shuffle([it.alt, ...distract]);
+      return { prompt: it.word, answer: it.alt, emoji: it.emoji, options };
+    });
+  }, [unit, level]); // eslint-disable-line react-hooks/exhaustive-deps
+  const [idx, setIdx] = useState(0);
+  const [pick, setPick] = useState(null);
+  const [flash, setFlash] = useState(null);
+  const [done, setDone] = useState(false);
+  const awarded = useRef(false);
+  if (rounds.length === 0) {
+    return (
+      <div className="ac-fade">
+        <BackBar onBack={onBack} color="#34d399" />
+        <div className="rounded-3xl gx-glass p-6 text-center text-indigo-100">
+          <p className="text-lg font-black text-white">🎈 Cosmic Balloon Pop</p>
+          <p className="mt-2 text-sm">This unit has no word-change pairs yet.</p>
+        </div>
+      </div>
+    );
+  }
+  const cur = rounds[idx];
+  const balloonColors = ["#f472b6", "#34d399", "#60a5fa", "#fbbf24", "#a78bfa"];
+  function pop(opt) {
+    if (pick !== null || done) return;
+    setPick(opt);
+    const ok = opt === cur.answer;
+    setFlash(ok ? "ok" : "bad");
+    setTimeout(() => {
+      setFlash(null); setPick(null);
+      if (!ok) return;
+      if (idx + 1 >= rounds.length) {
+        if (!awarded.current) { awarded.current = true; addCoins?.(15); try { confetti({ particleCount: 180, spread: 100, origin: { y: 0.6 } }); } catch {} }
+        setDone(true);
+      } else setIdx((n) => n + 1);
+    }, 800);
+  }
+  function reset() { setIdx(0); setPick(null); setFlash(null); setDone(false); awarded.current = false; }
+  return (
+    <div className="ac-fade">
+      <BackBar onBack={onBack} color="#34d399" />
+      <div className="mb-3 rounded-3xl p-4 text-center gx-glass" style={{ boxShadow: "0 0 18px #34d39966" }}>
+        <p className="text-[11px] font-extrabold uppercase tracking-widest text-emerald-300">Planet 2 · Grammar Black Hole</p>
+        <p className="text-xl font-black text-white">🎈 Cosmic Balloon Pop</p>
+        <p className="text-[11px] font-bold text-indigo-200">Pop the balloon with the correct {ud.formToggleLabel || "form"}.</p>
+      </div>
+      {!done ? (
+        <>
+          <div className="mb-4 rounded-3xl gx-glass p-5 text-center">
+            <p className="text-xs font-bold uppercase tracking-widest text-emerald-200">Change this word</p>
+            <p className="mt-1 text-3xl font-black text-white">{cur.emoji} {cur.prompt}</p>
+            <p className="mt-2 text-[11px] font-bold text-indigo-300">Balloon {idx + 1} / {rounds.length}</p>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            {cur.options.map((opt, i) => {
+              const isPick = pick === opt;
+              const isAnsRight = flash && opt === cur.answer;
+              const isPickWrong = flash && isPick && opt !== cur.answer;
+              const base = balloonColors[i % balloonColors.length];
+              return (
+                <button key={i} onClick={() => pop(opt)}
+                  className="relative flex h-24 items-center justify-center rounded-full px-3 text-center text-sm font-black text-white transition active:scale-90"
+                  style={{
+                    background: isAnsRight ? "radial-gradient(circle at 35% 30%, #6ee7b7, #059669)"
+                            : isPickWrong ? "radial-gradient(circle at 35% 30%, #fda4af, #e11d48)"
+                            : `radial-gradient(circle at 35% 30%, #ffffffcc, ${base} 62%, ${base})`,
+                    boxShadow: `0 0 16px ${base}88, inset -6px -8px 12px rgba(0,0,0,.25)`,
+                  }}>
+                  {opt}
+                </button>
+              );
+            })}
+          </div>
+        </>
+      ) : (
+        <div className="rounded-3xl gx-glass p-6 text-center">
+          <p className="text-2xl font-black text-white">🎉 All balloons popped!</p>
+          <p className="mt-1 text-sm font-bold text-emerald-200">+15 cosmic coins</p>
+          <button onClick={reset} className="mt-4 rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white ring-1 ring-white/20 hover:bg-white/20">Play again 🔄</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ---------- PLANET 1: One data-driven Vocabulary screen for ALL units/levels ----------
 export function VocabularyQuestData({ onBack, addCoins, unit = 1, level = "level_5" }) {
   const [tab, setTab] = useState("l1");
