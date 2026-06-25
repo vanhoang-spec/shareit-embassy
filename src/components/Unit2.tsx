@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, Mic, Volume2, Check, X, Sparkles, Rocket } from "lucide-react";
 import confetti from "canvas-confetti";
+import { CURRICULUM_DATA, getUnitData } from "./curriculum";
 
 // ===== Shared cosmic avatars (for Profile Center) =====
 export const COSMIC_AVATARS = [
