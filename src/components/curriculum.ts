@@ -2,7 +2,7 @@
 // CURRICULUM_DATA — single source of truth for ALL lesson content.
 // Add or edit lesson content here. Screens read it via getUnitData(unit, level).
 // =================================================================
-export const CURRICULUM_DATA = {
+export const CURRICULUM_DATA: any = {
   level_5: {
     unit_1: {
       title: "Adventure Camp",
@@ -324,7 +324,7 @@ export const CURRICULUM_DATA = {
     },
   },
 };
-export function getUnitData(unit, level = "level_5") {
+export function getUnitData(unit: any, level: string = "level_5"): any {
   const lvl = CURRICULUM_DATA[level];
   if (lvl && lvl[`unit_${unit}`]) return lvl[`unit_${unit}`];
   // Only fall back to level_5 if the requested level itself is unknown.
