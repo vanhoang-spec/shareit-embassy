@@ -1882,7 +1882,8 @@ export function NebulaBridge({ onBack, addCoins }) {
 
 // ---------- PLANET 4 U3: Reading Comet · History of News ----------
 export function ReadingAdventureU3({ onBack, addCoins, unit = 3, level = "level_5", title = "📰 The History of News" }) {
-  const data = getUnitData(unit, level).reading;
+  const ud = getUnitData(unit, level);
+  const data = ud.reading;
   const [answers, setAnswers] = useState({});
   const [done, setDone] = useState(false);
   const awarded = useRef(false);
@@ -1906,7 +1907,7 @@ export function ReadingAdventureU3({ onBack, addCoins, unit = 3, level = "level_
       <BackBar onBack={onBack} color="#22d3ee" />
       <div className="mb-3 rounded-3xl p-4 text-center gx-glass" style={{ boxShadow: "0 0 18px #22d3ee66" }}>
         <p className="text-[11px] font-extrabold uppercase tracking-widest text-cyan-300">Planet 4 · Reading Comet</p>
-        <p className="text-xl font-black text-white">{title}</p>
+        <p className="text-xl font-black text-white">{ud.icon} {ud.title}</p>
       </div>
       <div className="rounded-3xl gx-glass p-4 text-sm leading-relaxed text-indigo-100 whitespace-pre-line">
         {data.text}
@@ -2169,12 +2170,13 @@ export function Planet5ArenaU3({ onBack, addCoins }) {
 // ---------- PLANET 1 U4: reuses flashcard + speaking shells with unit=4 ----------
 export function VocabularyQuestU4({ onBack, addCoins, level = "level_5" }) {
   const [tab, setTab] = useState("l1");
+  const ud = getUnitData(4, level);
   return (
     <div className="ac-fade">
       <BackBar onBack={onBack} color="#a78bfa" />
       <div className="mb-3 rounded-3xl p-4 text-center gx-glass" style={{ boxShadow: "0 0 18px #a78bfa66" }}>
         <p className="text-[11px] font-extrabold uppercase tracking-widest text-violet-300">Planet 1 · Vocabulary Orbit</p>
-        <p className="text-xl font-black text-white">🧜‍♀️ Mythical Creatures Galaxy</p>
+        <p className="text-xl font-black text-white">{ud.icon} {ud.title}</p>
       </div>
       <div className="mb-3 grid grid-cols-2 gap-2">
         {[{k:"l1",t:"Lesson 1 · Flashcards"},{k:"l5",t:"Lesson 5 · Speaking"}].map((x) => (
@@ -2509,12 +2511,13 @@ export function Planet5ArenaU4({ onBack, addCoins }) {
 // ---------- PLANET 1 U5: Cooking vocabulary ----------
 export function VocabularyQuestU5({ onBack, addCoins, level = "level_5" }) {
   const [tab, setTab] = useState("l1");
+  const ud = getUnitData(5, level);
   return (
     <div className="ac-fade">
       <BackBar onBack={onBack} color="#fb923c" />
       <div className="mb-3 rounded-3xl p-4 text-center gx-glass" style={{ boxShadow: "0 0 18px #fb923c66" }}>
         <p className="text-[11px] font-extrabold uppercase tracking-widest text-amber-300">Planet 1 · Vocabulary Orbit</p>
-        <p className="text-xl font-black text-white">🍳 Cosmic Kitchen Pantry</p>
+        <p className="text-xl font-black text-white">{ud.icon} {ud.title}</p>
       </div>
       <div className="mb-3 grid grid-cols-2 gap-2">
         {[{k:"l1",t:"Lesson 1 · Flashcards"},{k:"l5",t:"Lesson 8 · Speaking"}].map((x) => (
