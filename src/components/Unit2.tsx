@@ -1827,6 +1827,98 @@ export function Planet5ArenaU3({ onBack, addCoins }) {
 // =================================================================
 
 // ---------- PLANET 1 U4: reuses flashcard + speaking shells with unit=4 ----------
+// ---------- PLANET 5: Data-driven quiz — Alien Trivia ----------
+export function AlienTrivia({ onBack, addCoins, unit = 1, level = "level_5" }) {
+  const ud = getUnitData(unit, level);
+  const questions = useMemo(() => {
+    const qs = [];
+    const vocab = (ud.vocabulary?.lesson_1 || []).filter((c) => c.vn);
+    shuffle(vocab).slice(0, 4).forEach((it) => {
+      const others = shuffle(vocab.filter((o) => o.vn !== it.vn).map((o) => o.vn)).slice(0, 3);
+      qs.push({ q: `What does '${it.word}' mean?`, emoji: it.emoji || "👾", opts: shuffle([it.vn, ...others]), a: it.vn });
+    });
+    (ud.reading?.questions || []).forEach((rq) => {
+      qs.push({ q: rq.q, emoji: "📖", opts: ["True ✅", "False ❌"], a: rq.a ? "True ✅" : "False ❌" });
+    });
+    return shuffle(qs);
+  }, [unit, level]); // eslint-disable-line react-hooks/exhaustive-deps
+  const [idx, setIdx] = useState(0);
+  const [picked, setPicked] = useState(null);
+  const [score, setScore] = useState(0);
+  const [done, setDone] = useState(false);
+  const awarded = useRef(false);
+  if (questions.length === 0) {
+    return (
+      <div className="ac-fade">
+        <BackBar onBack={onBack} color="#f472b6" />
+        <div className="rounded-3xl gx-glass p-6 text-center text-indigo-100">
+          <p className="text-lg font-black text-white">👾 Alien Trivia</p>
+          <p className="mt-2 text-sm">This unit has no quiz content yet.</p>
+        </div>
+      </div>
+    );
+  }
+  const cur = questions[idx];
+  function choose(opt) {
+    if (picked !== null || done) return;
+    setPicked(opt);
+    const ok = opt === cur.a;
+    if (ok) setScore((s) => s + 1);
+    setTimeout(() => {
+      setPicked(null);
+      if (idx + 1 >= questions.length) {
+        if (!awarded.current) { awarded.current = true; addCoins?.(15); try { confetti({ particleCount: 180, spread: 100, origin: { y: 0.6 } }); } catch {} }
+        setDone(true);
+      } else setIdx((n) => n + 1);
+    }, 900);
+  }
+  function reset() { setIdx(0); setPicked(null); setScore(0); setDone(false); awarded.current = false; }
+  return (
+    <div className="ac-fade">
+      <BackBar onBack={onBack} color="#f472b6" />
+      <div className="mb-3 rounded-3xl p-4 text-center gx-glass" style={{ boxShadow: "0 0 18px #f472b666" }}>
+        <p className="text-[11px] font-extrabold uppercase tracking-widest text-pink-300">Planet 5 · Quiz Arena</p>
+        <p className="text-xl font-black text-white">👾 Alien Trivia</p>
+        <p className="text-[11px] font-bold text-indigo-200">Answer the alien's questions to win cosmic coins!</p>
+      </div>
+      {!done ? (
+        <>
+          <div className="mb-4 rounded-3xl gx-glass p-5 text-center">
+            <p className="text-[11px] font-bold text-indigo-300">Question {idx + 1} / {questions.length}</p>
+            <p className="mt-2 text-lg font-black leading-snug text-white">{cur.emoji} {cur.q}</p>
+          </div>
+          <div className="space-y-2">
+            {cur.opts.map((opt, i) => {
+              const isPick = picked === opt;
+              const isRight = picked !== null && opt === cur.a;
+              const isWrong = isPick && opt !== cur.a;
+              return (
+                <button key={i} onClick={() => choose(opt)}
+                  className="w-full rounded-2xl px-4 py-3 text-left text-sm font-black text-white transition active:scale-95"
+                  style={{
+                    background: isRight ? "linear-gradient(135deg,#10b981,#34d399)"
+                            : isWrong ? "linear-gradient(135deg,#f43f5e,#fb7185)"
+                            : "rgba(255,255,255,.08)",
+                    boxShadow: isPick ? "0 0 14px #f472b688" : "inset 0 0 0 1px rgba(255,255,255,.18)",
+                  }}>
+                  {opt}
+                </button>
+              );
+            })}
+          </div>
+        </>
+      ) : (
+        <div className="rounded-3xl gx-glass p-6 text-center">
+          <p className="text-2xl font-black text-white">🎉 Quiz complete!</p>
+          <p className="mt-1 text-base font-black text-pink-200">Score: {score} / {questions.length}</p>
+          <p className="mt-1 text-sm font-bold text-emerald-200">+15 cosmic coins</p>
+          <button onClick={reset} className="mt-4 rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white ring-1 ring-white/20 hover:bg-white/20">Play again 🔄</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ---------- PLANET 2: Data-driven grammar game — Cosmic Balloon Pop ----------
 export function CosmicBalloonPop({ onBack, addCoins, unit = 1, level = "level_5" }) {
   const ud = getUnitData(unit, level);
