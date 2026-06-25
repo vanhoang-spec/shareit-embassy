@@ -3193,7 +3193,11 @@ function UnitGalaxy({ onEnterUnit, onBackToLevels, selectedLevel = "level_5" }) 
   const [toast, setToast] = useState(null);
   const timer = useRef(null);
   const unlockedSet = LEVEL_UNLOCK_MAP[selectedLevel] || LEVEL_UNLOCK_MAP.level_5;
-  const units = UNITS.map((u) => ({ ...u, unlocked: unlockedSet.has(u.n) }));
+  const lvlData = CURRICULUM_DATA[selectedLevel] || {};
+  const units = UNITS.map((u) => {
+    const d = lvlData[`unit_${u.n}`];
+    return { ...u, title: d?.title || u.title, emoji: d?.icon || u.emoji, unlocked: unlockedSet.has(u.n) };
+  });
   function tap(u) {
     if (u.unlocked) { onEnterUnit(u.n); return; }
     setToast(`Mission locked! Complete earlier units first! ☄️`);
