@@ -35,6 +35,7 @@ import {
   VocabularyQuestU5, QuantumScale, ReadingAdventureU5, Planet5ArenaU5,
   VocabularyQuestU6, EcoBalancer, ReadingAdventureU6, Planet5ArenaU6,
   VocabularyQuestU8, NebulaGateway, ReadingAdventureU8, Planet5ArenaU8,
+  VocabularyQuestData,
   CosmicSpeakingNebula,
 } from "./Unit2";
 
