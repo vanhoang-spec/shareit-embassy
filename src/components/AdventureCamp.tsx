@@ -57,7 +57,7 @@ import {
   Planet5ArenaU8,
   VocabularyQuestData,
   CosmicBalloonPop,
-  AlienTrivia,
+  AlienTriviaArena,
   FutureWillWont,
   getUnitData,
   CosmicSpeakingNebula,
@@ -5157,7 +5157,7 @@ export default function AdventureCamp() {
           {view === "quiz" &&
             ((selectedLevel !== "level_5" || currentUnit === 7) &&
             getUnitData(currentUnit, selectedLevel).quizGameMode === "ALIEN_TRIVIA" ? (
-              <AlienTrivia onBack={back} addCoins={addCoins} unit={currentUnit} level={selectedLevel} />
+              <AlienTriviaArena onBack={back} addCoins={addCoins} unit={currentUnit} level={selectedLevel} />
             ) : currentUnit === 8 ? (
               <Planet5ArenaU8 onBack={back} addCoins={addCoins} />
             ) : currentUnit === 6 ? (
