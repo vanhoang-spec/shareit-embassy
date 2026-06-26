@@ -215,6 +215,53 @@ export const CURRICULUM_DATA: any = {
         ],
       },
     },
+    unit_7: {
+      title: "High-Tech Future",
+      icon: "🤖",
+      formToggleLabel: "Plural Form 👥",
+      grammarGameMode: "FUTURE_WILL_WONT",
+      quizGameMode: "ALIEN_TRIVIA",
+      vocabulary: {
+        lesson_1: [
+          { word: "flying car", alt: "flying cars", vn: "xe bay", emoji: "🚗" },
+          { word: "robot worker", alt: "robot workers", vn: "người máy giúp việc", emoji: "🤖" },
+          { word: "3D printer", alt: "3D printers", vn: "máy in 3D", emoji: "🖨️" },
+          { word: "drone", alt: "drones", vn: "máy bay không người lái", emoji: "🚁" },
+          { word: "hoverboard", alt: "hoverboards", vn: "ván trượt bay", emoji: "🛹" },
+          { word: "VR headset", alt: "VR headsets", vn: "kính thực tế ảo", emoji: "🥽" },
+          { word: "jetpack", alt: "jetpacks", vn: "ba lô phản lực bay", emoji: "🚀" },
+          { word: "electric bike", alt: "electric bikes", vn: "xe đạp điện", emoji: "🚲" },
+        ],
+        lesson_5: ["skyscrapers", "green buildings", "energy", "automatic", "smart homes", "driverless cars", "inventions", "travel"],
+      },
+      grammar: {
+        willWont: [
+          { before: "We", after: "drive flying cars.", answer: "will" },
+          { before: "We", after: "go to work.", answer: "won't" },
+          { before: "Robot workers", after: "do all the work.", answer: "will" },
+          { before: "Drones", after: "deliver pizza to people's homes.", answer: "will" },
+          { before: "We", after: "wear VR headsets when we play computer games.", answer: "will" },
+          { before: "I", after: "ride an electric bike to school.", answer: "will" },
+          { before: "I", after: "take the bus.", answer: "won't" },
+          { before: "We", after: "have to do any chores.", answer: "won't" },
+        ],
+      },
+      ai_speak: [
+        "In the future, I'll ride a hoverboard to school.",
+        "I won't ride a hoverboard because they are scary.",
+        "Robot workers will do everything for us!",
+        "Will we live in houses in the future?",
+        "We'll travel with jetpacks and also with flying cars.",
+      ],
+      reading: {
+        text: "Life in the Future: Life will be very different in 50 years. There will be more people on Earth, so we'll live and work in tall skyscrapers. The skyscrapers will be green buildings with trees and plants everywhere. We'll live in smart homes, so everything will be automatic. Our robot workers will clean our houses, feed our pets, and cook breakfast for us. We won't have to do any chores! Transportation will be different, too. There will be driverless cars, so we won't need to drive. With new inventions like flying cars and jetpacks, people will travel much faster than they do today. Life in the future will be different, and it will be easier!",
+        questions: [
+          { q: "In the future, people will live in tall skyscrapers.", a: true },
+          { q: "People will have to do all their chores themselves.", a: false },
+          { q: "There will be driverless cars, so we won't need to drive.", a: true },
+        ],
+      },
+    },
     unit_8: {
       title: "On Vacation!",
       icon: "🛳️",
