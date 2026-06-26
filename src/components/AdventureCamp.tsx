@@ -5130,7 +5130,7 @@ export default function AdventureCamp() {
             <VocabularyQuestData onBack={back} addCoins={addCoins} unit={currentUnit} level={selectedLevel} />
           )}
           {view === "grammar" &&
-            getUnitData(currentUnit, selectedLevel).grammarGameMode === "ROCKET_BLASTER" ? <RocketSentenceBlaster onBack={back} addCoins={addCoins} unit={currentUnit} level={selectedLevel} /> : getUnitData(currentUnit, selectedLevel).grammarGameMode === "COSMIC_BALLOON_POP"
+            (getUnitData(currentUnit, selectedLevel).grammarGameMode === "COSMIC_BALLOON_POP" ? (
               <CosmicBalloonPop onBack={back} addCoins={addCoins} unit={currentUnit} level={selectedLevel} />
             ) : getUnitData(currentUnit, selectedLevel).grammarGameMode === "FUTURE_WILL_WONT" ? (
               <FutureWillWont onBack={back} addCoins={addCoins} unit={currentUnit} level={selectedLevel} />
