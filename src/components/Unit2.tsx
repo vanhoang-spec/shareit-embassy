@@ -2909,7 +2909,7 @@ export function FutureWillWont({ onBack, addCoins, unit = 1, level = "level_5" }
 
 // ---------- PLANET 5: Data-driven quiz — Alien Trivia ----------
 // Builds questions from the unit's vocabulary (word -> meaning) + reading True/False.
-export function AlienTrivia({ onBack, addCoins, unit = 1, level = "level_5" }) {
+export function AlienTriviaArena({ onBack, addCoins, unit = 1, level = "level_5" }) {
   const ud = getUnitData(unit, level);
   const questions = useMemo(() => {
     const qs = [];
