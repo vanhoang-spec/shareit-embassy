@@ -1169,7 +1169,7 @@ const TRIVIA_QUESTIONS = [
   },
   { q: "Which word has the /oy/ sound?", choices: ["joy", "soil", "coin", "point"], correct: 0 },
 ];
-function AlienTrivia({ addCoins }) {
+function AlienTriviaU2({ addCoins }) {
   const [pool] = useState(() => shuffle(TRIVIA_QUESTIONS));
   const [idx, setIdx] = useState(0);
   const [pick, setPick] = useState(null);
@@ -1369,7 +1369,7 @@ export function Planet5ArenaU2({ onBack, addCoins }) {
           </button>
         ))}
       </div>
-      {mode === "a" ? <PhonicsRocket addCoins={addCoins} /> : <AlienTrivia addCoins={addCoins} />}
+      {mode === "a" ? <PhonicsRocket addCoins={addCoins} /> : <AlienTriviaU2 addCoins={addCoins} />}
     </div>
   );
 }
@@ -2788,128 +2788,9 @@ export function Planet5ArenaU3({ onBack, addCoins }) {
 // =================================================================
 
 // ---------- PLANET 1 U4: reuses flashcard + speaking shells with unit=4 ----------
-// ---------- PLANET 2: Data-driven grammar game — Will or Won't? (future tense) ----------
-// Reads sentences from the unit's grammar.willWont; child picks 'will' or "won't".
-export function FutureWillWont({ onBack, addCoins, unit = 1, level = "level_5" }) {
-  const ud = getUnitData(unit, level);
-  const rounds = useMemo(() => shuffle((ud.grammar?.willWont || []).slice()), [unit, level]); // eslint-disable-line react-hooks/exhaustive-deps
-  const [idx, setIdx] = useState(0);
-  const [pick, setPick] = useState(null);
-  const [score, setScore] = useState(0);
-  const [done, setDone] = useState(false);
-  const awarded = useRef(false);
-
-  if (rounds.length === 0) {
-    return (
-      <div className="ac-fade">
-        <BackBar onBack={onBack} color="#34d399" />
-        <div className="rounded-3xl gx-glass p-6 text-center text-indigo-100">
-          <p className="text-lg font-black text-white">🔮 Will or Won't?</p>
-          <p className="mt-2 text-sm">This unit has no will/won't sentences yet.</p>
-        </div>
-      </div>
-    );
-  }
-
-  const cur = rounds[idx];
-  const options = ["will", "won't"];
-
-  function choose(opt) {
-    if (pick !== null || done) return;
-    setPick(opt);
-    const ok = opt === cur.answer;
-    if (ok) setScore((s) => s + 1);
-    setTimeout(() => {
-      setPick(null);
-      if (idx + 1 >= rounds.length) {
-        if (!awarded.current) {
-          awarded.current = true;
-          addCoins?.(15);
-          try {
-            confetti({ particleCount: 180, spread: 100, origin: { y: 0.6 } });
-          } catch {}
-        }
-        setDone(true);
-      } else setIdx((n) => n + 1);
-    }, 850);
-  }
-  function reset() {
-    setIdx(0);
-    setPick(null);
-    setScore(0);
-    setDone(false);
-    awarded.current = false;
-  }
-
-  return (
-    <div className="ac-fade">
-      <BackBar onBack={onBack} color="#34d399" />
-      <div className="mb-3 rounded-3xl p-4 text-center gx-glass" style={{ boxShadow: "0 0 18px #34d39966" }}>
-        <p className="text-[11px] font-extrabold uppercase tracking-widest text-emerald-300">
-          Planet 2 · Grammar Black Hole
-        </p>
-        <p className="text-xl font-black text-white">🔮 Will or Won't?</p>
-        <p className="text-[11px] font-bold text-indigo-200">Choose the correct word for each future sentence.</p>
-      </div>
-
-      {!done ? (
-        <>
-          <div className="mb-4 rounded-3xl gx-glass p-5 text-center">
-            <p className="text-[11px] font-bold text-indigo-300">
-              Sentence {idx + 1} / {rounds.length}
-            </p>
-            <p className="mt-2 text-lg font-black leading-snug text-white">
-              {cur.before} <span className="mx-1 rounded-md bg-white/15 px-3 py-0.5 text-emerald-200">____</span>{" "}
-              {cur.after}
-            </p>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            {options.map((opt) => {
-              const isPick = pick === opt;
-              const isRight = pick !== null && opt === cur.answer;
-              const isWrong = isPick && opt !== cur.answer;
-              return (
-                <button
-                  key={opt}
-                  onClick={() => choose(opt)}
-                  className="rounded-2xl px-4 py-5 text-center text-lg font-black text-white transition active:scale-95"
-                  style={{
-                    background: isRight
-                      ? "linear-gradient(135deg,#10b981,#34d399)"
-                      : isWrong
-                        ? "linear-gradient(135deg,#f43f5e,#fb7185)"
-                        : "rgba(255,255,255,.08)",
-                    boxShadow: isPick ? "0 0 14px #34d39988" : "inset 0 0 0 1px rgba(255,255,255,.18)",
-                  }}
-                >
-                  {opt}
-                </button>
-              );
-            })}
-          </div>
-        </>
-      ) : (
-        <div className="rounded-3xl gx-glass p-6 text-center">
-          <p className="text-2xl font-black text-white">🎉 Great future talk!</p>
-          <p className="mt-1 text-base font-black text-emerald-200">
-            Score: {score} / {rounds.length}
-          </p>
-          <p className="mt-1 text-sm font-bold text-emerald-200">+15 cosmic coins</p>
-          <button
-            onClick={reset}
-            className="mt-4 rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white ring-1 ring-white/20 hover:bg-white/20"
-          >
-            Play again 🔄
-          </button>
-        </div>
-      )}
-    </div>
-  );
-}
-
 // ---------- PLANET 5: Data-driven quiz — Alien Trivia ----------
 // Builds questions from the unit's vocabulary (word -> meaning) + reading True/False.
-export function AlienTriviaArena({ onBack, addCoins, unit = 1, level = "level_5" }) {
+export function AlienTrivia({ onBack, addCoins, unit = 1, level = "level_5" }) {
   const ud = getUnitData(unit, level);
   const questions = useMemo(() => {
     const qs = [];
