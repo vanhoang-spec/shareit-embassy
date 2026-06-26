@@ -347,6 +347,50 @@ export const CURRICULUM_DATA: any = {
     },
   },
   level_3: {
+    unit_1: {
+      title: "Family",
+      icon: "👪",
+      grammarGameMode: "ROCKET_BLASTER",
+      quizGameMode: "ALIEN_TRIVIA",
+      vocabulary: {
+        lesson_1: [
+          { word: "parents", vn: "bố mẹ / cha mẹ", emoji: "👫" },
+          { word: "uncle", vn: "chú / bác / cậu", emoji: "👨" },
+          { word: "aunt", vn: "cô / dì / bác gái", emoji: "👩" },
+          { word: "cousin", vn: "anh / chị / em họ", emoji: "🧒" },
+          { word: "big brother", vn: "anh trai", emoji: "👦" },
+          { word: "grandparents", vn: "ông bà", emoji: "👴" },
+          { word: "little sister", vn: "em gái", emoji: "👧" },
+        ],
+        lesson_5: ["glasses", "keys", "cell phone", "sandals", "e-reader", "wallet", "comic book"],
+      },
+      grammar: {
+        willWont: [
+          { before: "Whose glasses are these? They're", after: ".", answer: "mine" },
+          { before: "Whose cell phone is this? It's", after: ".", answer: "hers" },
+          { before: "Whose keys are these? They're", after: ".", answer: "his" },
+          { before: "Whose wallet is this? It's", after: ".", answer: "yours" },
+          { before: "Whose sandals are these? They're", after: ".", answer: "ours" },
+          { before: "Whose comic book is this? It's", after: ".", answer: "theirs" },
+        ],
+      },
+      ai_speak: [
+        "Who's he? He's my cousin.",
+        "Who are they? They're my aunt and uncle.",
+        "This is my family. I love my parents and my little sister.",
+        "Whose cell phone is this? It's hers.",
+        "These are my grandparents. They live with us.",
+      ],
+      reading: {
+        text: "Different Families: All families are different. Oliver has a small family. They live in the city. The city is very busy, with many people and cars. Oliver's family likes going shopping and going to the movies. Josie has a big family. They live in the countryside, where there are a lot of plants and animals. Her family enjoys nature. They like swimming in the river and flying kites together. Jenny's family also lives in the countryside. She has a small family. They like catching butterflies and growing vegetables. All families are different, and your family is different, too!",
+        questions: [
+          { q: "Oliver's family lives in the city.", a: true },
+          { q: "Josie has a small family.", a: false },
+          { q: "Jenny's family likes growing vegetables.", a: true },
+        ],
+      },
+    },
+
     unit_3: {
       title: "The Weather",
       icon: "🌦️",
