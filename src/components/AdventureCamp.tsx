@@ -5134,6 +5134,8 @@ export default function AdventureCamp() {
               <CosmicBalloonPop onBack={back} addCoins={addCoins} unit={currentUnit} level={selectedLevel} />
             ) : getUnitData(currentUnit, selectedLevel).grammarGameMode === "FUTURE_WILL_WONT" ? (
               <FutureWillWont onBack={back} addCoins={addCoins} unit={currentUnit} level={selectedLevel} />
+            ) : getUnitData(currentUnit, selectedLevel).grammarGameMode === "ROCKET_BLASTER" ? (
+              <RocketSentenceBlaster onBack={back} addCoins={addCoins} unit={currentUnit} level={selectedLevel} />
             ) : currentUnit === 8 ? (
               <NebulaGateway onBack={back} addCoins={addCoins} />
             ) : currentUnit === 6 ? (
