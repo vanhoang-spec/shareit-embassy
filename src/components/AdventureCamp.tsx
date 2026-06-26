@@ -35,7 +35,7 @@ import {
   VocabularyQuestU5, QuantumScale, ReadingAdventureU5, Planet5ArenaU5,
   VocabularyQuestU6, EcoBalancer, ReadingAdventureU6, Planet5ArenaU6,
   VocabularyQuestU8, NebulaGateway, ReadingAdventureU8, Planet5ArenaU8,
-  VocabularyQuestData, CosmicBalloonPop, AlienTrivia, getUnitData,
+  VocabularyQuestData, CosmicBalloonPop, AlienTriviaArena, FutureWillWont, getUnitData,
   CosmicSpeakingNebula,
 } from "./Unit2";
 
@@ -3186,7 +3186,7 @@ const UNITS = [
 ];
 
 const LEVEL_UNLOCK_MAP = {
-  level_5: new Set([1, 2, 3, 4, 5, 6, 8]),
+  level_5: new Set([1, 2, 3, 4, 5, 6, 7, 8]),
   level_3: new Set([4, 5]),
 };
 
@@ -3766,10 +3766,10 @@ export default function AdventureCamp() {
           )}
 
           {view === "vocab" && <VocabularyQuestData onBack={back} addCoins={addCoins} unit={currentUnit} level={selectedLevel} />}
-          {view === "grammar" && (getUnitData(currentUnit, selectedLevel).grammarGameMode === "COSMIC_BALLOON_POP" ? <CosmicBalloonPop onBack={back} addCoins={addCoins} unit={currentUnit} level={selectedLevel} /> : currentUnit === 8 ? <NebulaGateway onBack={back} addCoins={addCoins} /> : currentUnit === 6 ? <EcoBalancer onBack={back} addCoins={addCoins} /> : currentUnit === 5 ? <QuantumScale onBack={back} addCoins={addCoins} /> : currentUnit === 4 ? <OrbitalAlignment onBack={back} addCoins={addCoins} /> : currentUnit === 3 ? <NebulaBridge onBack={back} addCoins={addCoins} /> : currentUnit === 2 ? <RocketFuelMission onBack={back} addCoins={addCoins} /> : <GrammarLab onBack={back} addCoins={addCoins} />)}
+          {view === "grammar" && (getUnitData(currentUnit, selectedLevel).grammarGameMode === "COSMIC_BALLOON_POP" ? <CosmicBalloonPop onBack={back} addCoins={addCoins} unit={currentUnit} level={selectedLevel} /> : getUnitData(currentUnit, selectedLevel).grammarGameMode === "FUTURE_WILL_WONT" ? <FutureWillWont onBack={back} addCoins={addCoins} unit={currentUnit} level={selectedLevel} /> : currentUnit === 8 ? <NebulaGateway onBack={back} addCoins={addCoins} /> : currentUnit === 6 ? <EcoBalancer onBack={back} addCoins={addCoins} /> : currentUnit === 5 ? <QuantumScale onBack={back} addCoins={addCoins} /> : currentUnit === 4 ? <OrbitalAlignment onBack={back} addCoins={addCoins} /> : currentUnit === 3 ? <NebulaBridge onBack={back} addCoins={addCoins} /> : currentUnit === 2 ? <RocketFuelMission onBack={back} addCoins={addCoins} /> : <GrammarLab onBack={back} addCoins={addCoins} />)}
           {view === "speaking" && <CosmicSpeakingNebula onBack={back} addCoins={addCoins} unit={currentUnit} level={selectedLevel} />}
           {view === "reading" && <ReadingAdventureU3 onBack={back} addCoins={addCoins} unit={currentUnit} level={selectedLevel} />}
-          {view === "quiz" && (selectedLevel !== "level_5" && getUnitData(currentUnit, selectedLevel).quizGameMode === "ALIEN_TRIVIA" ? <AlienTrivia onBack={back} addCoins={addCoins} unit={currentUnit} level={selectedLevel} /> : currentUnit === 8 ? <Planet5ArenaU8 onBack={back} addCoins={addCoins} /> : currentUnit === 6 ? <Planet5ArenaU6 onBack={back} addCoins={addCoins} /> : currentUnit === 5 ? <Planet5ArenaU5 onBack={back} addCoins={addCoins} /> : currentUnit === 4 ? <Planet5ArenaU4 onBack={back} addCoins={addCoins} /> : currentUnit === 3 ? <Planet5ArenaU3 onBack={back} addCoins={addCoins} /> : currentUnit === 2 ? <Planet5ArenaU2 onBack={back} addCoins={addCoins} /> : <GrandUnitQuiz onBack={back} addCoins={addCoins} />)}
+          {view === "quiz" && ((selectedLevel !== "level_5" || currentUnit === 7) && getUnitData(currentUnit, selectedLevel).quizGameMode === "ALIEN_TRIVIA" ? <AlienTriviaArena onBack={back} addCoins={addCoins} unit={currentUnit} level={selectedLevel} /> : currentUnit === 8 ? <Planet5ArenaU8 onBack={back} addCoins={addCoins} /> : currentUnit === 6 ? <Planet5ArenaU6 onBack={back} addCoins={addCoins} /> : currentUnit === 5 ? <Planet5ArenaU5 onBack={back} addCoins={addCoins} /> : currentUnit === 4 ? <Planet5ArenaU4 onBack={back} addCoins={addCoins} /> : currentUnit === 3 ? <Planet5ArenaU3 onBack={back} addCoins={addCoins} /> : currentUnit === 2 ? <Planet5ArenaU2 onBack={back} addCoins={addCoins} /> : <GrandUnitQuiz onBack={back} addCoins={addCoins} />)}
         </main>
 
 
