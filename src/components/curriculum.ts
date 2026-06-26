@@ -2,7 +2,8 @@
 // CURRICULUM_DATA — single source of truth for ALL lesson content.
 // Add or edit lesson content here. Screens read it via getUnitData(unit, level).
 // =================================================================
-export const CURRICULUM_DATA: any = {
+
+export const CURRICULUM_DATA = {
   level_5: {
     unit_1: {
       title: "Adventure Camp",
@@ -12,16 +13,25 @@ export const CURRICULUM_DATA: any = {
       quizGameMode: "FOUR_IN_A_ROW",
       vocabulary: {
         lesson_1: [
-          { word: "build a shelter",    alt: "built a shelter",    vn: "dựng lều trú ẩn",       emoji: "⛺" },
-          { word: "ride a zipline",     alt: "rode a zipline",     vn: "trượt đu dây tự do",    emoji: "⚡" },
-          { word: "sleep in a tent",    alt: "slept in a tent",    vn: "ngủ trong lều",         emoji: "⛺" },
-          { word: "go hiking",          alt: "went hiking",        vn: "đi bộ đường dài",       emoji: "🥾" },
-          { word: "go mountain biking", alt: "went mountain biking", vn: "đi xe đạp địa hình",  emoji: "🚲" },
+          { word: "build a shelter", alt: "built a shelter", vn: "dựng lều trú ẩn", emoji: "⛺" },
+          { word: "ride a zipline", alt: "rode a zipline", vn: "trượt đu dây tự do", emoji: "⚡" },
+          { word: "sleep in a tent", alt: "slept in a tent", vn: "ngủ trong lều", emoji: "⛺" },
+          { word: "go hiking", alt: "went hiking", vn: "đi bộ đường dài", emoji: "🥾" },
+          { word: "go mountain biking", alt: "went mountain biking", vn: "đi xe đạp địa hình", emoji: "🚲" },
           { word: "cook on a campfire", alt: "cooked on a campfire", vn: "nấu ăn bên lửa trại", emoji: "🔥" },
-          { word: "go horseback riding", alt: "went horseback riding", vn: "cưỡi ngựa",          emoji: "🐎" },
-          { word: "go canoeing",        alt: "went canoeing",      vn: "chèo thuyền canoe",     emoji: "🛶" },
+          { word: "go horseback riding", alt: "went horseback riding", vn: "cưỡi ngựa", emoji: "🐎" },
+          { word: "go canoeing", alt: "went canoeing", vn: "chèo thuyền canoe", emoji: "🛶" },
         ],
-        lesson_5: ["jump on a trampoline","go climbing","play volleyball","make jewelry","play table tennis","play badminton","go ice skating","go bowling"],
+        lesson_5: [
+          "jump on a trampoline",
+          "go climbing",
+          "play volleyball",
+          "make jewelry",
+          "play table tennis",
+          "play badminton",
+          "go ice skating",
+          "go bowling",
+        ],
       },
       ai_speak: [
         "I cooked dinner on a campfire last night.",
@@ -34,8 +44,8 @@ export const CURRICULUM_DATA: any = {
         text: "Camp Energy Journal: Yesterday was amazing. We built a shelter in the woods. Later, we cooked on a campfire...",
         questions: [
           { q: "They built a shelter yesterday.", a: true },
-          { q: "They cooked inside a kitchen.",   a: false },
-          { q: "They slept in a hotel.",          a: false },
+          { q: "They cooked inside a kitchen.", a: false },
+          { q: "They slept in a hotel.", a: false },
         ],
       },
     },
@@ -47,16 +57,25 @@ export const CURRICULUM_DATA: any = {
       quizGameMode: "ALIEN_TRIVIA",
       vocabulary: {
         lesson_1: [
-          { word: "smartwatch",       alt: "smartwatches",       vn: "đồng hồ thông minh",     emoji: "⌚" },
-          { word: "laptop",           alt: "laptops",            vn: "máy tính xách tay",      emoji: "💻" },
-          { word: "smartphone",       alt: "smartphones",        vn: "điện thoại thông minh",  emoji: "📱" },
-          { word: "tablet",           alt: "tablets",            vn: "máy tính bảng",          emoji: "📟" },
-          { word: "digital camera",   alt: "digital cameras",    vn: "máy ảnh kỹ thuật số",    emoji: "📷" },
-          { word: "e-reader",         alt: "e-readers",          vn: "máy đọc sách",           emoji: "📖" },
-          { word: "headphones",                                  vn: "tai nghe",               emoji: "🎧" },
-          { word: "portable speaker", alt: "portable speakers",  vn: "loa di động",            emoji: "🔊" },
+          { word: "smartwatch", alt: "smartwatches", vn: "đồng hồ thông minh", emoji: "⌚" },
+          { word: "laptop", alt: "laptops", vn: "máy tính xách tay", emoji: "💻" },
+          { word: "smartphone", alt: "smartphones", vn: "điện thoại thông minh", emoji: "📱" },
+          { word: "tablet", alt: "tablets", vn: "máy tính bảng", emoji: "📟" },
+          { word: "digital camera", alt: "digital cameras", vn: "máy ảnh kỹ thuật số", emoji: "📷" },
+          { word: "e-reader", alt: "e-readers", vn: "máy đọc sách", emoji: "📖" },
+          { word: "headphones", vn: "tai nghe", emoji: "🎧" },
+          { word: "portable speaker", alt: "portable speakers", vn: "loa di động", emoji: "🔊" },
         ],
-        lesson_5: ["upload a photo","text a friend","stream a video","download a song","charge a phone","log in","print a document","search the internet"],
+        lesson_5: [
+          "upload a photo",
+          "text a friend",
+          "stream a video",
+          "download a song",
+          "charge a phone",
+          "log in",
+          "print a document",
+          "search the internet",
+        ],
       },
       ai_speak: [
         "At nine o'clock last night, I was streaming a video.",
@@ -68,8 +87,8 @@ export const CURRICULUM_DATA: any = {
       reading: {
         text: "Vlogging Kit & Tech Tools Review: This smartwatch is excellent for tracking steps. The portable speaker is loud...",
         questions: [
-          { q: "The smartwatch tracks steps.",   a: true },
-          { q: "The speaker is very quiet.",     a: false },
+          { q: "The smartwatch tracks steps.", a: true },
+          { q: "The speaker is very quiet.", a: false },
           { q: "The review talks about cooking.", a: false },
         ],
       },
@@ -82,16 +101,23 @@ export const CURRICULUM_DATA: any = {
       quizGameMode: "SPACE_DEFENSE_TRIVIA",
       vocabulary: {
         lesson_1: [
-          { word: "buy groceries",      alt: "bought groceries",     vn: "mua nhu yếu phẩm", emoji: "🛒" },
-          { word: "walk the dog",       alt: "walked the dog",       vn: "dắt chó đi dạo",   emoji: "🦮" },
-          { word: "study for a test",   alt: "studied for a test",   vn: "ôn thi",           emoji: "📝" },
-          { word: "take out the trash", alt: "took out the trash",   vn: "đổ rác",           emoji: "🗑️" },
-          { word: "buy a present",      alt: "bought a present",     vn: "mua quà",          emoji: "🎁" },
-          { word: "play chess",         alt: "played chess",         vn: "chơi cờ vua",      emoji: "♟️" },
-          { word: "read the newspaper", alt: "read the newspaper",   vn: "đọc báo giấy",     emoji: "📰" },
-          { word: "watch the news",     alt: "watched the news",     vn: "xem thời sự",      emoji: "📺" },
+          { word: "buy groceries", alt: "bought groceries", vn: "mua nhu yếu phẩm", emoji: "🛒" },
+          { word: "walk the dog", alt: "walked the dog", vn: "dắt chó đi dạo", emoji: "🦮" },
+          { word: "study for a test", alt: "studied for a test", vn: "ôn thi", emoji: "📝" },
+          { word: "take out the trash", alt: "took out the trash", vn: "đổ rác", emoji: "🗑️" },
+          { word: "buy a present", alt: "bought a present", vn: "mua quà", emoji: "🎁" },
+          { word: "play chess", alt: "played chess", vn: "chơi cờ vua", emoji: "♟️" },
+          { word: "read the newspaper", alt: "read the newspaper", vn: "đọc báo giấy", emoji: "📰" },
+          { word: "watch the news", alt: "watched the news", vn: "xem thời sự", emoji: "📺" },
         ],
-        lesson_5: ["go online","listen to the radio","read a magazine","download an app","look at the screen","read a blog post"],
+        lesson_5: [
+          "go online",
+          "listen to the radio",
+          "read a magazine",
+          "download an app",
+          "look at the screen",
+          "read a blog post",
+        ],
       },
       ai_speak: [
         "A man was walking his dog when it ran into the street.",
@@ -117,16 +143,16 @@ export const CURRICULUM_DATA: any = {
       quizGameMode: "QUANTUM_MEMORY_MATCH",
       vocabulary: {
         lesson_1: [
-          { word: "minotaur", alt: "minotaurs",   vn: "quái vật nhân ngưu",       emoji: "🐂" },
-          { word: "mermaid",  alt: "mermaids",    vn: "nàng tiên cá",            emoji: "🧜‍♀️" },
-          { word: "phoenix",  alt: "phoenixes",   vn: "chim phượng hoàng",       emoji: "🦅" },
-          { word: "dragon",   alt: "dragons",     vn: "con rồng",                emoji: "🐉" },
-          { word: "centaur",  alt: "centaurs",    vn: "nhân mã",                 emoji: "🏹" },
-          { word: "unicorn",  alt: "unicorns",    vn: "kỳ lân",                  emoji: "🦄" },
-          { word: "pegasus",  alt: "pegasuses",   vn: "ngựa có cánh pegasus",    emoji: "🐎" },
-          { word: "kraken",   alt: "krakens",     vn: "quái vật mực khổng lồ",   emoji: "🦑" },
+          { word: "minotaur", alt: "minotaurs", vn: "quái vật nhân ngưu", emoji: "🐂" },
+          { word: "mermaid", alt: "mermaids", vn: "nàng tiên cá", emoji: "🧜‍♀️" },
+          { word: "phoenix", alt: "phoenixes", vn: "chim phượng hoàng", emoji: "🦅" },
+          { word: "dragon", alt: "dragons", vn: "con rồng", emoji: "🐉" },
+          { word: "centaur", alt: "centaurs", vn: "nhân mã", emoji: "🏹" },
+          { word: "unicorn", alt: "unicorns", vn: "kỳ lân", emoji: "🦄" },
+          { word: "pegasus", alt: "pegasuses", vn: "ngựa có cánh pegasus", emoji: "🐎" },
+          { word: "kraken", alt: "krakens", vn: "quái vật mực khổng lồ", emoji: "🦑" },
         ],
-        lesson_5: ["tell a story","paint a picture","write a poem","sing a song","read a comic","make a statue"],
+        lesson_5: ["tell a story", "paint a picture", "write a poem", "sing a song", "read a comic", "make a statue"],
       },
       ai_speak: [
         "A minotaur was a monster that lived in a giant labyrinth.",
@@ -152,17 +178,17 @@ export const CURRICULUM_DATA: any = {
       quizGameMode: "ALIEN_TRIVIA",
       vocabulary: {
         lesson_1: [
-          { word: "flour",            vn: "bột mì",                emoji: "🌾" },
-          { word: "butter",           vn: "bơ",                    emoji: "🧈" },
-          { word: "sugar",            vn: "đường",                 emoji: "🍬" },
-          { word: "jelly",            vn: "thạch",                 emoji: "🍮" },
-          { word: "salt and pepper",  vn: "muối và hạt tiêu",      emoji: "🧂" },
-          { word: "honey",            vn: "mật ong",               emoji: "🍯" },
-          { word: "olive",      alt: "olives",       vn: "quả ô-liu",      emoji: "🫒" },
-          { word: "strawberry", alt: "strawberries", vn: "quả dâu tây",    emoji: "🍓" },
-          { word: "mushroom",   alt: "mushrooms",    vn: "cây nấm",        emoji: "🍄" },
+          { word: "flour", vn: "bột mì", emoji: "🌾" },
+          { word: "butter", vn: "bơ", emoji: "🧈" },
+          { word: "sugar", vn: "đường", emoji: "🍬" },
+          { word: "jelly", vn: "thạch", emoji: "🍮" },
+          { word: "salt and pepper", vn: "muối và hạt tiêu", emoji: "🧂" },
+          { word: "honey", vn: "mật ong", emoji: "🍯" },
+          { word: "olive", alt: "olives", vn: "quả ô-liu", emoji: "🫒" },
+          { word: "strawberry", alt: "strawberries", vn: "quả dâu tây", emoji: "🍓" },
+          { word: "mushroom", alt: "mushrooms", vn: "cây nấm", emoji: "🍄" },
         ],
-        lesson_5: ["cup","teaspoon","tablespoon","knife","bowl","fork","plate","glass"],
+        lesson_5: ["cup", "teaspoon", "tablespoon", "knife", "bowl", "fork", "plate", "glass"],
       },
       ai_speak: [
         "There is too much sugar in this giant bowl.",
@@ -188,16 +214,23 @@ export const CURRICULUM_DATA: any = {
       quizGameMode: "ALIEN_TRIVIA",
       vocabulary: {
         lesson_1: [
-          { word: "giant panda",      alt: "giant pandas",      vn: "gấu trúc lớn", emoji: "🐼" },
-          { word: "black rhino",      alt: "black rhinos",      vn: "tê giác đen",  emoji: "🦏" },
-          { word: "blue whale",       alt: "blue whales",       vn: "cá voi xanh",  emoji: "🐋" },
-          { word: "mountain gorilla", alt: "mountain gorillas", vn: "khỉ đột núi",  emoji: "🦍" },
-          { word: "snow leopard",     alt: "snow leopards",     vn: "báo tuyết",    emoji: "🐆" },
-          { word: "sea turtle",       alt: "sea turtles",       vn: "rùa biển",     emoji: "🐢" },
-          { word: "polar bear",       alt: "polar bears",       vn: "gấu bắc cực",  emoji: "🐻‍❄️" },
-          { word: "orangutan",        alt: "orangutans",        vn: "đười ươi",     emoji: "🦧" },
+          { word: "giant panda", alt: "giant pandas", vn: "gấu trúc lớn", emoji: "🐼" },
+          { word: "black rhino", alt: "black rhinos", vn: "tê giác đen", emoji: "🦏" },
+          { word: "blue whale", alt: "blue whales", vn: "cá voi xanh", emoji: "🐋" },
+          { word: "mountain gorilla", alt: "mountain gorillas", vn: "khỉ đột núi", emoji: "🦍" },
+          { word: "snow leopard", alt: "snow leopards", vn: "báo tuyết", emoji: "🐆" },
+          { word: "sea turtle", alt: "sea turtles", vn: "rùa biển", emoji: "🐢" },
+          { word: "polar bear", alt: "polar bears", vn: "gấu bắc cực", emoji: "🐻‍❄️" },
+          { word: "orangutan", alt: "orangutans", vn: "đười ươi", emoji: "🦧" },
         ],
-        lesson_5: ["recycle trash","plant trees","save water","turn off lights","clean up parks","reuse plastic bags"],
+        lesson_5: [
+          "recycle trash",
+          "plant trees",
+          "save water",
+          "turn off lights",
+          "clean up parks",
+          "reuse plastic bags",
+        ],
       },
       ai_speak: [
         "If we don't protect the giant pandas, they will disappear.",
@@ -215,6 +248,62 @@ export const CURRICULUM_DATA: any = {
         ],
       },
     },
+    unit_7: {
+      title: "High-Tech Future",
+      icon: "🤖",
+      formToggleLabel: "Plural Form 👥",
+      grammarGameMode: "FUTURE_WILL_WONT",
+      quizGameMode: "ALIEN_TRIVIA",
+      vocabulary: {
+        lesson_1: [
+          { word: "flying car", alt: "flying cars", vn: "xe bay", emoji: "🚗" },
+          { word: "robot worker", alt: "robot workers", vn: "người máy giúp việc", emoji: "🤖" },
+          { word: "3D printer", alt: "3D printers", vn: "máy in 3D", emoji: "🖨️" },
+          { word: "drone", alt: "drones", vn: "máy bay không người lái", emoji: "🚁" },
+          { word: "hoverboard", alt: "hoverboards", vn: "ván trượt bay", emoji: "🛹" },
+          { word: "VR headset", alt: "VR headsets", vn: "kính thực tế ảo", emoji: "🥽" },
+          { word: "jetpack", alt: "jetpacks", vn: "ba lô phản lực bay", emoji: "🚀" },
+          { word: "electric bike", alt: "electric bikes", vn: "xe đạp điện", emoji: "🚲" },
+        ],
+        lesson_5: [
+          "skyscrapers",
+          "green buildings",
+          "energy",
+          "automatic",
+          "smart homes",
+          "driverless cars",
+          "inventions",
+          "travel",
+        ],
+      },
+      grammar: {
+        willWont: [
+          { before: "We", after: "drive flying cars.", answer: "will" },
+          { before: "We", after: "go to work.", answer: "won't" },
+          { before: "Robot workers", after: "do all the work.", answer: "will" },
+          { before: "Drones", after: "deliver pizza to people's homes.", answer: "will" },
+          { before: "We", after: "wear VR headsets when we play computer games.", answer: "will" },
+          { before: "I", after: "ride an electric bike to school.", answer: "will" },
+          { before: "I", after: "take the bus.", answer: "won't" },
+          { before: "We", after: "have to do any chores.", answer: "won't" },
+        ],
+      },
+      ai_speak: [
+        "In the future, I'll ride a hoverboard to school.",
+        "I won't ride a hoverboard because they are scary.",
+        "Robot workers will do everything for us!",
+        "Will we live in houses in the future?",
+        "We'll travel with jetpacks and also with flying cars.",
+      ],
+      reading: {
+        text: "Life in the Future: Life will be very different in 50 years. There will be more people on Earth, so we'll live and work in tall skyscrapers. The skyscrapers will be green buildings with trees and plants everywhere. We'll live in smart homes, so everything will be automatic. Our robot workers will clean our houses, feed our pets, and cook breakfast for us. We won't have to do any chores! Transportation will be different, too. There will be driverless cars, so we won't need to drive. With new inventions like flying cars and jetpacks, people will travel much faster than they do today. Life in the future will be different, and it will be easier!",
+        questions: [
+          { q: "In the future, people will live in tall skyscrapers.", a: true },
+          { q: "People will have to do all their chores themselves.", a: false },
+          { q: "There will be driverless cars, so we won't need to drive.", a: true },
+        ],
+      },
+    },
     unit_8: {
       title: "On Vacation!",
       icon: "🛳️",
@@ -223,16 +312,23 @@ export const CURRICULUM_DATA: any = {
       quizGameMode: "ALIEN_TRIVIA",
       vocabulary: {
         lesson_1: [
-          { word: "go on a cruise",      alt: "went on a cruise",     vn: "đi du thuyền",            emoji: "🛳️" },
-          { word: "visit a theme park",  alt: "visited a theme park", vn: "thăm công viên giải trí", emoji: "🎢" },
-          { word: "see a show",          alt: "saw a show",           vn: "xem biểu diễn",           emoji: "🎭" },
-          { word: "go to the beach",     alt: "went to the beach",    vn: "đi bãi biển",             emoji: "🏖️" },
-          { word: "stay in a hotel",     alt: "stayed in a hotel",    vn: "ở khách sạn",             emoji: "🏨" },
-          { word: "visit a museum",      alt: "visited a museum",     vn: "thăm bảo tàng",           emoji: "🏛️" },
-          { word: "go sightseeing",      alt: "went sightseeing",     vn: "đi ngắm cảnh",            emoji: "🏙️" },
-          { word: "buy souvenirs",       alt: "bought souvenirs",     vn: "mua quà lưu niệm",        emoji: "🎁" },
+          { word: "go on a cruise", alt: "went on a cruise", vn: "đi du thuyền", emoji: "🛳️" },
+          { word: "visit a theme park", alt: "visited a theme park", vn: "thăm công viên giải trí", emoji: "🎢" },
+          { word: "see a show", alt: "saw a show", vn: "xem biểu diễn", emoji: "🎭" },
+          { word: "go to the beach", alt: "went to the beach", vn: "đi bãi biển", emoji: "🏖️" },
+          { word: "stay in a hotel", alt: "stayed in a hotel", vn: "ở khách sạn", emoji: "🏨" },
+          { word: "visit a museum", alt: "visited a museum", vn: "thăm bảo tàng", emoji: "🏛️" },
+          { word: "go sightseeing", alt: "went sightseeing", vn: "đi ngắm cảnh", emoji: "🏙️" },
+          { word: "buy souvenirs", alt: "bought souvenirs", vn: "mua quà lưu niệm", emoji: "🎁" },
         ],
-        lesson_5: ["pack a suitcase","book a flight","buy a ticket","check in","board the plane","explore the city"],
+        lesson_5: [
+          "pack a suitcase",
+          "book a flight",
+          "buy a ticket",
+          "check in",
+          "board the plane",
+          "explore the city",
+        ],
       },
       ai_speak: [
         "Have you ever stayed in a luxury hotel near the beach?",
@@ -245,8 +341,8 @@ export const CURRICULUM_DATA: any = {
         text: "The Galactic Vacation: Summer vacation has finally arrived! This year, Leo's family is planning an incredible trip across the solar system. First, they booked a flight on a hyper-drive starship. Yesterday, they checked in at the spaceport terminal and boarded the plane. They are going to stay in a floating hotel near the cosmic beach. Leo wants to visit a famous space museum and buy alien souvenirs for his best friends back home. It will be an unforgettable adventure!",
         questions: [
           { q: "Leo's family is going on a vacation across the solar system.", a: true },
-          { q: "They forgot to book a flight and stayed home.",                a: false },
-          { q: "Leo wants to buy souvenirs for his friends.",                  a: true },
+          { q: "They forgot to book a flight and stayed home.", a: false },
+          { q: "Leo wants to buy souvenirs for his friends.", a: true },
         ],
       },
     },
@@ -269,7 +365,14 @@ export const CURRICULUM_DATA: any = {
           { word: "wash the dishes", alt: "washes the dishes", vn: "rửa chén bát", emoji: "🧽" },
           { word: "play video games", alt: "plays video games", vn: "chơi trò chơi điện tử", emoji: "🎮" },
         ],
-        lesson_5: ["take art classes", "play soccer", "go to ballet class", "do karate", "play the violin", "sing in the choir"],
+        lesson_5: [
+          "take art classes",
+          "play soccer",
+          "go to ballet class",
+          "do karate",
+          "play the violin",
+          "sing in the choir",
+        ],
       },
       ai_speak: [
         "What do you do after school? I do my homework.",
@@ -324,7 +427,8 @@ export const CURRICULUM_DATA: any = {
     },
   },
 };
-export function getUnitData(unit: any, level: string = "level_5"): any {
+
+export function getUnitData(unit, level = "level_5") {
   const lvl = CURRICULUM_DATA[level];
   if (lvl && lvl[`unit_${unit}`]) return lvl[`unit_${unit}`];
   // Only fall back to level_5 if the requested level itself is unknown.
