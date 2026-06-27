@@ -347,6 +347,52 @@ export const CURRICULUM_DATA: any = {
     },
   },
   level_3: {
+    unit_6: {
+      title: "Jobs and Places",
+      icon: "💼",
+      grammarGameMode: "ROCKET_BLASTER",
+      quizGameMode: "ALIEN_TRIVIA",
+      vocabulary: {
+        lesson_1: [
+          { word: "construction worker", vn: "công nhân xây dựng", emoji: "👷" },
+          { word: "librarian", vn: "thủ thư", emoji: "📚" },
+          { word: "paramedic", vn: "nhân viên cấp cứu", emoji: "🚑" },
+          { word: "architect", vn: "kiến trúc sư", emoji: "📐" },
+          { word: "fisherman", vn: "ngư dân", emoji: "🎣" },
+          { word: "dancer", vn: "vũ công / diễn viên múa", emoji: "💃" },
+          { word: "writer", vn: "nhà văn", emoji: "✍️" },
+          { word: "musician", vn: "nhạc sĩ / nhạc công", emoji: "🎸" },
+        ],
+        lesson_5: ["office", "hospital", "school", "factory", "farm", "restaurant", "boat"],
+      },
+      grammar: {
+        willWont: [
+          { before: "Kevin loves books. He wants to be a", after: ".", answer: "librarian" },
+          { before: "Julie loves music. She wants to be a", after: ".", answer: "musician" },
+          { before: "Matt designs buildings. He wants to be an", after: ".", answer: "architect" },
+          { before: "Clara loves to dance. She wants to be a", after: ".", answer: "dancer" },
+          { before: "I write stories. I want to be a", after: ".", answer: "writer" },
+          { before: "She helps sick people. She wants to be a", after: ".", answer: "paramedic" },
+          { before: "He catches fish at sea. He wants to be a", after: ".", answer: "fisherman" },
+          { before: "I build houses. I want to be a", after: ".", answer: "construction worker" },
+        ],
+      },
+      ai_speak: [
+        "What do you want to be? I want to be an architect.",
+        "I don't want to be a writer. I want to be a musician.",
+        "Where does she work? She works in a hospital.",
+        "He works on a boat. He is a fisherman.",
+        "A teacher works in a school, and a cook works in a restaurant.",
+      ],
+      reading: {
+        text: "The Flying Doctors: Most people with service jobs work in an office or a hospital. In Australia, some doctors are different. There are many small towns and farms far away, and most of these places do not have a hospital nearby. When people there need help, they call the Flying Doctors. These doctors do not work in one building — they fly airplanes to reach their patients! Doctors, nurses, and even dentists travel by plane to help people in faraway places. They have important and exciting jobs.",
+        questions: [
+          { q: "The Flying Doctors travel by airplane to help people.", a: true },
+          { q: "Every small town in Australia has a big hospital.", a: false },
+          { q: "Doctors, nurses, and dentists can all be Flying Doctors.", a: true },
+        ],
+      },
+    },
     unit_1: {
       title: "Family",
       icon: "👪",
