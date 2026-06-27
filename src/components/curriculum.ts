@@ -347,6 +347,50 @@ export const CURRICULUM_DATA: any = {
     },
   },
   level_3: {
+    unit_7: {
+      title: "Yesterday",
+      icon: "🕗",
+      grammarGameMode: "ROCKET_BLASTER",
+      quizGameMode: "ALIEN_TRIVIA",
+      vocabulary: {
+        lesson_1: [
+          { word: "school", vn: "trường học", emoji: "🏫" },
+          { word: "beach", vn: "bãi biển", emoji: "🏖️" },
+          { word: "home", vn: "nhà / ở nhà", emoji: "🏠" },
+          { word: "doctor's office", vn: "phòng khám bác sĩ", emoji: "🩺" },
+          { word: "sports center", vn: "trung tâm thể thao", emoji: "🏟️" },
+          { word: "Grandma's house", vn: "nhà bà", emoji: "👵" },
+          { word: "park", vn: "công viên", emoji: "🏞️" },
+        ],
+        lesson_5: ["sick", "scared", "tired", "angry", "surprised", "happy", "excited"],
+      },
+      grammar: {
+        willWont: [
+          { before: "Matt built a sandcastle. He was at the", after: ".", answer: "beach" },
+          { before: "Julie was sick. She was at the", after: ".", answer: "doctor's office" },
+          { before: "We played basketball. We were at the", after: ".", answer: "sports center" },
+          { before: "Clara ate cookies. She was at", after: ".", answer: "Grandma's house" },
+          { before: "I did my homework. I was at", after: ".", answer: "home" },
+          { before: "On Monday the children were at", after: ".", answer: "school" },
+          { before: "We rode our bikes. We were at the", after: ".", answer: "park" },
+        ],
+      },
+      ai_speak: [
+        "Where were you yesterday? I was at the beach.",
+        "Matt wasn't at school. He was at the sports center.",
+        "Was she happy? No, she wasn't. She was tired.",
+        "Were they surprised? Yes, they were!",
+        "I was at Grandma's house. I was excited and happy.",
+      ],
+      reading: {
+        text: "Where Were You Yesterday? Yesterday was Saturday, so the children were not at school. Matt was at the beach. He was happy because he loves the sea. Julie was at home. She was a little tired, so she played quiet computer games. Clara was at her grandma's house. She was excited because Grandma made cookies! In the evening, everyone was at home again. It was a fun day for the whole class.",
+        questions: [
+          { q: "Yesterday the children were at school.", a: false },
+          { q: "Matt was happy at the beach.", a: true },
+          { q: "Clara was at her grandma's house.", a: true },
+        ],
+      },
+    },
     unit_6: {
       title: "Jobs and Places",
       icon: "💼",
