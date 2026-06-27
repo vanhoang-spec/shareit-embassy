@@ -347,6 +347,59 @@ export const CURRICULUM_DATA: any = {
     },
   },
   level_3: {
+    unit_8: {
+      title: "Camping",
+      icon: "🏕️",
+      grammarGameMode: "ROCKET_BLASTER",
+      quizGameMode: "ALIEN_TRIVIA",
+      vocabulary: {
+        lesson_1: [
+          { word: "mountain", vn: "núi / ngọn núi", emoji: "⛰️" },
+          { word: "cloud", vn: "đám mây", emoji: "☁️" },
+          { word: "star", vn: "ngôi sao", emoji: "⭐" },
+          { word: "cave", vn: "hang động", emoji: "🕳️" },
+          { word: "bat", vn: "con dơi", emoji: "🦇" },
+          { word: "river", vn: "dòng sông / con sông", emoji: "🏞️" },
+          { word: "field", vn: "cánh đồng", emoji: "🌾" },
+          { word: "road", vn: "con đường", emoji: "🛣️" },
+        ],
+        lesson_5: [
+          "up the mountain",
+          "down the mountain",
+          "into the cave",
+          "out of the cave",
+          "around the lake",
+          "across the river",
+          "along the road",
+        ],
+      },
+      grammar: {
+        willWont: [
+          { before: "We climbed to the top. We went", after: "the mountain.", answer: "up" },
+          { before: "We walked back to the bottom. We went", after: "the mountain.", answer: "down" },
+          { before: "We explored the dark cave. We went", after: "the cave.", answer: "into" },
+          { before: "We left the dark cave. We went", after: "of the cave.", answer: "out" },
+          { before: "We walked from one side to the other. We went", after: "the river.", answer: "across" },
+          { before: "We walked beside the water. We went", after: "the river.", answer: "along" },
+          { before: "We walked in a big circle. We went", after: "the lake.", answer: "around" },
+        ],
+      },
+      ai_speak: [
+        "Where did you go? We went to the river.",
+        "We went into the cave. There were some bats!",
+        "Was there a road by the river? No, there wasn't.",
+        "Were there any stars last night? Yes, there were!",
+        "We didn't go up the mountain. We went across the field.",
+      ],
+      reading: {
+        text: "A Camping Trip: Last weekend, Kevin and his dad went camping near a big mountain. There was a clean river, and there were many tall trees. At night, the sky was beautiful. There were lots of stars and a few clouds. The next morning, they walked up the mountain and into a dark cave. There were some bats inside, so they ran out quickly! It was a fun and exciting trip.",
+        questions: [
+          { q: "Kevin and his dad went camping near a mountain.", a: true },
+          { q: "There were no stars in the night sky.", a: false },
+          { q: "They saw some bats in the cave.", a: true },
+        ],
+      },
+    },
     unit_7: {
       title: "Yesterday",
       icon: "🕗",
