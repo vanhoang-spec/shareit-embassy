@@ -4,6 +4,52 @@
 // =================================================================
 export const CURRICULUM_DATA: any = {
   level_4: {
+    unit_2: {
+      title: "At School",
+      icon: "🏫",
+      grammarGameMode: "ROCKET_BLASTER",
+      quizGameMode: "ALIEN_TRIVIA",
+      vocabulary: {
+        lesson_1: [
+          { word: "social studies", vn: "môn Xã hội học", emoji: "🌍" },
+          { word: "art", vn: "môn Mỹ thuật", emoji: "🎨" },
+          { word: "English", vn: "môn Tiếng Anh", emoji: "📖" },
+          { word: "music", vn: "môn Âm nhạc", emoji: "🎵" },
+          { word: "math", vn: "môn Toán", emoji: "➗" },
+          { word: "health", vn: "môn Sức khỏe", emoji: "🩺" },
+          { word: "P.E.", vn: "môn Thể dục", emoji: "🏃" },
+          { word: "science", vn: "môn Khoa học", emoji: "🔬" },
+        ],
+        lesson_5: ["gym", "cafeteria", "music room", "classroom", "art room", "computer lab"],
+      },
+      grammar: {
+        willWont: [
+          { before: "Do you have art today? Yes, I", after: ".", answer: "do" },
+          { before: "Do you have P.E. today? No, I", after: ".", answer: "don't" },
+          { before: "Does she have music today? Yes, she", after: ".", answer: "does" },
+          { before: "Does he have math today? No, he", after: ".", answer: "doesn't" },
+          { before: "Do they have English today? Yes, they", after: ".", answer: "do" },
+          { before: "Does Suzy have science today? No, she", after: ".", answer: "doesn't" },
+          { before: "Do we have health today? No, we", after: ".", answer: "don't" },
+          { before: "Does Kevin have social studies? Yes, he", after: ".", answer: "does" },
+        ],
+      },
+      ai_speak: [
+        "Do you have P.E. today? Yes, I do.",
+        "Does she have music today? No, she doesn't.",
+        "Where's Sid? He's in the gym.",
+        "What's he doing? He's playing basketball.",
+        "I really like art, but I don't like math.",
+      ],
+      reading: {
+        text: "A New Friend: Today there is a new student named Holly. 'Welcome to our class!' says the teacher. Holly asks, 'Do we have music today?' 'Yes, we do, but we have math first,' he answers. At lunchtime, Julie and Kevin sit with Holly and eat together. In art class, Holly paints a colorful picture. Later, the class has music, and Holly asks to play the drums. She plays really well! 'Wow, you're great, Holly!' her new friends say. Always be friendly to new people!",
+        questions: [
+          { q: "The children have math before music.", a: true },
+          { q: "Holly eats lunch all alone.", a: false },
+          { q: "Holly plays the drums very well.", a: true },
+        ],
+      },
+    },
     unit_1: {
       title: "Good Morning",
       icon: "🌅",
