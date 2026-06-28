@@ -708,6 +708,50 @@ export const CURRICULUM_DATA: any = {
     },
   },
   level_3: {
+    unit_2: {
+      title: "Healthy Food",
+      icon: "🥗",
+      formToggleLabel: "Plural ⬆️",
+      grammarGameMode: "ROCKET_BLASTER",
+      quizGameMode: "ALIEN_TRIVIA",
+      vocabulary: {
+        lesson_1: [
+          { word: "mango", alt: "mangoes", vn: "xoài", emoji: "🥭" },
+          { word: "potato", alt: "potatoes", vn: "khoai tây", emoji: "🥔" },
+          { word: "peach", alt: "peaches", vn: "quả đào", emoji: "🍑" },
+          { word: "carrot", alt: "carrots", vn: "cà rốt", emoji: "🥕" },
+          { word: "tomato", alt: "tomatoes", vn: "cà chua", emoji: "🍅" },
+          { word: "cucumber", alt: "cucumbers", vn: "dưa leo / dưa chuột", emoji: "🥒" },
+          { word: "avocado", alt: "avocados", vn: "quả bơ", emoji: "🥑" },
+        ],
+        lesson_5: ["pasta", "popcorn", "tea", "coffee", "soda", "beef", "chicken", "lemonade"],
+      },
+      grammar: {
+        willWont: [
+          { before: "There are", after: "carrots in the box.", answer: "some" },
+          { before: "There aren't", after: "tomatoes today.", answer: "any" },
+          { before: "There", after: "some soda in the fridge.", answer: "is" },
+          { before: "There are some avocados, but there", after: "any apples.", answer: "aren't" },
+          { before: "Is there any popcorn? No, there", after: ".", answer: "isn't" },
+          { before: "Are there any peaches? Yes, there", after: ".", answer: "are" },
+        ],
+      },
+      ai_speak: [
+        "There are some avocados, but there aren't any apples.",
+        "Are there any apples? No, there aren't.",
+        "Is there any popcorn? No, there isn't.",
+        "There's some soda. Is there any coffee?",
+        "Are there any peaches? Yes, there are.",
+      ],
+      reading: {
+        text: "Food Groups: There are four food groups. They are healthy and good for our bodies. Peaches, carrots, cucumbers, and potatoes are in the fruit and vegetable group. Bread, rice, and pasta are in the grain group. Fish, meat, beans, and eggs are in the protein group. Yogurt, cheese, and milk are in the dairy group. Candy and soda are not in any food group because they aren't healthy foods. Try to eat food from all four groups every day!",
+        questions: [
+          { q: "There are four food groups.", a: true },
+          { q: "Candy and soda are healthy foods.", a: false },
+          { q: "Yogurt and cheese are in the dairy group.", a: true },
+        ],
+      },
+    },
     unit_8: {
       title: "Camping",
       icon: "🏕️",
