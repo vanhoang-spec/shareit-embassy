@@ -3,6 +3,55 @@
 // Add or edit lesson content here. Screens read it via getUnitData(unit, level).
 // =================================================================
 export const CURRICULUM_DATA: any = {
+  level_4: {
+    unit_1: {
+      title: "Good Morning",
+      icon: "🌅",
+      formToggleLabel: "He/She Form 👤",
+      grammarGameMode: "ROCKET_BLASTER",
+      quizGameMode: "ALIEN_TRIVIA",
+      vocabulary: {
+        lesson_1: [
+          { word: "wake up", alt: "wakes up", vn: "thức dậy", emoji: "⏰" },
+          { word: "brush my hair", alt: "brushes hair", vn: "chải tóc", emoji: "💇" },
+          { word: "take a shower", alt: "takes a shower", vn: "tắm vòi sen", emoji: "🚿" },
+          { word: "get dressed", alt: "gets dressed", vn: "mặc quần áo", emoji: "👕" },
+          { word: "wash my face", alt: "washes face", vn: "rửa mặt", emoji: "🧼" },
+          { word: "have breakfast", alt: "has breakfast", vn: "ăn sáng", emoji: "🥣" },
+          { word: "make breakfast", alt: "makes breakfast", vn: "chuẩn bị bữa sáng", emoji: "🍳" },
+          { word: "go to school", alt: "goes to school", vn: "đi học", emoji: "🏫" },
+        ],
+        lesson_5: ["take a taxi", "take the bus", "take the train", "take the subway", "walk", "ride a bicycle"],
+      },
+      grammar: {
+        willWont: [
+          { before: "Every morning I", after: "wash my face.", answer: "always" },
+          { before: "He hates breakfast. He", after: "has breakfast.", answer: "never" },
+          { before: "On most days, she", after: "takes a shower.", answer: "usually" },
+          { before: "Once a week, we", after: "take the bus.", answer: "sometimes" },
+          { before: "I wake up at six every single day. I", after: "wake up late.", answer: "never" },
+          { before: "My dad", after: "makes breakfast on most mornings.", answer: "usually" },
+          { before: "Every single day, I", after: "brush my hair.", answer: "always" },
+          { before: "Once or twice a month, we", after: "ride a bicycle to school.", answer: "sometimes" },
+        ],
+      },
+      ai_speak: [
+        "I always wake up at six o'clock.",
+        "She usually makes breakfast for the family.",
+        "How often do you ride your bicycle to school?",
+        "He never has breakfast before school.",
+        "I sometimes take the bus, but I usually walk.",
+      ],
+      reading: {
+        text: "Matt's Busy Morning: Matt usually wakes up at seven o'clock, but today he wakes up late! He quickly washes his face, brushes his teeth, gets dressed, and brushes his hair. Matt's dad usually makes breakfast for the family. Soon his friend Sid is at the door, but Matt is still not ready for school. 'Look in the mirror, Matt!' says his mom. Oh no! Matt forgot to finish getting ready. Always be prepared for school!",
+        questions: [
+          { q: "Matt usually wakes up at seven o'clock.", a: true },
+          { q: "Matt takes a long shower every morning.", a: false },
+          { q: "Matt is not ready when his friend Sid arrives.", a: true },
+        ],
+      },
+    },
+  },
   level_5: {
     unit_1: {
       title: "Adventure Camp",
