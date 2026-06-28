@@ -4,6 +4,59 @@
 // =================================================================
 export const CURRICULUM_DATA: any = {
   level_4: {
+    unit_4: {
+      title: "Last Weekend",
+      icon: "🎬",
+      formToggleLabel: "Past Form ⏳",
+      grammarGameMode: "ROCKET_BLASTER",
+      quizGameMode: "ALIEN_TRIVIA",
+      vocabulary: {
+        lesson_1: [
+          { word: "buy candy", alt: "bought candy", vn: "mua kẹo", emoji: "🍬" },
+          { word: "see a movie", alt: "saw a movie", vn: "xem phim", emoji: "🎬" },
+          { word: "take a picture", alt: "took a picture", vn: "chụp ảnh", emoji: "📷" },
+          { word: "go shopping", alt: "went shopping", vn: "đi mua sắm", emoji: "🛍️" },
+          { word: "have a milkshake", alt: "had a milkshake", vn: "uống sữa lắc", emoji: "🥤" },
+          { word: "eat pizza", alt: "ate pizza", vn: "ăn pizza", emoji: "🍕" },
+        ],
+        lesson_5: [
+          "read a book",
+          "write a poem",
+          "do karate",
+          "sing a song",
+          "make a video",
+          "build a tree house",
+          "draw a picture",
+        ],
+      },
+      grammar: {
+        willWont: [
+          { before: "Last weekend I", after: "a movie at the theater.", answer: "saw" },
+          { before: "Kevin", after: "a new shirt at the store.", answer: "bought" },
+          { before: "We", after: "pizza for lunch on Saturday.", answer: "ate" },
+          { before: "I", after: "shopping with my mom and Sid.", answer: "went" },
+          { before: "She", after: "a picture of her friends.", answer: "took" },
+          { before: "They", after: "a milkshake after the movie.", answer: "had" },
+          { before: "Suzy", after: "a tree house in the garden.", answer: "built" },
+          { before: "I", after: "a video with my friends.", answer: "made" },
+        ],
+      },
+      ai_speak: [
+        "I saw a movie last weekend.",
+        "I went shopping and I bought a new shirt.",
+        "Did you buy anything? Yes, I did.",
+        "What did you do last weekend? I did karate.",
+        "Suzy built a tree house and I made a video.",
+      ],
+      reading: {
+        text: "Movie Magic: A lot of movies today are animated. Animated movies can show talking animals or robots in space. In the past, animated movies were black and white. Artists drew the pictures with pencils and paper, and then a director made them into a movie. These days, animated movies are colorful. A person who makes them is called an animator. Animators use computers to draw 3D characters, and then they move the characters and give them voices. Making one movie can take many years! Some animators use small models instead. They move the models and take lots of pictures. Animated movies are amazing!",
+        questions: [
+          { q: "In the past, animated movies were black and white.", a: true },
+          { q: "Today, animators use computers to make movies.", a: true },
+          { q: "Making one animated movie takes only one day.", a: false },
+        ],
+      },
+    },
     unit_3: {
       title: "Shareville Fair",
       icon: "🎡",
