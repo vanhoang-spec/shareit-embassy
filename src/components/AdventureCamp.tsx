@@ -4131,8 +4131,8 @@ const LEVELS = [
     title: "Galaxy Level 2",
     glow: "#34d399",
     core: "radial-gradient(circle at 30% 30%, #d1fae5, #10b981 55%, #064e3b)",
-    unlocked: false,
-    levelKey: null,
+    unlocked: true,
+    levelKey: "level_2",
   },
   {
     n: 3,
