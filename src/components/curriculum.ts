@@ -4,6 +4,132 @@
 // =================================================================
 export const CURRICULUM_DATA: any = {
   level_2: {
+    unit_2: {
+      title: "My Things",
+      icon: "🧸",
+      grammarGameMode: "ROCKET_BLASTER",
+      quizGameMode: "ALIEN_TRIVIA",
+      vocabulary: {
+        lesson_1: [
+          { word: "teddy bear", vn: "gấu bông", emoji: "🧸" },
+          { word: "camera", vn: "máy ảnh", emoji: "📷" },
+          { word: "scooter", vn: "xe trượt scooter", emoji: "🛴" },
+          { word: "train", vn: "tàu hỏa (đồ chơi)", emoji: "🚂" },
+          { word: "yo-yo", vn: "con quay yo-yo", emoji: "🪀" },
+          { word: "skateboard", vn: "ván trượt", emoji: "🛹" },
+          { word: "board game", vn: "trò chơi cờ bàn", emoji: "🎲" },
+          { word: "video game", vn: "trò chơi điện tử", emoji: "🎮" },
+        ],
+        lesson_5: ["bag", "tablet", "paintbrush", "scissors", "marker", "paint", "glue", "photo"],
+      },
+      grammar: {
+        willWont: [
+          { before: "Look at Alex! That's", after: "camera.", answer: "his" },
+          { before: "Look at Eva! Those are", after: "teddy bears.", answer: "her" },
+          { before: "Look at Bobby and Eva! Those are", after: "yo-yos.", answer: "their" },
+          { before: "Is this", after: "bag? No, it isn't.", answer: "your" },
+          { before: "Those are", after: "things, not yours!", answer: "our" },
+          { before: "That's", after: "train. It's Alex's.", answer: "his" },
+          { before: "Are these", after: "scissors?", answer: "your" },
+          { before: "Those are", after: "board games.", answer: "her" },
+        ],
+      },
+      ai_speak: [
+        "Look at Alex! That's his new camera.",
+        "Those are her teddy bears. That's cute!",
+        "Is this your bag? No, it isn't.",
+        "Can I borrow it? Sure! Ask first.",
+        "Those are our scooters. You can use them, but please ask first.",
+      ],
+      reading: {
+        text: "Fun with Colors! You can mix colors to make new colors. Mix blue and yellow to make green. Mix red and yellow to make orange. Mix red and blue to make purple. An artist uses paint and a paintbrush to make a painting. You can also make a collage with paper, paint, scissors, and glue. There are many colors all around us. How many can you find?",
+        questions: [
+          { q: "Blue and yellow make green.", a: true },
+          { q: "Red and blue make orange.", a: false },
+          { q: "You can make a collage with paper and glue.", a: true },
+        ],
+      },
+    },
+    unit_3: {
+      title: "At the Zoo",
+      icon: "🐘",
+      formToggleLabel: "Số nhiều +s ⬆️",
+      grammarGameMode: "COSMIC_BALLOON_POP",
+      quizGameMode: "ALIEN_TRIVIA",
+      vocabulary: {
+        lesson_1: [
+          { word: "elephant", alt: "elephants", vn: "con voi", emoji: "🐘" },
+          { word: "zebra", alt: "zebras", vn: "con ngựa vằn", emoji: "🦓" },
+          { word: "giraffe", alt: "giraffes", vn: "con hươu cao cổ", emoji: "🦒" },
+          { word: "monkey", alt: "monkeys", vn: "con khỉ", emoji: "🐒" },
+          { word: "hippo", alt: "hippos", vn: "con hà mã", emoji: "🦛" },
+          { word: "crocodile", alt: "crocodiles", vn: "con cá sấu", emoji: "🐊" },
+          { word: "tiger", alt: "tigers", vn: "con hổ", emoji: "🐯" },
+        ],
+        lesson_5: ["beach", "bookstore", "mall", "playground", "school", "swimming pool", "zoo"],
+      },
+      ai_speak: [
+        "Is there a monkey? Yes, there is.",
+        "Are there hippos at this zoo? Yes, there are.",
+        "Is there an elephant? No, there isn't.",
+        "Where's the playground? It's in front of the zoo.",
+        "Where's the bookstore? It's between the zoo and the mall.",
+      ],
+      reading: {
+        text: "Baby Animals! A mother crocodile is a good mother. Her body is about three meters long, from her head to her tail. Her babies hatch from eggs. A baby giraffe is very tall. Giraffes have long legs and a long neck. The mother giraffe eats leaves from the trees and gives milk to her baby. A baby monkey has two arms, two legs, and a very long tail. Monkeys climb trees with their arms, legs, and tails.",
+        questions: [
+          { q: "Baby crocodiles hatch from eggs.", a: true },
+          { q: "Giraffes have short necks.", a: false },
+          { q: "Monkeys climb trees with their tails.", a: true },
+        ],
+      },
+    },
+    unit_4: {
+      title: "Yummy Food!",
+      icon: "🍉",
+      grammarGameMode: "GRAMMAR_ORBIT",
+      quizGameMode: "ALIEN_TRIVIA",
+      vocabulary: {
+        lesson_1: [
+          { word: "pineapple", vn: "quả dứa", emoji: "🍍" },
+          { word: "pear", vn: "quả lê", emoji: "🍐" },
+          { word: "apple", vn: "quả táo", emoji: "🍎" },
+          { word: "kiwi", vn: "quả kiwi", emoji: "🥝" },
+          { word: "watermelon", vn: "quả dưa hấu", emoji: "🍉" },
+          { word: "orange", vn: "quả cam", emoji: "🍊" },
+          { word: "coconut", vn: "quả dừa", emoji: "🥥" },
+          { word: "banana", vn: "quả chuối", emoji: "🍌" },
+        ],
+        lesson_5: ["burger", "corn", "egg", "French fries", "pancakes", "pie", "sandwich", "soup"],
+      },
+      grammar: {
+        willWont: [
+          { before: "Does Dan like bananas? Yes, he", after: ".", answer: "does" },
+          { before: "Does Nancy like apples? Yes, she", after: ".", answer: "does" },
+          { before: "Does he like pie? No, he", after: ".", answer: "doesn't" },
+          { before: "What", after: "you want for lunch?", answer: "do" },
+          { before: "I", after: "eggs and pancakes, please.", answer: "want" },
+          { before: "Does she like pears? Yes, she", after: ".", answer: "does" },
+          { before: "Do you like soup? No, I", after: ".", answer: "don't" },
+          { before: "What do you", after: "for dinner?", answer: "want" },
+        ],
+      },
+      ai_speak: [
+        "Does Dan like bananas? Yes, he does.",
+        "Does Nancy like apples? Yes, she does.",
+        "What do you want for breakfast? I want eggs and pancakes, please.",
+        "What do you want for dinner? I want a burger and pie, please.",
+        "Do you like soup? No, I don't.",
+      ],
+      reading: {
+        text: "Life Cycle of a Fruit! This is the life cycle of a watermelon. A watermelon seed is small and black. The seed grows into a plant. The plant is green, and it grows big. Then the plant grows flowers, and the flowers become fruit. The fruit has many seeds inside. The seeds fall on the ground, and they grow into more watermelons. Watermelons are green and red. They are big and have a lot of juice. They are very healthy and yummy!",
+        questions: [
+          { q: "A watermelon seed grows into a plant.", a: true },
+          { q: "Watermelons are small and dry.", a: false },
+          { q: "A watermelon has seeds inside.", a: true },
+        ],
+      },
+    },
     unit_1: {
       title: "On the Farm",
       icon: "🐄",
