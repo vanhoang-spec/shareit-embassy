@@ -4,6 +4,51 @@
 // =================================================================
 export const CURRICULUM_DATA: any = {
   level_4: {
+    unit_3: {
+      title: "Shareville Fair",
+      icon: "🎡",
+      formToggleLabel: "Past -ed ⏳",
+      grammarGameMode: "COSMIC_BALLOON_POP",
+      quizGameMode: "ALIEN_TRIVIA",
+      vocabulary: {
+        lesson_1: [
+          { word: "wave", alt: "waved", vn: "vẫy tay", emoji: "👋" },
+          { word: "wait", alt: "waited", vn: "chờ / đợi", emoji: "⏳" },
+          { word: "point", alt: "pointed", vn: "chỉ tay", emoji: "👉" },
+          { word: "shout", alt: "shouted", vn: "hét / la lớn", emoji: "📢" },
+          { word: "watch", alt: "watched", vn: "xem / theo dõi", emoji: "👀" },
+          { word: "play", alt: "played", vn: "chơi", emoji: "🎯" },
+          { word: "smile", alt: "smiled", vn: "mỉm cười", emoji: "😊" },
+        ],
+        lesson_5: ["juggle", "bounce", "laugh", "cry", "follow", "push", "pull", "carry"],
+      },
+      grammar: {
+        willWont: [
+          { before: "We", after: "in line for pizza.", answer: "waited" },
+          { before: "Then we", after: "some fun games.", answer: "played" },
+          { before: "Finally we", after: "some funny clowns.", answer: "watched" },
+          { before: "The clowns", after: "at us.", answer: "waved" },
+          { before: "Julie", after: "at the big Ferris wheel.", answer: "pointed" },
+          { before: "Clara was happy. She", after: "at her friends.", answer: "smiled" },
+          { before: "The children were excited. They", after: "and cheered.", answer: "shouted" },
+        ],
+      },
+      ai_speak: [
+        "How was the roller coaster? It was great!",
+        "I waved at you and your mom.",
+        "We waited in line for a long time.",
+        "Did they juggle? Yes, they did.",
+        "Did you like the clowns? No, I didn't.",
+      ],
+      reading: {
+        text: "Cool Rides: Ferris wheels and roller coasters are fun rides at the fair. A man named George Ferris designed the very first Ferris wheel a long time ago, in 1893. It was 80 meters high, and it turned slowly in a big circle. Today there are Ferris wheels all around the world. The tallest one, the High Roller in Las Vegas, is 167 meters high! Roller coasters were slow in the past, but now they go very, very fast. Some of them are very tall, too. A lot of people feel scared on fast roller coasters, but they are also exciting. Which ride do you like best?",
+        questions: [
+          { q: "George Ferris designed the first Ferris wheel.", a: true },
+          { q: "Roller coasters were very fast in the past.", a: false },
+          { q: "The High Roller is in Las Vegas.", a: true },
+        ],
+      },
+    },
     unit_2: {
       title: "At School",
       icon: "🏫",
