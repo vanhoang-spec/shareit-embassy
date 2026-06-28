@@ -4,6 +4,52 @@
 // =================================================================
 export const CURRICULUM_DATA: any = {
   level_2: {
+    unit_8: {
+      title: "Cool Clothes",
+      icon: "👕",
+      grammarGameMode: "GRAMMAR_ORBIT",
+      quizGameMode: "ALIEN_TRIVIA",
+      vocabulary: {
+        lesson_1: [
+          { word: "pants", vn: "quần dài", emoji: "👖" },
+          { word: "T-shirt", vn: "áo thun", emoji: "👕" },
+          { word: "shirt", vn: "áo sơ mi", emoji: "👔" },
+          { word: "sweater", vn: "áo len", emoji: "🧥" },
+          { word: "sneakers", vn: "giày thể thao", emoji: "👟" },
+          { word: "skirt", vn: "váy", emoji: "👗" },
+          { word: "shoes", vn: "giày", emoji: "👞" },
+          { word: "socks", vn: "tất / vớ", emoji: "🧦" },
+        ],
+        lesson_5: ["dress", "jacket", "jeans", "shorts", "baseball cap", "hat", "boots"],
+      },
+      grammar: {
+        willWont: [
+          { before: "Whose sweater is that? It's", after: "sweater.", answer: "May's" },
+          { before: "Whose sneakers are those? They're", after: "sneakers.", answer: "Dan's" },
+          { before: "Whose skirt is that? It's", after: "skirt.", answer: "May's" },
+          { before: "Whose shirt is this? It's", after: "shirt.", answer: "David's" },
+          { before: "Whose hat is this? It's", after: "hat.", answer: "Nancy's" },
+          { before: "Whose jeans are these? They're", after: "jeans.", answer: "Alex's" },
+          { before: "Whose dress is this? It's", after: "dress.", answer: "Lori's" },
+          { before: "Whose socks are those? They're", after: "socks.", answer: "May's" },
+        ],
+      },
+      ai_speak: [
+        "Whose sweater is that? It's May's sweater.",
+        "Whose sneakers are those? They're Dan's sneakers.",
+        "What are you wearing? I'm wearing a T-shirt and jeans.",
+        "What's he wearing? He's wearing a jacket and a baseball cap.",
+        "Whose shirt is this? It's David's shirt.",
+      ],
+      reading: {
+        text: "Something Old, Something New! What can you do with old toys and old clothes? Don't put your old toys in the trash. You can give them to your brother, your sister, or a friend. You can give old clothes to a store, too. But you can't give dirty clothes to a store. Make sure the clothes are clean! You can also use old clothes to make a toy. Something old can become something new. You can make a collage with recycled things. Old clothes can be new and fun again!",
+        questions: [
+          { q: "You can give old toys to a friend.", a: true },
+          { q: "You can give dirty clothes to a store.", a: false },
+          { q: "Old clothes can become something new.", a: true },
+        ],
+      },
+    },
     unit_5: {
       title: "I Can Do It!",
       icon: "💪",
