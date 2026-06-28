@@ -3887,9 +3887,9 @@ function DashboardHub({ onPick, name, currentUnit = 1, selectedLevel = "level_5"
               : currentUnit === 2
                 ? "🌀"
                 : "🌠";
-  const unitTitle = isL3 ? l3Title : l5Title;
-  const unitEmoji = isL3 ? l3Emoji : l5Emoji;
-  const levelLabel = isL3 ? "Share It! 3" : "Share It! 5";
+  const unitTitle = getUnitData(currentUnit, selectedLevel).title || (isL3 ? l3Title : l5Title);
+  const unitEmoji = getUnitData(currentUnit, selectedLevel).icon || (isL3 ? l3Emoji : l5Emoji);
+  const levelLabel = "Share It! " + selectedLevel.replace("level_", "");
   return (
     <div className="ac-fade relative">
       <div className="relative mb-4 overflow-hidden rounded-3xl p-4 text-center gx-glass">
@@ -4366,7 +4366,7 @@ function UnitGalaxy({ onEnterUnit, onBackToLevels, selectedLevel = "level_5" }) 
     timer.current = setTimeout(() => setToast(null), 1800);
   }
   useEffect(() => () => clearTimeout(timer.current), []);
-  const levelLabel = selectedLevel === "level_3" ? "Galaxy Level 3" : "Galaxy Level 5";
+  const levelLabel = "Galaxy Level " + selectedLevel.replace("level_", "");
   return (
     <div className="ac-fade">
       <button
