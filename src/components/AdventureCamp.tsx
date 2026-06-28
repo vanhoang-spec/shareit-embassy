@@ -60,6 +60,7 @@ import {
   AlienTriviaArena,
   FutureWillWont,
   RocketSentenceBlaster,
+  CosmicGrammarOrbit,
   getUnitData,
   CosmicSpeakingNebula,
 } from "./Unit2";
