@@ -4,6 +4,92 @@
 // =================================================================
 export const CURRICULUM_DATA: any = {
   level_4: {
+    unit_5: {
+      title: "History Museum",
+      icon: "🏛️",
+      grammarGameMode: "ROCKET_BLASTER",
+      quizGameMode: "ALIEN_TRIVIA",
+      vocabulary: {
+        lesson_1: [
+          { word: "scientist", vn: "nhà khoa học", emoji: "🔬" },
+          { word: "soccer player", vn: "cầu thủ bóng đá", emoji: "⚽" },
+          { word: "movie star", vn: "ngôi sao điện ảnh", emoji: "🎬" },
+          { word: "painter", vn: "họa sĩ", emoji: "🎨" },
+          { word: "pop star", vn: "ca sĩ nhạc pop", emoji: "🎤" },
+          { word: "photographer", vn: "nhiếp ảnh gia", emoji: "📷" },
+          { word: "nurse", vn: "y tá", emoji: "🩺" },
+        ],
+        lesson_5: [
+          "tie my shoes",
+          "play an instrument",
+          "speak English",
+          "whistle a tune",
+          "use a smartphone",
+          "do a cartwheel",
+        ],
+      },
+      grammar: {
+        willWont: [
+          { before: "Mary Miller was a", after: ".", answer: "photographer" },
+          { before: "Bill Brown was a", after: ".", answer: "painter" },
+          { before: "Sue Smith was a", after: ".", answer: "nurse" },
+          { before: "Rose Red was a", after: ".", answer: "movie star" },
+          { before: "Barry Baker was a", after: ".", answer: "pop star" },
+          { before: "Larry Lopez was a", after: ".", answer: "soccer player" },
+          { before: "Hannah Harris was a", after: ".", answer: "scientist" },
+        ],
+      },
+      ai_speak: [
+        "Who was Mary Miller? She was a photographer.",
+        "What did she do? She took photos of animals.",
+        "Who was Bill Brown? He was a painter.",
+        "Could you tie your shoes when you were three? No, I couldn't.",
+        "Could you use a smartphone when you were five? Yes, I could.",
+      ],
+      reading: {
+        text: "Brilliant Musicians: Mozart and Beethoven were great musicians. They made music a long time ago, but it is still popular today. Mozart could play the piano when he was five years old. He played at concerts when he was six, and he wrote music when he was eight. When Mozart was thirty-one, a young musician named Beethoven wanted to meet him. Beethoven could play the piano and the violin when he was young. He liked Mozart's music very much. Later, something terrible happened. When Beethoven was thirty-one, he could not hear his music anymore. He was very sad, but he still made beautiful music for many years.",
+        questions: [
+          { q: "Mozart could play the piano when he was five.", a: true },
+          { q: "Beethoven could play the piano and the violin.", a: true },
+          { q: "Beethoven could hear his music when he was thirty-one.", a: false },
+        ],
+      },
+    },
+    unit_6: {
+      title: "In the Forest",
+      icon: "🌲",
+      formToggleLabel: "Comparative -er ⬆️",
+      grammarGameMode: "COSMIC_BALLOON_POP",
+      quizGameMode: "ALIEN_TRIVIA",
+      vocabulary: {
+        lesson_1: [
+          { word: "small", alt: "smaller", vn: "nhỏ", emoji: "🐜" },
+          { word: "big", alt: "bigger", vn: "to / lớn", emoji: "🐘" },
+          { word: "fast", alt: "faster", vn: "nhanh", emoji: "🐆" },
+          { word: "slow", alt: "slower", vn: "chậm", emoji: "🐌" },
+          { word: "cute", alt: "cuter", vn: "dễ thương", emoji: "🐰" },
+          { word: "tall", alt: "taller", vn: "cao", emoji: "🦒" },
+          { word: "strong", alt: "stronger", vn: "khỏe / mạnh", emoji: "💪" },
+          { word: "loud", alt: "louder", vn: "ồn / to tiếng", emoji: "🔊" },
+        ],
+        lesson_5: ["owl", "wolf", "deer", "rabbit", "fox", "snail", "beetle", "raccoon"],
+      },
+      ai_speak: [
+        "A fox is cuter than a wolf.",
+        "Sid is faster than a bee.",
+        "A wolf is bigger than an owl.",
+        "A rabbit is faster than a snail.",
+        "I think the owl is the prettiest.",
+      ],
+      reading: {
+        text: "Night Owls: Owls are nocturnal animals. They sleep in the day and hunt at night. Their big eyes help them see very well in the dark. There are many different species of owls. The eagle owl is one of the biggest. It is about 75 centimeters tall and lives in a forest. At night, it hunts fish, snakes, and rabbits. The burrowing owl is one of the strangest. It is smaller than the eagle owl and sleeps in a hole in the ground. It has long legs and can run very fast. The elf owl is the smallest of all. It is only 15 centimeters tall, and at night it hunts insects and lizards.",
+        questions: [
+          { q: "Owls sleep in the day and hunt at night.", a: true },
+          { q: "The elf owl is the biggest owl species.", a: false },
+          { q: "The burrowing owl can run very fast.", a: true },
+        ],
+      },
+    },
     unit_4: {
       title: "Last Weekend",
       icon: "🎬",
