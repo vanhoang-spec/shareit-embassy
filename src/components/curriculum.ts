@@ -3,6 +3,60 @@
 // Add or edit lesson content here. Screens read it via getUnitData(unit, level).
 // =================================================================
 export const CURRICULUM_DATA: any = {
+  level_2: {
+    unit_1: {
+      title: "On the Farm",
+      icon: "🐄",
+      formToggleLabel: "Số nhiều +s ⬆️",
+      grammarGameMode: "ROCKET_BLASTER",
+      quizGameMode: "ALIEN_TRIVIA",
+      vocabulary: {
+        lesson_1: [
+          { word: "donkey", alt: "donkeys", vn: "con lừa", emoji: "🫏" },
+          { word: "horse", alt: "horses", vn: "con ngựa", emoji: "🐴" },
+          { word: "goat", alt: "goats", vn: "con dê", emoji: "🐐" },
+          { word: "duck", alt: "ducks", vn: "con vịt", emoji: "🦆" },
+          { word: "sheep", alt: "sheep", vn: "con cừu", emoji: "🐑" },
+          { word: "cow", alt: "cows", vn: "con bò", emoji: "🐄" },
+          { word: "chicken", alt: "chickens", vn: "con gà", emoji: "🐔" },
+          { word: "caterpillar", alt: "caterpillars", vn: "con sâu bướm", emoji: "🐛" },
+          { word: "butterfly", alt: "butterflies", vn: "con bướm", emoji: "🦋" },
+          { word: "bee", alt: "bees", vn: "con ong", emoji: "🐝" },
+          { word: "mosquito", alt: "mosquitos", vn: "con muỗi", emoji: "🦟" },
+          { word: "ladybug", alt: "ladybugs", vn: "con bọ rùa", emoji: "🐞" },
+          { word: "ant", alt: "ants", vn: "con kiến", emoji: "🐜" },
+        ],
+        lesson_5: ["spider", "legs", "wings", "eyes", "open", "closed"],
+      },
+      grammar: {
+        willWont: [
+          { before: "What's this? It's a", after: ".", answer: "goat" },
+          { before: "What's that? It's a", after: ".", answer: "duck" },
+          { before: "What's this? It's a", after: ".", answer: "sheep" },
+          { before: "What's that? It's a", after: ".", answer: "cow" },
+          { before: "What are these? They're", after: ".", answer: "bees" },
+          { before: "What are those? They're", after: ".", answer: "ants" },
+          { before: "What are these? They're", after: ".", answer: "butterflies" },
+          { before: "What are those? They're", after: ".", answer: "mosquitos" },
+        ],
+      },
+      ai_speak: [
+        "What's this? It's a sheep.",
+        "What's that? It's a cow.",
+        "What are these? They're butterflies.",
+        "What are those? They're bees.",
+        "Look! What's that? It's a baby duck. It's cute!",
+      ],
+      reading: {
+        text: "Bugs Are Great! Bugs are small, but they are amazing. A spider has eight legs and eight eyes. A spider is not an insect! A butterfly has six legs and big, colorful wings. When the wings are open, you can see the bright colors. A bee is yellow, brown, and black. It has six legs, four wings, and many eyes. You can find bugs in your garden, on trees, and under leaves. Look closely. How many can you find?",
+        questions: [
+          { q: "A spider has eight legs.", a: true },
+          { q: "A butterfly has no wings.", a: false },
+          { q: "You can find bugs under leaves.", a: true },
+        ],
+      },
+    },
+  },
   level_4: {
     unit_7: {
       title: "Outdoor Fun",
