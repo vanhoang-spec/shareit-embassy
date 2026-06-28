@@ -4,6 +4,88 @@
 // =================================================================
 export const CURRICULUM_DATA: any = {
   level_4: {
+    unit_7: {
+      title: "Outdoor Fun",
+      icon: "🛹",
+      formToggleLabel: "Comparative ⬆️",
+      grammarGameMode: "COSMIC_BALLOON_POP",
+      quizGameMode: "ALIEN_TRIVIA",
+      vocabulary: {
+        lesson_1: [
+          { word: "exciting", alt: "more exciting", vn: "thú vị / hào hứng", emoji: "🤩" },
+          { word: "boring", alt: "more boring", vn: "chán / nhàm chán", emoji: "😴" },
+          { word: "dangerous", alt: "more dangerous", vn: "nguy hiểm", emoji: "⚠️" },
+          { word: "difficult", alt: "more difficult", vn: "khó", emoji: "😣" },
+          { word: "easy", alt: "easier", vn: "dễ", emoji: "😎" },
+          { word: "fun", alt: "more fun", vn: "vui", emoji: "😄" },
+        ],
+        lesson_5: ["snowboarding", "sailing", "rock climbing", "golfing", "skydiving", "scuba diving"],
+      },
+      ai_speak: [
+        "Juggling is more difficult than riding a bicycle.",
+        "Skateboarding is more boring than juggling.",
+        "Roller skating is easier than skateboarding.",
+        "Which one is the most exciting? I think skydiving is the most exciting.",
+        "Golfing is the most boring activity.",
+      ],
+      reading: {
+        text: "Be Safe: Riding a bicycle, roller skating, and skateboarding are fun, but they can be dangerous. Here are some ways to stay safe. When you ride a bicycle, always wear a helmet. Wear colorful clothes so drivers can see you, and use lights at night. Never listen to music on the road, and always stop when you see a stop sign. When you skateboard or roller skate, never skate on the road. A park is much safer! Always wear a helmet to protect your head, and wear elbow pads and knee pads to protect your arms and legs. Have fun and be safe!",
+        questions: [
+          { q: "You should always wear a helmet when you ride a bicycle.", a: true },
+          { q: "It is safe to skateboard on the road.", a: false },
+          { q: "Elbow pads and knee pads protect your arms and legs.", a: true },
+        ],
+      },
+    },
+    unit_8: {
+      title: "Summer Vacation",
+      icon: "🏖️",
+      grammarGameMode: "ROCKET_BLASTER",
+      quizGameMode: "ALIEN_TRIVIA",
+      vocabulary: {
+        lesson_1: [
+          { word: "feed my hamster", vn: "cho chuột hamster ăn", emoji: "🐹" },
+          { word: "make my bed", vn: "dọn giường", emoji: "🛏️" },
+          { word: "find my swimsuit", vn: "tìm đồ bơi", emoji: "🩱" },
+          { word: "clean my room", vn: "dọn phòng", emoji: "🧹" },
+          { word: "pack my suitcase", vn: "soạn va li", emoji: "🧳" },
+          { word: "help my parents", vn: "giúp bố mẹ", emoji: "🤝" },
+        ],
+        lesson_5: [
+          "go to a water park",
+          "learn to surf",
+          "look for seashells",
+          "sell lemonade",
+          "stay in a hotel",
+          "visit family",
+        ],
+      },
+      grammar: {
+        willWont: [
+          { before: "Before vacation, I have to pack my", after: ".", answer: "suitcase" },
+          { before: "Clara has to feed her", after: ".", answer: "hamster" },
+          { before: "I have to clean my", after: ".", answer: "room" },
+          { before: "This summer, I'm going to visit", after: ".", answer: "family" },
+          { before: "Sid is going to sell", after: ".", answer: "lemonade" },
+          { before: "We're going to learn to", after: ".", answer: "surf" },
+        ],
+      },
+      ai_speak: [
+        "I have to pack my suitcase before vacation.",
+        "Do you have to feed your hamster? Yes, I do.",
+        "What are you going to do this summer? I'm going to visit family.",
+        "What's Sid going to do? He's going to sell lemonade.",
+        "I'm not going to visit family. I'm going to learn to surf.",
+      ],
+      reading: {
+        text: "Wonder Water Park: Come to Wonder Water Park, the biggest water park in the country! There are lots of things to do. You can play in the wave pool. It is cheap, and one hour costs only four dollars. You can also learn to surf. A surfing lesson costs ten dollars per hour. The park has three exciting water slides. The Mega Slide is the longest. It is 300 meters long, and one hour on it costs five dollars. You can relax on the slow Lazy River, too. Swimming makes you hungry, so you can buy pizza, sandwiches, and ice cream. Come and have fun!",
+        questions: [
+          { q: "Wonder Water Park is the biggest water park in the country.", a: true },
+          { q: "The Mega Slide is the shortest water slide.", a: false },
+          { q: "You can learn to surf at the water park.", a: true },
+        ],
+      },
+    },
     unit_5: {
       title: "History Museum",
       icon: "🏛️",
